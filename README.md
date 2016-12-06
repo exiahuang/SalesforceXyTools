@@ -3,10 +3,10 @@
 SalesforceXyTools for Sublime Text is Rapid development tools for Salesforce Development.
 
 * Auto Create Apex Test Class Code, Auto Create Test Data For Apex Test Class.
-* SFDC Dataviewer, SFDC Online Dataviewer
+* SFDC Dataviewer, SFDC Online Dataviewer.
 * SObject Viewer, SObject Description, Export SOjbect Fields to Excel
 * Atuo Login SFDC.
-* SOQL Query/ Tooling Query/ Run Apex Script
+* SOQL Query, Tooling Query, Run Apex Script.
 
 ## Issues
 
@@ -35,15 +35,16 @@ All issues are managed by the [SalesforceXyTools](https://github.com/exiahuang/S
 ####Use [Mavensmate](https://github.com/joeferraro/MavensMate-SublimeText) Session 
 
 You may set `use_mavensmate_setting` to a single path on your local filesystem or an array of paths.
-If you set `use_mavensmate_setting` true, you can use all the setting of mavensmate, you need not to add any ID/Password of SFDC.
+If you set `use_mavensmate_setting` true, you can use all the setting of mavensmate, you need not to set `projects` or `default_project` .
 ```
 "use_mavensmate_setting" : true
 ```
 
-If you set `use_mavensmate_setting` false, please set the `default_project` and `projects` as the example.
-#####Examples
+####Use `projects` Setting
 
-######Array of projects
+If you set `use_mavensmate_setting` false, please set the `default_project` and `projects` as the example.
+
+#####Examples of projects
 
 ```
 "default_project":"huangxy1",
@@ -71,4 +72,5 @@ If you set `use_mavensmate_setting` false, please set the `default_project` and 
         }
     }
 ```
+
 
