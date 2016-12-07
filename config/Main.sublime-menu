@@ -87,10 +87,10 @@
                     }
                 ]
             },
-            {
-                "caption": "Show SFDC Coverage",
-                "command": "sfdc_coverage"
-            },
+            // {
+            //     "caption": "Show SFDC Coverage",
+            //     "command": "sfdc_coverage"
+            // },
             { "caption": "-" },
             {  
                 "caption":"Settings","children":  
