@@ -1,0 +1,60 @@
+{
+	// please copy and change the default setting below
+	// if you have any question of the setting,
+	// please contact with me.
+	// Email: exia.huang@hotmail.com
+	
+	// If you use mavensmate setting , please set use_mavensmate_setting true.
+	// If use_mavensmate_setting is true, you need not to set anything below. 
+	// If you set the use_mavensmate_setting false, you need to set "projects" value below.
+	"use_mavensmate_setting":true,
+
+	// SFDC Dataviewer Select Limit
+	"soql_select_limit":50,
+
+	// Salesforce-xy-tools base workspace
+    "xy_output_floder": "huangxy",
+
+	// the default project which you work with
+	"default_project":"huangxy1",
+
+	"projects":
+	{
+		// the Example of the projects 
+		// If you set the use_mavensmate_setting false, 
+		// you need to set "projects" value below.
+		"huangxy1":
+		{
+			"loginUrl": "https://login.salesforce.com",
+			"password": "XXXXXXX",
+			"security_token": "XXXXXXXXXXXXXXX",
+			"username": "XXXXXXX@ibmer.info",
+			"api_version": 36.0,
+			"is_sandbox": false,
+			"workspace": "C:/workspace/huangxy1/"
+		},
+		"huangxy2":
+		{
+			"loginUrl": "https://test.salesforce.com",
+			"password": "XXXXXXX",
+			"security_token": "XXXXXXX",
+			"username": "XXXXXXX@ibmer.info",
+			"api_version": 36.0,
+			"is_sandbox": true,
+			"workspace": "C:/workspace/huangxy2/"
+		}
+	},
+
+	///////// Debug Log Categories
+	// https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/sforce_api_header_debuggingheader.htm
+	// //////
+	"debug_levels": {
+        "Workflow": "INFO",
+        "Callout": "INFO",
+        "System": "DEBUG",
+        "Apex_Code": "DEBUG",
+        "Apex_Profiling": "INFO",
+        "Validation": "INFO",
+        "DB":"Info"
+    }
+}

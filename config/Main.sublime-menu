@@ -1,0 +1,144 @@
+[
+    {
+        "caption": "SFDC-XY",
+        "mnemonic": "X",
+        "id": "SFDC-XY",
+        "children":
+        [
+            // SFDC専用
+            { "caption": "-" },
+            {
+                "caption": "Login SFDC",
+                "command": "login_sfdc"
+            },
+            {
+                "caption": "SFDC SOQL",
+                "children":
+                [
+                    {
+                        "caption": "SOQL Query",
+                        "command": "soql_query"
+                    },
+                    {
+                        "caption": "Tooling Query",
+                        "command": "tooling_query"
+                    },
+                    {
+                        "caption": "Run Apex Script",
+                        "command": "run_apex_script"
+                    }
+                ]
+            },
+            {
+                "caption": "SFDC Object",
+                "children":
+                [
+                    {
+                        "caption": "Show SFDC Object List",
+                        "command": "show_sfdc_object_list"
+                    },
+                    {
+                        "caption": "Save SFDC Object List AS Excel",
+                        "command": "save_sfdc_object_as_excel"
+                    },
+                    {
+                        "caption": "SFDC Object Describe",
+                        "command": "sfdc_object_desc"
+                    }
+                ]
+            },
+            {
+                "caption": "SFDC Data",
+                "children":
+                [
+                    {
+                        "caption": "SFDC DataViewer",
+                        "command": "sfdc_dataviewer"
+                    },
+                    {
+                        "caption": "SFDC Online DataViewer",
+                        "command": "sfdc_online_dataviewer"
+                    }
+                ]
+            },
+            {
+                "caption": "SFDC Code Creator",
+                "children":
+                [
+                    {
+                        "caption": "Create All Test Data(Needed Field)",
+                        "command": "create_all_test_data"
+                    },
+                    {
+                        "caption": "Insert Test Data(All Field)",
+                        "command": "create_test_data_all"
+                    },
+                    {
+                        "caption": "Insert Test Data(Needed Field)",
+                        "command": "create_test_data_need"
+                    },
+                    {
+                        "caption": "Insert Test Data(From Soql)",
+                        "command": "create_test_data_from_soql"
+                    },
+                    {
+                        "caption": "Create Test Code",
+                        "command": "create_test_code"
+                    }
+                ]
+            },
+            {
+                "caption": "Show SFDC Coverage",
+                "command": "sfdc_coverage"
+            },
+            { "caption": "-" },
+            {  
+                "caption":"Settings","children":  
+                [     
+                    {  
+                        "caption":"Settings - Default" ,  
+                        "command": "open_file", "args":  
+                        {  
+                            "file": "${packages}/SalesforceXyTools/config/sfdc.huangxy.sublime-settings"  
+                        }     
+                    },  
+                    {  
+                        "caption":"Settings - User" ,  
+                        "command": "open_file", "args":  
+                        {  
+                            "file": "${packages}/User/sfdc.huangxy.sublime-settings"  
+                        }     
+                    },  
+                    { "caption": "-" },  
+                    {  
+                        "caption":"Key Bindings - Default" ,  
+                        "command": "open_file", "args":  
+                        {  
+                            "file": "${packages}/SalesforceXyTools/config/Default ($platform).sublime-keymap"  
+                        }     
+                    },  
+                    {  
+                        "caption":"Key Bindings - User" ,  
+                        "command": "open_file", "args":  
+                        {  
+                            "file": "${packages}/User/Default ($platform).sublime-keymap"  
+                        }     
+                    }
+                ]  
+            },
+            { "caption": "-" },
+            {
+                "caption": "Home Page",
+                "command": "home_page"
+            },
+            {
+                "caption": "Report Issue",
+                "command": "report_issue_xy"
+            },
+            {
+                "caption": "About",
+                "command": "about_hxy"
+            }
+        ]
+    }
+]

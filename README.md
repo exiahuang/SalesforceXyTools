@@ -8,6 +8,12 @@ SalesforceXyTools for Sublime Text is Rapid development tools for Salesforce Dev
 * Atuo Login SFDC.
 * SOQL Query, Tooling Query, Run Apex Script.
 
+
+## Basic on OpenSource
+1. [XLWT (License: BSD)](https://pypi.python.org/pypi/xlwt)
+2. [Simple-Salesforce (License: Apache 2.0)](https://pypi.python.org/pypi/simple-salesforce/0.72.2)
+3. [requests (License: Apache 2.0)](https://pypi.python.org/pypi/requests/2.12.3)
+
 ## Issues
 
 All issues are managed by the [SalesforceXyTools](https://github.com/exiahuang/SalesforceXyTools)

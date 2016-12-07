@@ -1,0 +1,52 @@
+[
+	{ "caption": "-" },
+	{
+		"id":"SFDC-XY",
+		"caption": "SFDC-XY",
+		"children":
+		[
+            {
+                "caption": "Show SFDC Object List",
+                "command": "show_sfdc_object_list"
+            },
+            {
+                "caption": "Save SFDC Object AS Excel",
+                "command": "save_sfdc_object_as_excel"
+            },
+            {
+                "caption": "SOQL Query",
+                "command": "soql_query"
+            },
+            {
+                "caption": "Tooling Query",
+                "command": "tooling_query"
+            },
+            {
+                "caption": "Run Apex Script",
+                "command": "run_apex_script"
+            },
+            {
+                "caption": "Login SFDC",
+                "command": "login_sfdc"
+            },
+			{ "caption": "-" },
+            {
+                "caption": "creat test code",
+                "command": "create_test_code"
+            },
+            {
+                "caption": "Insert Test Data(All Field)",
+                "command": "create_test_data_all"
+            },
+            {
+                "caption": "Insert Test Data(Needed Field)",
+                "command": "create_test_data_need"
+            },
+            {
+                "caption": "Insert Test Data(From Soql)",
+                "command": "create_test_data_from_soql"
+            }
+		]
+	},
+	{ "caption": "-" }
+]
