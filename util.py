@@ -406,7 +406,7 @@ def get_soql_to_apex(sobj_fields, soql, soql_result):
             else:
                 fieldtype = "string"
 
-            show_in_panel(field_name + ',' + fieldtype + '\n')
+            # show_in_panel(field_name + ',' + fieldtype + '\n')
             field["value"] = xformat(value, fieldtype)
             row.append(field)
         table.append(row)

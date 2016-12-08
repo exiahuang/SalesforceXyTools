@@ -80,3 +80,28 @@ If you set `use_mavensmate_setting` false, please set the `default_project` and 
 ```
 
 
+
+## Usage
+#### Run SOQL/Run Tooling api
+Select your SOQL, [SFDC-XY] -> [SFDC SOQL] -> [SOQL Query]/[Tooling Query] and run!
+
+![Run SOQL](https://github.com/exiahuang/XyHelp/blob/master/SalesforceXyTools/sfdc_soql.gif?raw=true)
+
+
+#### SFDC Object Descript, Save as Excel
+Path: [SFDC-XY] -> [SFDC Object]
+
+![SFDC Object](https://github.com/exiahuang/XyHelp/blob/master/SalesforceXyTools/sfdc_object.gif?raw=true)
+
+
+#### SFDC DataViewer
+Path: [SFDC-XY] -> [SFDC Dataviewer]
+
+![SFDC Object](https://github.com/exiahuang/XyHelp/blob/master/SalesforceXyTools/dataviwer.gif?raw=true)
+
+
+
+#### Create Test Code
+Open your apex code, [SFDC-XY] -> [SFDC Code Creator] -> [Create Test Code] and you can auto creat your apex test class!! 
+
+![Create Test Code](https://github.com/exiahuang/XyHelp/blob/master/SalesforceXyTools/test_class_create.gif?raw=true)
