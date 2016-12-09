@@ -6,6 +6,7 @@ import json
 import re
 import webbrowser
 import random
+import platform
 
 from .salesforce import *
 from . import setting
@@ -180,6 +181,14 @@ def handle_thread(thread, msg=None, counter=0, direction=1, width=8):
 ##########################################################################################
 #Python Util
 ##########################################################################################
+def getSlash():
+    sysstr = platform.system()
+    if(sysstr =="Windows"):
+        slash = "\\"
+    else:
+        slash = "/"
+    return slash
+
 def random_str(randomlength=8):
     str = ''
     chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789'

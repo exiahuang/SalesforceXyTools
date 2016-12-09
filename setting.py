@@ -96,7 +96,7 @@ def load_mavensmate_setting(window=None):
         settings["default_project"] = settings["projectName"]
 
     if "api_version" not in settings:
-        settings["api_version"] = "30.0"
+        settings["api_version"] = "37.0"
 
     # if "password" not in settings:
     #     settings["password"] = ""

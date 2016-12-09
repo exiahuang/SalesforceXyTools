@@ -48,5 +48,21 @@
             }
 		]
 	},
+    {
+        "caption": "Open Controller",
+        "command": "open_controller"
+    },
+    {
+        "caption": "Copy FileName",
+        "command": "copy_filename"
+    },
+    {
+        "caption": "Open VisualPage",
+        "command": "open_visualpage"
+    },
+    {
+        "caption": "Open TestClass",
+        "command": "open_testclass"
+    },
 	{ "caption": "-" }
 ]

@@ -7,7 +7,8 @@ import re
 import random
 import threading
 
-from . import xlwt
+# from . import xlwt
+from . import xlsxwriter
 from . import requests
 from . import util
 from . import setting
@@ -61,7 +62,111 @@ class ShowSfdcObjectListCommand(sublime_plugin.TextCommand):
         util.handle_thread(thread)
 
 
+# # Save the SFDC Object As Excel
+# # use xlwt to write excel,deprecated 
+# class SaveSfdcObjectAsExcelCommand(sublime_plugin.WindowCommand):
+#     def main_handle(self, savePath = ''):
+#         try:
+#             dirPath = os.path.dirname(savePath)
+#             util.makedir(dirPath)
+
+#             sf = util.sf_login()
+#             # contact = sf.query("SELECT Id, Email FROM Contact limit 1")
+
+#             sfdesc = sf.describe()
+#             book = xlwt.Workbook()
+#             newSheet_1 = book.add_sheet('オブジェクトリスト')
+#             newSheet_1.write(0, 0, 'label')
+#             newSheet_1.write(0, 1, 'name')
+#             newSheet_1.write(0, 2, 'keyPrefix')
+#             index = 1;
+#             sheetIndex = 0;
+
+#             for x in sf.describe()["sobjects"]:
+#               #write to xls
+#               book.get_sheet(0)
+#               newSheet_1.write(index, 0, util.xstr(x["label"]))
+#               newSheet_1.write(index, 1, util.xstr(x["name"]))
+#               newSheet_1.write(index, 2, util.xstr(x["keyPrefix"]))
+#               index = index + 1
+#               #print(sf.Kind__c.describe())
+#               #print(x["name"])
+#               #print(x["custom"])
+#               if x["custom"]:
+#                   sheetIndex += 1
+                  
+#                   # sftype = SFType(util.xstr(x["name"]), sf.session_id, sf.sf_instance, sf_version=sf.sf_version,
+#                   #               proxies=sf.proxies, session=sf.session)
+#                   sftype = sf.getSobject(util.xstr(x["name"]))
+
+#                   #print(x["name"])     
+#                   #write to xls
+#                   fieldSheet_1 = book.add_sheet(x["name"])
+#                   book.get_sheet(sheetIndex)
+#                   rowIndex = 0;
+#                   fieldSheet_1.write(rowIndex, 0, "name")
+#                   fieldSheet_1.write(rowIndex, 1, "label")
+#                   fieldSheet_1.write(rowIndex, 2, "type")
+#                   fieldSheet_1.write(rowIndex, 3, "length")
+#                   fieldSheet_1.write(rowIndex, 4, "scale")
+
+#                   sftypedesc = sftype.describe()
+#                   for field in sftypedesc["fields"]:
+#                      #print(field["name"])  
+#                      #print(field["label"])  
+#                      #print(field["type"])  
+#                      #print(field["length"])  
+#                      #print(field["scale"])  
+#                      rowIndex += 1
+#                      fieldSheet_1.write(rowIndex, 0, field["name"])
+#                      fieldSheet_1.write(rowIndex, 1, field["label"])
+#                      fieldSheet_1.write(rowIndex, 2, field["type"])
+#                      fieldSheet_1.write(rowIndex, 3, field["length"])
+#                      fieldSheet_1.write(rowIndex, 4, field["scale"])
+
+#               #message += x["label"] + "\n"
+
+#             # book.save( settings["default_project"] + '_sobject.xls')
+#             book.save(savePath)
+#             util.show_in_dialog("Done! Please see the dir below: \n" + dirPath)
+#             # isOpen = sublime.ok_cancel_dialog('Do you want to open the directory?')
+#             # if isOpen:
+
+
+
+#         except requests.exceptions.RequestException as e:
+#             util.show_in_panel("Network connection timeout when issuing REST GET request")
+#             return
+#         except SalesforceExpiredSession as e:
+#             util.show_in_dialog('session expired')
+#             return
+#         except SalesforceRefusedRequest as e:
+#             util.show_in_panel('The request has been refused.')
+#             return
+#         except SalesforceError as e:
+#             err = 'Error code: %s \nError message:%s' % (e.status,e.content)
+#             util.show_in_panel(err)
+#             return
+#         except Exception as e:
+#             util.show_in_panel(e)
+#             # util.show_in_dialog('Exception Error!')
+#             return
+
+#     def on_input(self, args):
+#         thread = threading.Thread(target=self.main_handle, args=(args, ))
+#         thread.start()
+#         util.handle_thread(thread)
+
+
+#     def run(self):
+#         settings = setting.load()
+#         self.fullPath =  os.path.join(util.get_default_floder(), settings["default_project"] + '_sobject.xls')
+#         # show_input_panel(caption, initial_text, on_done, on_change, on_cancel)
+#         self.window.show_input_panel("Please Input FullPath of fileName: " , 
+#             self.fullPath, self.on_input, None, None)
+
 # Save the SFDC Object As Excel
+# # use xlsxwriter to write excel
 class SaveSfdcObjectAsExcelCommand(sublime_plugin.WindowCommand):
     def main_handle(self, savePath = ''):
         try:
@@ -72,17 +177,21 @@ class SaveSfdcObjectAsExcelCommand(sublime_plugin.WindowCommand):
             # contact = sf.query("SELECT Id, Email FROM Contact limit 1")
 
             sfdesc = sf.describe()
-            book = xlwt.Workbook()
-            newSheet_1 = book.add_sheet('オブジェクトリスト')
+            book = xlsxwriter.Workbook(savePath)
+            newSheet_1Name = 'オブジェクトリスト'
+            newSheet_1 = book.add_worksheet(newSheet_1Name)
             newSheet_1.write(0, 0, 'label')
             newSheet_1.write(0, 1, 'name')
             newSheet_1.write(0, 2, 'keyPrefix')
             index = 1;
+
+            sheetIndexMap = {}
             sheetIndex = 0;
+            sheetIndexMap[0] = newSheet_1Name
 
             for x in sf.describe()["sobjects"]:
               #write to xls
-              book.get_sheet(0)
+              # book.get_sheet(0)
               newSheet_1.write(index, 0, util.xstr(x["label"]))
               newSheet_1.write(index, 1, util.xstr(x["name"]))
               newSheet_1.write(index, 2, util.xstr(x["keyPrefix"]))
@@ -99,8 +208,12 @@ class SaveSfdcObjectAsExcelCommand(sublime_plugin.WindowCommand):
 
                   #print(x["name"])     
                   #write to xls
-                  fieldSheet_1 = book.add_sheet(x["name"])
-                  book.get_sheet(sheetIndex)
+                  worksheet_name = x["name"]
+                  if len(worksheet_name) > 31:
+                    worksheet_name = (x["name"].replace("_",""))[0:31]
+
+                  fieldSheet_1 = book.add_worksheet(worksheet_name)
+                  # book.get_sheet(sheetIndex)
                   rowIndex = 0;
                   fieldSheet_1.write(rowIndex, 0, "name")
                   fieldSheet_1.write(rowIndex, 1, "label")
@@ -125,11 +238,9 @@ class SaveSfdcObjectAsExcelCommand(sublime_plugin.WindowCommand):
               #message += x["label"] + "\n"
 
             # book.save( settings["default_project"] + '_sobject.xls')
-            book.save(savePath)
             util.show_in_dialog("Done! Please see the dir below: \n" + dirPath)
             # isOpen = sublime.ok_cancel_dialog('Do you want to open the directory?')
             # if isOpen:
-
 
 
         except requests.exceptions.RequestException as e:
@@ -158,11 +269,10 @@ class SaveSfdcObjectAsExcelCommand(sublime_plugin.WindowCommand):
 
     def run(self):
         settings = setting.load()
-        self.fullPath =  os.path.join(util.get_default_floder(), settings["default_project"] + '_sobject.xls')
+        self.fullPath =  os.path.join(util.get_default_floder(), settings["default_project"] + '_sobject.xlsx')
         # show_input_panel(caption, initial_text, on_done, on_change, on_cancel)
         self.window.show_input_panel("Please Input FullPath of fileName: " , 
             self.fullPath, self.on_input, None, None)
-
         
 
 # Soql Query
@@ -835,6 +945,80 @@ class CreateTestCodeCommand(sublime_plugin.TextCommand):
         sel_string = self.view.substr(sublime.Region(0, self.view.size()))
         test_code = util.get_testclass(sel_string)
         util.show_in_new_tab(test_code)
+
+
+class OpenControllerCommand(sublime_plugin.TextCommand):
+    def run(self, edit):
+        file_name = self.view.file_name()
+        if file_name:
+            # XyzPage.page -> XyzController.cls
+            # Xyz.page -> XyzController.cls
+            page_floder = util.getSlash() + "pages" + util.getSlash()
+            class_floder = util.getSlash() + "classes" + util.getSlash()
+            file_name1 = file_name.replace(page_floder, class_floder).replace('.page', 'Controller.cls')
+            file_name2 = file_name.replace(page_floder, class_floder).replace('Page.page', 'Controller.cls')
+            if os.path.isfile(file_name1): 
+                self.view.window().open_file(file_name1)
+            elif os.path.isfile(file_name2): 
+                self.view.window().open_file(file_name2)
+
+    def is_enabled(self):
+        file_name = self.view.file_name()
+        check = os.path.isfile(file_name) and ( file_name.find(".page") > -1 )
+        return check
+        
+    def is_visible(self):
+        return self.is_enabled()
+
+# Open Test Class
+class OpenTestclassCommand(sublime_plugin.TextCommand):
+    def run(self, edit):
+        file_name = self.view.file_name()
+
+        if file_name:
+            # XyzController.cls -> XyzControllerTest.cls
+            file_name1 = file_name.replace('.cls', 'Test.cls')
+            if os.path.isfile(file_name1): 
+                self.view.window().open_file(file_name1)
+
+    def is_enabled(self):
+        file_name = self.view.file_name()
+        check = os.path.isfile(file_name) and ( file_name.find(".cls") > -1 ) and ( file_name.find("Test.cls") == -1 )
+        return check
+
+    def is_visible(self):
+        return self.is_enabled()
+
+
+
+class OpenVisualpageCommand(sublime_plugin.TextCommand):
+    def run(self, edit):
+        file_name = self.view.file_name()
+
+        if file_name:
+            # XyzPage.page -> XyzController.cls
+            # Xyz.page -> XyzController.cls
+            page_floder = util.getSlash() + "pages" + util.getSlash()
+            class_floder = util.getSlash() + "classes" + util.getSlash()
+            file_name1 = file_name.replace(class_floder, page_floder).replace('Controller.cls', '.page')
+            file_name2 = file_name.replace(class_floder, page_floder).replace('Controller.cls', 'Page.page')
+            if os.path.isfile(file_name1): 
+                self.view.window().open_file(file_name1)
+            elif os.path.isfile(file_name2): 
+                self.view.window().open_file(file_name2)
+
+    def is_enabled(self):
+        file_name = self.view.file_name()
+        check = os.path.isfile(file_name) and ( file_name.find(".cls") > -1 ) and ( file_name.find("Test.cls") == -1 )
+        return check
+
+    def is_visible(self):
+        return self.is_enabled()
+
+
+class CopyFilenameCommand(sublime_plugin.TextCommand):
+    def run(self, edit):
+        file_name = self.view.file_name()
 
 
 class AboutHxyCommand(sublime_plugin.ApplicationCommand):
