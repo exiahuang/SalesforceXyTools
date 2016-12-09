@@ -25,7 +25,7 @@ All issues are managed by the [SalesforceXyTools](https://github.com/exiahuang/S
 - Sublime Text 3 [http://www.sublimetext.com/3](http://www.sublimetext.com/3)
 - Sublime Text Package Control [https://packagecontrol.io/installation](https://packagecontrol.io/installation)
 
-### Plugin Installation
+### Plugin Installation(Use Package Control to Install)
 
 1. Open Sublime Text 3
 2. Run `Package Control: Install Package` command
@@ -33,6 +33,16 @@ All issues are managed by the [SalesforceXyTools](https://github.com/exiahuang/S
 3. Search for `SalesforceXyTools`
 4. Hit `Enter`
 
+### Plugin Installation(Use Source package)
+
+1. Download [SalesforceXyTools](https://github.com/exiahuang/SalesforceXyTools/archive/master.zip)
+2. Open Sublime Text 3
+3. Prefences -> Browse Packages 
+4. Extra zip file which you download
+```
+    Extra path Example:
+    {Path Of Sublime Text}\Data\Packages\SalesforceXyTools-master
+```
 
 ## Setup
 
