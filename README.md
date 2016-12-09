@@ -115,3 +115,9 @@ Path: [SFDC-XY] -> [SFDC Dataviewer]
 Open your apex code, [SFDC-XY] -> [SFDC Code Creator] -> [Create Test Code] and you can auto creat your apex test class!! 
 
 ![Create Test Code](https://github.com/exiahuang/XyHelp/blob/master/SalesforceXyTools/test_class_create.gif?raw=true)
+
+
+#### ApexController , Viewer , TestClass Quick Jump 
+Right Click, and find the click!
+
+![Controller_VF_Jump](https://github.com/exiahuang/XyHelp/blob/master/SalesforceXyTools/Controller_VF_Jump.gif?raw=true)
