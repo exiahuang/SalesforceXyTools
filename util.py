@@ -312,6 +312,17 @@ def makedir(dirPath):
     if not os.path.exists(dirPath):
         os.makedirs(dirPath)
 
+def del_comment(soql):
+    result = soql
+    if soql:
+        soql = soql.strip()
+        result1, number = re.subn("//.*", "", soql)
+        result, number = re.subn("/\*([\s|\S]*?)\*/", "", result1, flags=re.M)
+    # show_in_panel(result)
+
+    return result
+
+
 def get_soql_sobject(soql):
     # match = re.match(""select\s+\*\s+from[\s\t]+\w+"", soql.strip(), re.IGNORECASE)
     return soql
@@ -457,17 +468,25 @@ def get_sentence(objectApiName, table):
 #Apex String Util
 ##########################################################################################
 def get_functionList(src_str):
+    
+    en_src_str = encode_map_str(src_str)
+
     # pattern = r'(public[^(){}]*)\(([^)]*)\)[^{]'
     pattern = r'(public[^(){};]*)\(([^)]*)\)\s*{'
-    match = re.findall(pattern, src_str, re.I|re.M)
+    match = re.findall(pattern, en_src_str, re.I|re.M)
+
 
     functionList = []
     for m in match: 
         f={}
         f['function_name'] = m[0].split()[-1]
-        f['return_type'] = m[0].split()[-2]
+        f['return_type'] = decode_map_str(m[0].split()[-2])
         f['is_void'] = ( f['return_type'] == 'void' )
-        f['args'] = m[1].strip().split(',')
+        
+        # args' format is like map<id###obj>,
+        # it will need to decode 
+        f['args'] = decode_map_str(m[1].strip().split(','))
+
         f['is_static'] = ( xstr(m[0]).find("static") > -1 )
         # show_in_panel(f)
         functionList.append(f)
@@ -475,6 +494,40 @@ def get_functionList(src_str):
         # functionArgs = m[1].strip().split(',')
         # functionList[functionName] = functionArgs
     return functionList
+
+# replace map<id, obj> to map<id###obj>
+def encode_map_str(str):
+    result = str
+
+    # replace map<id, obj>mapName to map<id, obj> mapName
+    # insert a space
+    pattern = r'>[\S]'
+    match = re.findall(pattern, str, re.I|re.M)
+    for m in match: 
+        tmp_map_str = m.replace('>', '> ')
+        result = result.replace(m, tmp_map_str)
+
+    # replace map<id, obj> to map<id###obj>
+    pattern = r'map<[^>]*>'
+    match = re.findall(pattern, str, re.I|re.M)
+    for m in match: 
+        tmp_map_str = m.replace(',', '##').replace(' ', '')
+        result = result.replace(m, tmp_map_str)
+
+    return result
+
+# replace map<id###obj> to map<id, obj>
+def decode_map_str(map_str):
+    if isinstance(map_str, str):
+        result = map_str.replace('##', ',')
+        return result
+    elif isinstance(map_str, list):
+        result = []
+        for s in map_str:
+            result.append(s.replace('##', ','))
+        return result
+    else:
+        return str
 
 
 def get_class_name(src_str):
@@ -520,6 +573,8 @@ def template_testfunction():
 '''
 
 def get_testclass(src_str):
+    src_str = del_comment(src_str)
+
     className = get_class_name(src_str)
     page_name = className.replace('Controller', '')
     
@@ -539,11 +594,13 @@ def get_testclass(src_str):
         for arg in args:
             if arg == '':
                 continue
+
             argName = arg.strip().split()
+
             argList.append(argName[1])
             paramsStr += ("\t\t{paramStr} = {testValue};\n"
                           .format(paramStr=arg.strip(),
-                                 testValue=random_data(data_type=argName[0], isLoop = False)))
+                                 testValue=random_data(data_type=decode_map_str(argName[0]), isLoop = False)))
         argsStr = ','.join(argList)
 
         function_body += paramsStr

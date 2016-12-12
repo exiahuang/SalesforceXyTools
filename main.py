@@ -312,7 +312,8 @@ class SoqlQueryCommand(sublime_plugin.TextCommand):
           util.show_in_dialog("Please select the SOQL !!")
           return
         else:
-            sel_string = self.view.substr(sel_area[0]).strip()
+            sel_string = self.view.substr(sel_area[0])
+            sel_string = util.del_comment(sel_string)
 
         thread = threading.Thread(target=self.main_handle, args=(sel_string, ))
         thread.start()
@@ -358,8 +359,9 @@ class ToolingQueryCommand(sublime_plugin.TextCommand):
         if sel_area[0].empty():
           util.show_in_dialog("Please select the Tooling SOQL !!")
           return
-        else:
-            sel_string = self.view.substr(sel_area[0]).strip()
+        else:            
+            sel_string = self.view.substr(sel_area[0])
+            sel_string = util.del_comment(sel_string)
 
         thread = threading.Thread(target=self.main_handle, args=(sel_string, ))
         thread.start()
@@ -447,8 +449,9 @@ class RunApexScriptCommand(sublime_plugin.TextCommand):
           util.show_in_dialog("Please select the Tooling SOQL !!")
           return
         else:
-            sel_string = self.view.substr(sel_area[0]).strip()
-            
+            sel_string = self.view.substr(sel_area[0])
+            sel_string = util.del_comment(sel_string)
+                        
         thread = threading.Thread(target=self.main_handle, args=(sel_string, ))
         thread.start()
         util.handle_thread(thread)
@@ -805,7 +808,8 @@ class CreateTestDataFromSoqlCommand(sublime_plugin.TextCommand):
           util.show_in_dialog("Please select the SOQL !!")
           return
         else:
-            sel_string = self.view.substr(sel_area[0]).strip()
+            sel_string = self.view.substr(sel_area[0])
+            sel_string = util.del_comment(sel_string)
 
         thread = threading.Thread(target=self.main_handle, args=(sel_string, ))
         thread.start()
@@ -942,9 +946,13 @@ def createTestDataStr(objectApiName, sftype, isAllField):
 
 class CreateTestCodeCommand(sublime_plugin.TextCommand):
     def run(self, edit):
-        sel_string = self.view.substr(sublime.Region(0, self.view.size()))
-        test_code = util.get_testclass(sel_string)
-        util.show_in_new_tab(test_code)
+        try:
+            sel_string = self.view.substr(sublime.Region(0, self.view.size()))
+            test_code = util.get_testclass(sel_string)
+            util.show_in_new_tab(test_code)
+        except Exception as e:
+            util.show_in_panel(e)
+            return
 
 
 class OpenControllerCommand(sublime_plugin.TextCommand):

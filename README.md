@@ -10,9 +10,11 @@ SalesforceXyTools for Sublime Text is Rapid development tools for Salesforce Dev
 
 
 ## Basic on OpenSource
-1. [XLWT (License: BSD)](https://pypi.python.org/pypi/xlwt)
+1. [xlsxwriter (License: BSD)](https://github.com/jmcnamara/XlsxWriter)
 2. [Simple-Salesforce (License: Apache 2.0)](https://pypi.python.org/pypi/simple-salesforce/0.72.2)
 3. [requests (License: Apache 2.0)](https://pypi.python.org/pypi/requests/2.12.3)
+
+~~[XLWT (License: BSD)](https://pypi.python.org/pypi/xlwt)~~
 
 ## Issues
 
