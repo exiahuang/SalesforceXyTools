@@ -667,9 +667,22 @@ def get_testclass(src_str):
 ##########################################################################################
 #browser Util
 ##########################################################################################
-def open_in_browser(url):
-    browser_path = ''
-    webbrowser.open_new_tab(url)
+def open_in_browser(url, browser_name = '', browser_path = ''):
+    if not browser_path or not os.path.exists(browser_path) or browser_name == "default":
+        webbrowser.open_new_tab(url)
+
+    elif browser_name == "chrome-private":
+        os.system("\"%s\" --incognito %s" % (browser_path, url))
+
+    else:
+        try:
+            # show_in_panel("33")
+            # browser_path = "\"C:\Program Files\Google\Chrome\Application\chrome.exe\" --incognito"
+            webbrowser.register('chromex', None, webbrowser.BackgroundBrowser(browser_path))
+            webbrowser.get('chromex').open_new_tab(url)
+        except Exception as e:
+            webbrowser.open_new_tab(url)
+
 
 ##########################################################################################
 #END

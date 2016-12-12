@@ -56,5 +56,10 @@
         "Apex_Profiling": "INFO",
         "Validation": "INFO",
         "DB":"Info"
-    }
+    },
+	"broswers":
+	{
+		"chrome": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+		"IE": "C:\\Program Files\\Internet Explorer\\iexplore.exe"
+	}
 }

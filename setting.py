@@ -13,7 +13,7 @@ def load():
     settings["debug_levels"] = s.get("debug_levels")
     settings["use_mavensmate_setting"] = s.get("use_mavensmate_setting")
     settings["projects"] = projects = s.get("projects")
-    settings["xyfloder"] = s.get("xy_output_floder")
+    settings["broswers"] = s.get("broswers")
 
     if settings["use_mavensmate_setting"]:
         mm_settings = load_mavensmate_setting()
@@ -52,6 +52,8 @@ def load():
 
     print('------->load end')
     return settings
+
+
 
 def load_mavensmate_setting(window=None):
     # Load all settings

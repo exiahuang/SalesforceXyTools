@@ -458,8 +458,45 @@ class RunApexScriptCommand(sublime_plugin.TextCommand):
 
 
 # Login Salesforce
-class LoginSfdcCommand(sublime_plugin.TextCommand):
-    def run(self, edit):
+class LoginSfdcCommand(sublime_plugin.WindowCommand):
+    def run(self):
+        try:
+            self.settings = setting.load()
+            self.dirs = []
+            self.results = []
+            for browser in self.settings["broswers"]:
+                broswer_path = self.settings["broswers"][browser]
+                if os.path.exists(broswer_path):
+                    self.dirs.append(browser)
+                    self.results.append(broswer_path)
+            if self.settings["broswers"]["chrome"]:
+                broswer_path = self.settings["broswers"][browser]
+                if os.path.exists(broswer_path):
+                    self.dirs.append("chrome-private")
+                    self.results.append(broswer_path)
+            # default browser
+            if not self.dirs:
+                self.dirs.append("default")
+                self.results.append("default")
+
+            self.window.show_quick_panel(self.dirs, self.panel_done,sublime.MONOSPACE_FONT)
+
+        except Exception as e:
+            util.show_in_panel(e)
+            return
+
+    def panel_done(self, picked):
+        if 0 > picked < len(self.results):
+            return
+        self.browser = self.dirs[picked]
+        self.broswer_path = self.results[picked]
+
+        thread = threading.Thread(target=self.main_handle)
+        thread.start()
+        util.handle_thread(thread)
+
+
+    def main_handle(self):
         try:
             sf = util.sf_login()
 
@@ -472,7 +509,7 @@ class LoginSfdcCommand(sublime_plugin.TextCommand):
                                  sid=sf.session_id,
                                  returl=returl))
             # print(login_url)
-            util.open_in_browser(login_url)
+            util.open_in_browser(login_url, self.browser, self.broswer_path)
 
         except requests.exceptions.RequestException as e:
             util.show_in_panel("Network connection timeout when issuing REST GET request")
@@ -1054,3 +1091,4 @@ class HomePageCommand(sublime_plugin.ApplicationCommand):
     def run(command):
         version_info = sublime.load_settings("sfdc.version.sublime-settings")
         util.open_in_browser(version_info.get("homepage"))
+
