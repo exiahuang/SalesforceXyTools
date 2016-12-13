@@ -45,6 +45,16 @@
 		}
 	},
 
+	// Add your browser which you like!
+	// examle:
+	// "firefox":"Path of firefox!",
+	// "Edge":"Path of Edge", or another
+	"browsers":
+	{
+		"chrome": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+		"IE": "C:\\Program Files\\Internet Explorer\\iexplore.exe"
+	},
+
 	///////// Debug Log Categories
 	// https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/sforce_api_header_debuggingheader.htm
 	// //////
@@ -56,10 +66,5 @@
         "Apex_Profiling": "INFO",
         "Validation": "INFO",
         "DB":"Info"
-    },
-	"broswers":
-	{
-		"chrome": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-		"IE": "C:\\Program Files\\Internet Explorer\\iexplore.exe"
-	}
+    }
 }
