@@ -13,7 +13,7 @@ def load():
     settings["debug_levels"] = s.get("debug_levels")
     settings["use_mavensmate_setting"] = s.get("use_mavensmate_setting")
     settings["projects"] = projects = s.get("projects")
-    settings["broswers"] = s.get("broswers")
+    settings["browsers"] = s.get("browsers")
 
     if settings["use_mavensmate_setting"]:
         mm_settings = load_mavensmate_setting()
