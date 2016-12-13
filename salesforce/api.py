@@ -439,7 +439,7 @@ class Salesforce(object):
         Returns a `requests.result` object.
         """
         result = self.session.request(
-            method, url, headers=self.headers, **kwargs)
+            method, url, verify=False, headers=self.headers, **kwargs)
 
         if result.status_code >= 300:
             _exception_handler(result)
@@ -681,7 +681,7 @@ class SFType(object):
             'Authorization': 'Bearer ' + self.session_id,
             'X-PrettyPrint': '1'
         }
-        result = self.session.request(method, url, headers=headers, **kwargs)
+        result = self.session.request(method, url, verify=False, headers=headers, **kwargs)
 
         if result.status_code >= 300:
             _exception_handler(result, self.name)

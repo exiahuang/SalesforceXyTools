@@ -10,9 +10,13 @@ def load():
     # Load sublime-settings
     s = sublime.load_settings(SFDC_HUANGXY_SETTINGS)
     settings["default_project"] = s.get("default_project")
+    settings["default_api_version"] = s.get("default_api_version")
     settings["debug_levels"] = s.get("debug_levels")
     settings["use_mavensmate_setting"] = s.get("use_mavensmate_setting")
+    settings["xyfloder"] = s.get("xy_output_floder")
+    settings["soql_select_limit"] = s.get("soql_select_limit")
     settings["projects"] = projects = s.get("projects")
+    settings["projects"] = projects
     settings["browsers"] = s.get("browsers")
 
     if settings["use_mavensmate_setting"]:
@@ -38,8 +42,12 @@ def load():
     settings["password"] = default_project_value["password"]
     settings["security_token"] = default_project_value["security_token"]
     settings["username"] = default_project_value["username"]
-    settings["api_version"] = default_project_value["api_version"]
     settings["workspace"] = default_project_value["workspace"]
+    if "api_version" in default_project_value:
+        settings["api_version"] = default_project_value["api_version"]
+    else:
+        settings["api_version"] = settings["default_api_version"]
+        
 
     # url bug???
     settings["soap_login_url"] = settings["loginUrl"] + "/services/Soap/s/{0}".format(settings["api_version"])
@@ -110,6 +118,22 @@ def load_mavensmate_setting(window=None):
 
     return settings
 
+def get_browser_setting():
+    dirs = []
+    settings = load()
+    for browser in settings["browsers"]:
+        broswer_path = settings["browsers"][browser]
+        if os.path.exists(broswer_path):
+            dirs.append([browser,broswer_path])
+    if settings["browsers"]["chrome"]:
+        broswer_path = settings["browsers"]["chrome"]
+        if os.path.exists(broswer_path):
+            dirs.append(["chrome-private",broswer_path])
+    # default browser
+    if not dirs:
+        dirs.append(["default",""])
+    return dirs
+
 
 def mm_project_directory(window=None):
     if window == None:
@@ -127,6 +151,7 @@ def get_project_settings(window=None):
     except:
         # raise BaseException("Could not load project settings")
         print("Could not load project settings")
+
 
 def parse_json_from_file(location):
     try:

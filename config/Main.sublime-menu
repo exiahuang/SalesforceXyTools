@@ -12,6 +12,10 @@
                 "command": "login_sfdc"
             },
             {
+                "caption": "Login Project",
+                "command": "login_project"
+            },
+            {
                 "caption": "SFDC SOQL",
                 "children":
                 [

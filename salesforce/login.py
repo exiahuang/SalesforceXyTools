@@ -145,7 +145,7 @@ def SalesforceLogin(
         'SOAPAction': 'login'
     }
     response = (session or requests).post(
-        soap_url, login_soap_request_body, headers=login_soap_request_headers,
+        soap_url, login_soap_request_body, headers=login_soap_request_headers,verify=False, 
         proxies=proxies)
 
     if response.status_code != 200:

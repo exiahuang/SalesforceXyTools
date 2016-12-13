@@ -14,12 +14,27 @@ from . import setting
 ##########################################################################################
 #Salesforce Util
 ##########################################################################################
-def sf_login():
+def sf_login(project_name=''):
     try:
         settings = setting.load()
-        # print('--------->')
-        # print(settings)
-        if settings["use_mavensmate_setting"]:
+
+        if project_name:
+            projects = settings["projects"]
+            project = projects[project_name]
+
+            if "api_version" in project:
+                api_version = project["api_version"]
+            else:
+                api_version = settings["default_api_version"]
+                
+            sf = Salesforce(username=project["username"], 
+                        password=project["password"], 
+                        security_token=project["security_token"], 
+                        sandbox=project["is_sandbox"],
+                        version=api_version
+                        )
+
+        elif settings["use_mavensmate_setting"]:
             sf = Salesforce(username=settings["username"],
                             session_id=settings["sessionId"] ,
                             instance_url=settings["instanceUrl"],
@@ -462,7 +477,30 @@ def get_sentence(objectApiName, table):
 
     return apex_sentence
 
+##get_file_name_no_extension is from mavensmate util
+def get_file_name_no_extension(path):
+    base=os.path.basename(path)
+    return os.path.splitext(base)[0]
 
+##get_friendly_platform_key is from mavensmate util
+def get_friendly_platform_key():
+    friendly_platform_map = {
+        'darwin': 'osx',
+        'win32': 'windows',
+        'linux2': 'linux',
+        'linux': 'linux'
+    }
+    return friendly_platform_map[sys.platform]    
+
+##parse_json_from_file is from mavensmate util
+def parse_json_from_file(location):
+    try:
+        json_data = open(location)
+        data = json.load(json_data)
+        json_data.close()
+        return data
+    except:
+        return {}
 
 ##########################################################################################
 #Apex String Util

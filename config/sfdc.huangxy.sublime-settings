@@ -18,6 +18,11 @@
 	// the default project which you work with
 	"default_project":"huangxy1",
 
+	"default_api_version": 37.0,
+
+	// "projects" is the base setting,
+	// if you set "use_mavensmate_setting" false, you must set "projects"
+	// if you set "projects", you can login your project quickly
 	"projects":
 	{
 		// the Example of the projects 

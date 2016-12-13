@@ -461,35 +461,22 @@ class RunApexScriptCommand(sublime_plugin.TextCommand):
 class LoginSfdcCommand(sublime_plugin.WindowCommand):
     def run(self):
         try:
-            self.settings = setting.load()
-            self.dirs = []
-            self.results = []
-            for browser in self.settings["browsers"]:
-                broswer_path = self.settings["browsers"][browser]
-                if os.path.exists(broswer_path):
-                    self.dirs.append(browser)
-                    self.results.append(broswer_path)
-            if self.settings["browsers"]["chrome"]:
-                broswer_path = self.settings["browsers"]["chrome"]
-                if os.path.exists(broswer_path):
-                    self.dirs.append("chrome-private")
-                    self.results.append(broswer_path)
-            # default browser
-            if not self.dirs:
-                self.dirs.append("default")
-                self.results.append("default")
+            self.dirs = setting.get_browser_setting()
+            dirs = []
+            for dir in self.dirs:
+                dirs.append(dir[0])
 
-            self.window.show_quick_panel(self.dirs, self.panel_done,sublime.MONOSPACE_FONT)
+            self.window.show_quick_panel(dirs, self.panel_done,sublime.MONOSPACE_FONT)
 
         except Exception as e:
             util.show_in_panel(e)
             return
 
     def panel_done(self, picked):
-        if 0 > picked < len(self.results):
+        if 0 > picked < len(self.dirs):
             return
-        self.browser = self.dirs[picked]
-        self.broswer_path = self.results[picked]
+        self.browser = self.dirs[picked][0]
+        self.broswer_path = self.dirs[picked][1]
 
         thread = threading.Thread(target=self.main_handle)
         thread.start()
@@ -499,17 +486,93 @@ class LoginSfdcCommand(sublime_plugin.WindowCommand):
     def main_handle(self):
         try:
             sf = util.sf_login()
+            login_sf_home(self, sf, self.browser, self.broswer_path)
+        except requests.exceptions.RequestException as e:
+            util.show_in_panel("Network connection timeout when issuing REST GET request")
+            return
+        except SalesforceExpiredSession as e:
+            util.show_in_dialog('session expired')
+            return
+        except SalesforceRefusedRequest as e:
+            util.show_in_panel('The request has been refused.')
+            return
+        except SalesforceError as e:
+            err = 'Error code: %s \nError message:%s' % (e.status,e.content)
+            util.show_in_panel(err)
+            return
+        except Exception as e:
+            util.show_in_panel(e)
+            return
 
-            # print(sf.sf_instance)
-            # print(sf.session_id)
-            # returl = ('https://{instance}/'.format(instance=sf.sf_instance))
+# Login Project
+class LoginProjectCommand(sublime_plugin.WindowCommand):
+    def run(self):
+        settings = setting.load()
+        self.settings = settings
+        projects = settings["projects"]
+        dirs = []
+        for project_key in projects.keys():
+            project_value = projects[project_key]
+            dirs.append(project_key)
+
+        self.results = dirs
+        self.window.show_quick_panel(dirs, self.panel_done,
+            sublime.MONOSPACE_FONT)
+
+    def panel_done(self, picked):
+        if 0 > picked < len(self.results):
+            return
+        self.picked_project = self.results[picked]
+
+        self.dirs = setting.get_browser_setting()
+        dirs = []
+        for dir in self.dirs:
+            dirs.append(dir[0])
+
+        sublime.set_timeout(lambda:self.window.show_quick_panel(dirs, self.browser_choose), 10)
+
+    def browser_choose(self, picked):
+        if 0 > picked < len(self.dirs):
+            return
+        self.browser = self.dirs[picked][0]
+        self.broswer_path = self.dirs[picked][1]
+        
+        thread = threading.Thread(target=self.main_handle)
+        thread.start()
+        util.handle_thread(thread)
+
+    def main_handle(self):
+        try:
+            sf = util.sf_login(self.picked_project)
+            # login_sf_home(self, sf)
+            login_sf_home(self, sf, self.browser, self.broswer_path)
+        except requests.exceptions.RequestException as e:
+            util.show_in_panel("Network connection timeout when issuing REST GET request")
+            return
+        except SalesforceExpiredSession as e:
+            util.show_in_dialog('session expired')
+            return
+        except SalesforceRefusedRequest as e:
+            util.show_in_panel('The request has been refused.')
+            return
+        except SalesforceError as e:
+            err = 'Error code: %s \nError message:%s' % (e.status,e.content)
+            util.show_in_panel(err)
+            return
+        except Exception as e:
+            util.show_in_panel(e)
+            return
+
+# salesforce_instance is Salesforce instance from simple-salesforce
+def login_sf_home(self, salesforce_instance, browser='default', broswer_path=''):
+        try:
+            sf = salesforce_instance
             returl = '/home/home.jsp'
             login_url = ('https://{instance}/secur/frontdoor.jsp?sid={sid}&retURL={returl}'
                          .format(instance=sf.sf_instance,
                                  sid=sf.session_id,
                                  returl=returl))
-            # print(login_url)
-            util.open_in_browser(login_url, self.browser, self.broswer_path)
+            util.open_in_browser(login_url, browser, broswer_path)
 
         except requests.exceptions.RequestException as e:
             util.show_in_panel("Network connection timeout when issuing REST GET request")
@@ -526,8 +589,8 @@ class LoginSfdcCommand(sublime_plugin.WindowCommand):
             return
         except Exception as e:
             util.show_in_panel(e)
-            # util.show_in_dialog('Exception Error!')
             return
+
 
 
 # sfdc_dataviewer
