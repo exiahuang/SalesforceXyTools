@@ -43,7 +43,9 @@ All issues are managed by the [SalesforceXyTools](https://github.com/exiahuang/S
 4. Extra zip file which you download
 ```
     Extra path Example:
-    {Path Of Sublime Text}\Data\Packages\SalesforceXyTools-master
+    {Path Of Sublime Text}\Data\Packages\SalesforceXyTools
+    
+    Ensure the path is correct!!
 ```
 
 ## Setup
@@ -123,3 +125,18 @@ Open your apex code, [SFDC-XY] -> [SFDC Code Creator] -> [Create Test Code] and 
 Right Click, and find the click!
 
 ![Controller_VF_Jump](https://github.com/exiahuang/XyHelp/blob/master/SalesforceXyTools/Controller_VF_Jump.gif?raw=true)
+
+
+#### Define your login browser
+Add your `browsers` setting as below
+```
+    // Add your browser which you like!
+    // examle:
+    // "firefox":"Path of firefox!",
+    // "Edge":"Path of Edge", or another
+    "browsers":
+    {
+        "chrome": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+        "IE": "C:\\Program Files\\Internet Explorer\\iexplore.exe"
+    },
+```
