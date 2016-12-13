@@ -470,7 +470,7 @@ class LoginSfdcCommand(sublime_plugin.WindowCommand):
                     self.dirs.append(browser)
                     self.results.append(broswer_path)
             if self.settings["broswers"]["chrome"]:
-                broswer_path = self.settings["broswers"][browser]
+                broswer_path = self.settings["broswers"]["chrome"]
                 if os.path.exists(broswer_path):
                     self.dirs.append("chrome-private")
                     self.results.append(broswer_path)
