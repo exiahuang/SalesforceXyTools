@@ -27,20 +27,22 @@ def sf_login(project_name=''):
             else:
                 api_version = settings["default_api_version"]
                 
-            sf = Salesforce(username=project["username"], 
+            sf = Soap(username=project["username"], 
                         password=project["password"], 
                         security_token=project["security_token"], 
                         sandbox=project["is_sandbox"],
-                        version=api_version
+                        version=api_version,
+                        settings=settings
                         )
 
         elif settings["use_mavensmate_setting"]:
-            sf = Salesforce(username=settings["username"],
+            sf = Soap(username=settings["username"],
                             session_id=settings["sessionId"] ,
                             instance_url=settings["instanceUrl"],
                             sandbox=settings["is_sandbox"],
                             version=settings["api_version"],
-                            client_id=settings["id"]
+                            client_id=settings["id"],
+                            settings=settings
                             # password=None,
                             # security_token=None,
                             # instance=None,
@@ -50,11 +52,12 @@ def sf_login(project_name=''):
                             # settings=None
                             )
         else:
-            sf = Salesforce(username=settings["username"], 
+            sf = Soap(username=settings["username"], 
                         password=settings["password"], 
                         security_token=settings["security_token"], 
                         sandbox=settings["is_sandbox"],
-                        version=settings["api_version"]
+                        version=settings["api_version"],
+                        settings=settings
                         )
 
         sf.settings = settings
@@ -67,40 +70,6 @@ def sf_login(project_name=''):
         show_in_dialog('Login Error! ' + xstr(e))
         return
 
-def sf_soap():
-    try:
-        settings = setting.load()
-        if settings["use_mavensmate_setting"]:
-            sf = SFSoap(username=settings["username"],
-                        session_id=settings["sessionId"] ,
-                        instance_url=settings["instanceUrl"],
-                        sandbox=settings["is_sandbox"],
-                        version=settings["api_version"],
-                        client_id=settings["id"],
-                        settings=settings
-                        # password=None,
-                        # security_token=None,
-                        # instance=None,
-                        # organizationId=None,
-                        # proxies=None,
-                        # session=None,
-                        # settings=None
-                        )
-        else:
-            sf = SFSoap(username=settings["username"], 
-                        password=settings["password"], 
-                        security_token=settings["security_token"], 
-                        sandbox=settings["is_sandbox"],
-                        version=settings["api_version"],
-                        settings=settings
-                        )
-
-        sf.settings = settings
-        return sf
-    except Exception as e:
-        # print(e)
-        show_in_dialog('Login Error!' + xstr(e))
-        return
 
 ##########################################################################################
 #Sublime Util
@@ -299,9 +268,22 @@ def xformat(str, data_type='string'):
     elif data_type == 'int' or data_type == 'currency' or data_type == 'double' or data_type == 'percent' or data_type == 'boolean' or data_type == 'combobox':
         val = str
     elif data_type == 'datetime':
-        val = "datetime.parse('%s')" % str
+        # '2016-12-16T00:00:00.000+0000' formate
+        try:
+            tmpstr = str[0:19].split("T")
+            a = tmpstr[0].split("-")
+            b = tmpstr[1].split(":")
+            val = "Datetime.newInstance(%s, %s, %s, %s, %s, %s)" % (a[0],a[1],a[2],b[0],b[1],b[2])
+        except Exception:
+            val = "DateTime.now()"
+
     elif data_type == 'date':
-        val = "date.parse('%s')" % str
+        try:
+            a = str.split("-")
+            val = "Date.newInstance(%s, %s, %s)" % (a[0],a[1],a[2])
+        except Exception:
+            val = "DateTime.now()"
+        
     else:
         val = 'null'
 
@@ -333,14 +315,21 @@ def del_comment(soql):
         soql = soql.strip()
         result1, number = re.subn("//.*", "", soql)
         result, number = re.subn("/\*([\s|\S]*?)\*/", "", result1, flags=re.M)
+        result = result.strip()
     # show_in_panel(result)
 
     return result
 
 
-def get_soql_sobject(soql):
+def get_soql_sobject(soql_str):
+    soql = del_comment(soql_str)
     # match = re.match(""select\s+\*\s+from[\s\t]+\w+"", soql.strip(), re.IGNORECASE)
-    return soql
+    # TODO
+    match = re.match("select\s+\*\s+from[\s\t]+(\w+)([\t\s\S]*)", soql, re.I|re.M)
+    sobject = ""
+    if match:
+        sobject = match.group(1)
+    return sobject
 
 
 def get_soql_fields(soql):

@@ -30,6 +30,11 @@
                     {
                         "caption": "Run Apex Script",
                         "command": "run_apex_script"
+                    },
+                    { "caption": "-" },
+                    {
+                        "caption": "Creat SQOL",
+                        "command": "soql_create"
                     }
                 ]
             },

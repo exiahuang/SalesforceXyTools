@@ -20,5 +20,5 @@ from .login import (
 
 
 from .soap import (
-    SFSoap
+    Soap
 )
