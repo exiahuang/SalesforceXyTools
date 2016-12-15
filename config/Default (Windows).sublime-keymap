@@ -1,8 +1,87 @@
 [
-    { "keys": ["alt+d"], "command": "sfdc_object_desc" },
-    { "keys": ["alt+o"], "command": "sfdc_online_dataviewer" },
-    { "keys": ["alt+l"], "command": "login_sfdc" },
-    // { "keys": ["alt+x"], "command": "soql_query" },
-    // { "keys": ["alt+z"], "command": "run_apex_script" },
-    { "keys": ["alt+h"], "command": "create_test_code" }
+	{
+	    "keys": ["alt+l"],
+	    "command": "login_sfdc"
+	},
+	{
+	    "keys": ["alt+ctrl+l"],
+	    "command": "login_project"
+	},
+
+	// SFDC SOQL,
+	{
+	    "keys": ["alt+ctrl+q"],
+	    "command": "soql_query"
+	},
+	{
+	    "keys": ["alt+ctrl+w"],
+	    "command": "tooling_query"
+	},
+	// {
+	//     "keys": ["alt+ctrl+a"],
+	//     "command": "run_apex_script"
+	// },
+	// {
+	//     "keys": ["alt+ctrl+x"],
+	//     "command": "soql_create"
+	// },
+
+	//"SFDC Object"
+	// {
+	//     "keys": ["alt+u"],
+	//     "command": "show_sfdc_object_list"
+	// },
+	// {
+	//     "keys": ["alt+ctrl+?"],
+	//     "command": "save_sfdc_object_as_excel"
+	// },
+	// {
+	//     "keys": ["alt+ctrl+d"],
+	//     "command": "sfdc_object_desc"
+	// },
+
+	//SFDC Data",
+	// {
+	//     "keys": ["alt+ctrl+d"],
+	//     "command": "sfdc_dataviewer"
+	// },
+	{
+	    "keys": ["alt+ctrl+d"],
+	    "command": "sfdc_online_dataviewer"
+	},
+
+
+	//"SFDC Code Creator",
+	// {
+	//     "keys": ["alt+x","alt+y"],
+	//     "command": "create_all_test_data"
+	// },
+	// {
+	//     "keys": ["alt+x","alt+y"],
+	//     "command": "create_test_data_all"
+	// },
+	// {
+	//     "keys": "Insert Test Data(Needed Field)",
+	//     "command": "create_test_data_need"
+	// },
+	// {
+	//     "keys": "Insert Test Data(From Soql)",
+	//     "command": "create_test_data_from_soql"
+	// },
+	{
+	    "keys": ["alt+h"],
+	    "command": "create_test_code"
+	},
+	{
+	    "keys": ["alt+ctrl+c"],
+	    "command": "open_controller"
+	},
+	{
+	    "keys": ["alt+ctrl+v"],
+	    "command": "open_visualpage"
+	},
+	{
+	    "keys": ["alt+ctrl+t"],
+	    "command": "open_testclass"
+	}
 ]
