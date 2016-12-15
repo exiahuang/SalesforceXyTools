@@ -40,6 +40,14 @@ Right Click, and find the click!
 
 ![Controller_VF_Jump](https://github.com/exiahuang/XyHelp/blob/master/SalesforceXyTools/Controller_VF_Jump.gif?raw=true)
 
+## SOQL Auto Creator
+
+![auto_soql](https://github.com/exiahuang/XyHelp/blob/master/SalesforceXyTools/auto_soql.gif?raw=true)
+
+## Run Select *
+
+![select_all](https://github.com/exiahuang/XyHelp/blob/master/SalesforceXyTools/select_all.gif?raw=true)
+
 
 ## Define your login browser
 Add your `browsers` setting as below
