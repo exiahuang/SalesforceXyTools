@@ -259,7 +259,7 @@ def xstr(s):
 
 def xformat(str, data_type='string'):
 
-    if data_type == 'string' or data_type == 'textarea' or data_type == 'url' or data_type == 'phone' or data_type == 'email' or data_type == 'ID' or data_type == 'picklist' or data_type == 'multipicklist' or data_type == 'reference':
+    if data_type == 'id' or data_type == 'string' or data_type == 'textarea' or data_type == 'url' or data_type == 'phone' or data_type == 'email' or data_type == 'ID' or data_type == 'picklist' or data_type == 'multipicklist' or data_type == 'reference':
         if str is None:
             val = ''
         else:
@@ -285,7 +285,8 @@ def xformat(str, data_type='string'):
             val = "DateTime.now()"
         
     else:
-        val = 'null'
+        # val = 'null'
+        val = str
 
     return val
 
@@ -432,6 +433,7 @@ def get_soql_to_apex(sobj_fields, soql, soql_result):
 
             # show_in_panel(field_name + ',' + fieldtype + '\n')
             field["value"] = xformat(value, fieldtype)
+            field["label"] = sobj_fields[field_name]["label"]
             row.append(field)
         table.append(row)
 
@@ -453,10 +455,19 @@ def get_sentence(objectApiName, table):
                     .format(T=objectApiName,
                             instance_name=instance_name))
         for field in row:
-            apex_sentence += ("{instance_name}.{field} = {value};\n"
-                             .format(instance_name=instance_name,
-                                     field=field['name'],
-                                     value=field['value']))
+            if field['name'] == 'id' or field['value'] == '' or field['value'] == 'null' or field['value'] == '\'\'' :
+                apex_sentence += ("// {instance_name}.{field} = {value};    // {label}\n"
+                                     .format(instance_name=instance_name,
+                                             field=field['name'],
+                                             value=field['value'],
+                                             label=field['label']))
+            else:
+                apex_sentence += ("{instance_name}.{field} = {value};   // {label}\n"
+                                 .format(instance_name=instance_name,
+                                         field=field['name'],
+                                         value=field['value'],
+                                         label=field['label']))
+
         apex_sentence += ("{obj_name}List.add({instance_name});\n\n"
                     .format(obj_name=obj_name,
                             instance_name=instance_name))

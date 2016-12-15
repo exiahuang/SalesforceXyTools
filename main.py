@@ -513,7 +513,7 @@ class SfdcDataviewerCommand(sublime_plugin.WindowCommand):
         soql += ' , '.join(fields)
         soql += ' FROM ' + self.picked_name
         if 'soql_select_limit' in self.settings:
-            soql += ' LIMIT ' + self.settings["soql_select_limit"]
+            soql += ' LIMIT ' + util.xstr(self.settings["soql_select_limit"])
 
         message = 'soql : ' + soql + '\n\n\n\n'
 
@@ -977,7 +977,8 @@ class CreateTestCodeCommand(sublime_plugin.TextCommand):
 class OpenControllerCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         file_name = self.view.file_name()
-        if file_name:
+        isExist = False
+        if file_name and ( file_name.find(".page") > -1 ):
             # XyzPage.page -> XyzController.cls
             # Xyz.page -> XyzController.cls
             page_floder = util.getSlash() + "pages" + util.getSlash()
@@ -986,14 +987,26 @@ class OpenControllerCommand(sublime_plugin.TextCommand):
             file_name2 = file_name.replace(page_floder, class_floder).replace('Page.page', 'Controller.cls')
             if os.path.isfile(file_name1): 
                 self.view.window().open_file(file_name1)
+                isExist = True
             elif os.path.isfile(file_name2): 
                 self.view.window().open_file(file_name2)
+                isExist = True
+        elif file_name and ( file_name.find("Test.cls") > -1 ):
+            # XyzControllerTest.cls -> XyzController.cls
+            file_name1 = file_name.replace('Test.cls', '.cls')
+            if os.path.isfile(file_name1): 
+                self.view.window().open_file(file_name1)
+                isExist = True
+
+        if not isExist:
+            util.show_in_panel('file not found!\n')
+
 
     def is_enabled(self):
         file_name = self.view.file_name()
         if file_name is None:
             return False
-        check = os.path.isfile(file_name) and ( file_name.find(".page") > -1 )
+        check = os.path.isfile(file_name) and (( file_name.find(".page") > -1 ) or ( file_name.find("Test.cls") > -1 ))
         return check
         
     def is_visible(self):
@@ -1003,12 +1016,17 @@ class OpenControllerCommand(sublime_plugin.TextCommand):
 class OpenTestclassCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         file_name = self.view.file_name()
+        isExist = False
 
         if file_name:
             # XyzController.cls -> XyzControllerTest.cls
             file_name1 = file_name.replace('.cls', 'Test.cls')
             if os.path.isfile(file_name1): 
                 self.view.window().open_file(file_name1)
+                isExist = True
+
+        if not isExist:
+            util.show_in_panel('file not found!\n')
 
     def is_enabled(self):
         file_name = self.view.file_name()
@@ -1025,6 +1043,7 @@ class OpenTestclassCommand(sublime_plugin.TextCommand):
 class OpenVisualpageCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         file_name = self.view.file_name()
+        isExist = False
 
         if file_name:
             # XyzPage.page -> XyzController.cls
@@ -1035,8 +1054,13 @@ class OpenVisualpageCommand(sublime_plugin.TextCommand):
             file_name2 = file_name.replace(class_floder, page_floder).replace('Controller.cls', 'Page.page')
             if os.path.isfile(file_name1): 
                 self.view.window().open_file(file_name1)
+                isExist = True
             elif os.path.isfile(file_name2): 
                 self.view.window().open_file(file_name2)
+                isExist = True
+
+        if not isExist:
+            util.show_in_panel('file not found!\n')
 
     def is_enabled(self):
         file_name = self.view.file_name()
