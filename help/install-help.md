@@ -7,6 +7,18 @@ http://www.ibmer.info/salesforcexytools.html
 #GitHub地址
 https://github.com/exiahuang/SalesforceXyTools
 
+# install SalesforceXyTools.sublime-package
+1. Open sublime Text, Click the Preferences > Browse Packages… menu
+2. Browse up a folder and then into the Installed Packages/ folder
+3. Download Package SalesforceXyTools.sublime-package and copy it into the Installed Packages/ directory
+4. Restart Sublime Text
+
+#about mavensmate version 
+*  support for [mavensmate v0.0.10](https://github.com/joeferraro/MavensMate-Desktop/releases/tag/v0.0.10)*
+*  not support for v0.0.11-beta.2 above*
+![MavensMate-Version.JPG](https://github.com/exiahuang/XyHelp/blob/master/SalesforceXyTools/MavensMate-Version.JPG?raw=true)
+
+
 #安装配置
 1.打开Sublime安装路径下的 \Data\Installed Packages 目录，复制SalesforceXyTools.sublime-package到该目录下。
  {Sublime Text安装路径}\Data\Installed Packages。
@@ -48,3 +60,5 @@ https://github.com/exiahuang/SalesforceXyTools/releases
   
 *  [mavensmate v0.0.10](https://github.com/joeferraro/MavensMate-Desktop/releases/tag/v0.0.10)をサポートしますが、*
 *  v0.0.11-beta.2 から v0.0.11-beta.7までのバージョンばしばらくサポートしません。*
+
+
