@@ -13,6 +13,15 @@ https://github.com/exiahuang/SalesforceXyTools
 3. Download Package [SalesforceXyTools.sublime-package](https://github.com/exiahuang/SalesforceXyTools/releases) and copy it into the Installed Packages/ directory
 4. Restart Sublime Text
 
+*Download SalesforceXyTools.sublime-packag
+![download.jpg](https://github.com/exiahuang/XyHelp/blob/master/SalesforceXyTools/download.jpg?raw=true)
+
+*Setup SalesforceXyTools.sublime-packag
+![setup.jpg](https://github.com/exiahuang/XyHelp/blob/master/SalesforceXyTools/setup.jpg?raw=true)
+
+
+
+
 #about mavensmate version 
 *  support for [mavensmate v0.0.10](https://github.com/joeferraro/MavensMate-Desktop/releases/tag/v0.0.10)*
 *  not support for v0.0.11-beta.2 above*
@@ -32,9 +41,8 @@ https://github.com/exiahuang/SalesforceXyTools
 如果你不使用mavensmate开发salesforce，那么设置”use_mavensmate_setting”:false,然后设置你的default_project and projects。
 
 * 请使用mavensmate v0.0.10一下版本，v0.0.11-beta.2到v0.0.11-beta.7版本暂时不支持*
-*  [mavensmate v0.0.10](https://github.com/joeferraro/MavensMate-Desktop/releases/tag/v0.0.10)をサポートしますが、*
-*  v0.0.11-beta.2 から v0.0.11-beta.7までのバージョンばしばらくサポートしません。*
- 
+*  [mavensmate v0.0.10](https://github.com/joeferraro/MavensMate-Desktop/releases/tag/v0.0.10)*
+
 
 #インストール手順書(日本語)
 
