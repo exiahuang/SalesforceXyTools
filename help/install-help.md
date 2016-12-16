@@ -10,7 +10,7 @@ https://github.com/exiahuang/SalesforceXyTools
 # install SalesforceXyTools.sublime-package
 1. Open sublime Text, Click the Preferences > Browse Packages… menu
 2. Browse up a folder and then into the Installed Packages/ folder
-3. Download Package SalesforceXyTools.sublime-package and copy it into the Installed Packages/ directory
+3. Download Package [SalesforceXyTools.sublime-package](https://github.com/exiahuang/SalesforceXyTools/releases) and copy it into the Installed Packages/ directory
 4. Restart Sublime Text
 
 #about mavensmate version 
