@@ -20,7 +20,7 @@ SalesforceXyTools for Sublime Text is Rapid development tools for Salesforce Dev
 
 All issues are managed by the [SalesforceXyTools](https://github.com/exiahuang/SalesforceXyTools)
 
-## Install
+## Install [more install help](https://github.com/exiahuang/SalesforceXyTools/blob/master/help/install-help.md)
 
 ### Prerequisites
 
@@ -96,9 +96,24 @@ If you set `use_mavensmate_setting` false, please set the `default_project` and 
     }
 ```
 
+#### Define your login browser
+Add your `browsers` setting as below
+```
+    // Add your browser which you like!
+    // examle:
+    // "firefox":"Path of firefox!",
+    // "Edge":"Path of Edge", or another
+    "browsers":
+    {
+        "chrome": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+        "IE": "C:\\Program Files\\Internet Explorer\\iexplore.exe"
+    },
+```
 
 
-## Usage
+
+## Usage [more usage help](https://github.com/exiahuang/SalesforceXyTools/blob/master/help/SalesforceXyTools-Help.md)
+
 #### Run SOQL/Run Tooling api
 Select your SOQL, [SFDC-XY] -> [SFDC SOQL] -> [SOQL Query]/[Tooling Query] and run!
 
@@ -130,16 +145,3 @@ Right Click, and find the click!
 ![Controller_VF_Jump](https://github.com/exiahuang/XyHelp/blob/master/SalesforceXyTools/Controller_VF_Jump.gif?raw=true)
 
 
-#### Define your login browser
-Add your `browsers` setting as below
-```
-    // Add your browser which you like!
-    // examle:
-    // "firefox":"Path of firefox!",
-    // "Edge":"Path of Edge", or another
-    "browsers":
-    {
-        "chrome": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-        "IE": "C:\\Program Files\\Internet Explorer\\iexplore.exe"
-    },
-```
