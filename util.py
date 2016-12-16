@@ -165,7 +165,7 @@ def handle_thread(thread, msg=None, counter=0, direction=1, width=8):
 ##########################################################################################
 #Python Util
 ##########################################################################################
-def getSlash():
+def get_slash():
     sysstr = platform.system()
     if(sysstr =="Windows"):
         slash = "\\"
@@ -244,6 +244,10 @@ def get_obj_name(sobj_name):
     # str = sobj_name.replace('__c','')
     # return cap_low(str)
 
+
+def get_api_name(api_name):
+    return api_name.replace('__c','')
+
 def cap_low(str):
     strlen = len(str)
     if strlen == 0:
@@ -309,6 +313,10 @@ def get_default_floder(iscreate=False):
 def makedir(dirPath):
     if not os.path.exists(dirPath):
         os.makedirs(dirPath)
+
+def get_plugin_path():
+    from os.path import dirname, realpath
+    return dirname(realpath(__file__))
 
 def del_comment(soql):
     result = soql
@@ -579,37 +587,6 @@ def get_class_name(src_str):
     return className
 
 
-def template_testcode():
-    return '''/**
-* @author huangxy
-*/
-@isTest
-private class {class_name}Test {{
-{class_body}
-}}'''
-
-def template_testfunction():
-    return '''
-    static testMethod void test_{function_name}() {{
-
-        // PageReference pageRef = Page.{page_name};
-        // Test.setCurrentPage(pageRef);
-        // pageRef.getParameters().put('param1', 'param1');
-
-        Test.startTest();
-{function_body}
-        Test.stopTest();
-
-        // Check
-        // System.assert(ApexPages.hasMessages());
-        // for(ApexPages.Message msg : ApexPages.getMessages()) {{
-        //     System.assertEquals('Upload file is NULL', msg.getSummary());
-        //     System.assertEquals(ApexPages.Severity.ERROR, msg.getSeverity());
-        // }}
-    }}
-
-'''
-
 def get_testclass(src_str):
     src_str = del_comment(src_str)
 
@@ -634,72 +611,229 @@ def get_testclass(src_str):
                 continue
 
             argName = arg.strip().split()
-
             argList.append(argName[1])
+
             paramsStr += ("\t\t{paramStr} = {testValue};\n"
                           .format(paramStr=arg.strip(),
                                  testValue=random_data(data_type=decode_map_str(argName[0]), isLoop = False)))
         argsStr = ','.join(argList)
 
+        # define Test Paramters
         function_body += paramsStr
         test_in_all += paramsStr
+
+        # call static method
         if item['is_static']:
             if item['is_void']:
-                codeSnippet = ("\t\t{class_name}.{function_name}({args});\n"
-                              .format(class_name=className,
-                                     function_name=function_name,
-                                     args=argsStr))
+                tmpValue = {}
+                tmpValue['instance_name'] = className
+                tmpValue['function_name'] = function_name
+                tmpValue['args'] = argsStr
+                codeSnippet = get_code_snippet(CS_CALL_VOID_FUN, tmpValue) 
+                # codeSnippet = ("\t\t{class_name}.{function_name}({args});\n"
+                #               .format(class_name=className,
+                #                      function_name=function_name,
+                #                      args=argsStr))
             else:
-                codeSnippet = ("\t\t{return_type} result = {class_name}.{function_name}({args});\n"
-                              .format(return_type=item['return_type'],
-                                     class_name=className,
-                                     function_name=function_name,
-                                     args=argsStr))
+                tmpValue = {}
+                tmpValue['return_type'] = item['return_type']
+                tmpValue['return_name'] = 'result' + function_name.capitalize()
+                tmpValue['instance_name'] = className
+                tmpValue['function_name'] = function_name
+                tmpValue['args'] = argsStr
+                codeSnippet = get_code_snippet(CS_CALL_FUN, tmpValue) 
+
+                # codeSnippet = ("\t\t{return_type} result = {class_name}.{function_name}({args});\n"
+                #               .format(return_type=item['return_type'],
+                #                      class_name=className,
+                #                      function_name=function_name,
+                #                      args=argsStr))
             function_body += codeSnippet
-            test_in_all += codeSnippet
+            test_in_all += get_code_snippet(CS_COMMENT, " test " + function_name) 
+            test_in_all += codeSnippet + "\n"
+
+        # call constructor method
         elif className == function_name:
-            codeSnippet = ("\t\t{class_name} {instance_name} = new {class_name}({args});\n"
-                              .format(instance_name=instance_name,
-                                 class_name=className,
-                                 args=argsStr))
+            tmpValue = {}
+            tmpValue["class_name"] = className
+            tmpValue["instance_name"] = instance_name
+            tmpValue["args"] = argsStr
+            codeSnippet = get_code_snippet(CS_INSTANCE, tmpValue)
+            # codeSnippet = ("\t\t{class_name} {instance_name} = new {class_name}({args});\n"
+            #                   .format(instance_name=instance_name,
+            #                      class_name=className,
+            #                      args=argsStr))
             function_body += codeSnippet
-            test_in_all += codeSnippet
+            test_in_all += get_code_snippet(CS_COMMENT, " test " + function_name) 
+            test_in_all += codeSnippet + "\n"
+
+        # call other apex method
         else:
-            codeSnippet = ("\t\t{class_name} {instance_name} = new {class_name}();\n"
-                              .format(instance_name=instance_name,
-                                 class_name=className))
+            tmpValue = {}
+            tmpValue["class_name"] = className
+            tmpValue["instance_name"] = instance_name
+            tmpValue["args"] = ''
+            codeSnippet = get_code_snippet(CS_INSTANCE, tmpValue)
+            # codeSnippet = ("\t\t{class_name} {instance_name} = new {class_name}();\n"
+            #                   .format(instance_name=instance_name,
+            #                      class_name=className))
+            
+            # new Instance for call apex method
+            # test_in_all is not need
             function_body += codeSnippet
             if test_in_all_flg:
-                test_in_all += codeSnippet
+                test_in_all += codeSnippet + "\n"
                 test_in_all_flg = False
 
             if item['is_void']:
-                codeSnippet = ("\t\t{instance_name}.{function_name}({args});\n"
-                              .format(instance_name=instance_name,
-                                     function_name=function_name,
-                                     args=argsStr))
+                tmpValue = {}
+                tmpValue['instance_name'] = instance_name
+                tmpValue['function_name'] = function_name
+                tmpValue['args'] = argsStr
+                codeSnippet = get_code_snippet(CS_CALL_VOID_FUN, tmpValue) 
+                # codeSnippet = ("\t\t{instance_name}.{function_name}({args});\n"
+                #               .format(instance_name=instance_name,
+                #                      function_name=function_name,
+                #                      args=argsStr))
             else:
-                codeSnippet = ("\t\t{return_type} result = {instance_name}.{function_name}({args});\n"
-                              .format(return_type=item['return_type'],
-                                    instance_name=instance_name,
-                                     function_name=function_name,
-                                     args=argsStr))
+                tmpValue = {}
+                tmpValue['return_type'] = item['return_type']
+                tmpValue['return_name'] = 'result' + function_name.capitalize()
+                tmpValue['instance_name'] = instance_name
+                tmpValue['function_name'] = function_name
+                tmpValue['args'] = argsStr
+                codeSnippet = get_code_snippet(CS_CALL_FUN, tmpValue) 
+                # codeSnippet = ("\t\t{return_type} result = {instance_name}.{function_name}({args});\n"
+                #               .format(return_type=item['return_type'],
+                #                     instance_name=instance_name,
+                #                      function_name=function_name,
+                #                      args=argsStr))
             function_body += codeSnippet
-            test_in_all += codeSnippet
+            test_in_all += get_code_snippet(CS_COMMENT, " test " + function_name) 
+            test_in_all += codeSnippet + "\n"
 
-        function_template = template_testfunction().format(function_name=function_name,
+        function_template = get_template(TMP_TEST_METHOD).format(function_name=function_name,
                                                             function_body=function_body,
                                                             page_name=page_name)
         class_body += function_template
 
-    # Test for all method
-    class_body += template_testfunction().format(function_name='all',
+    # create Test for all method
+    class_body += get_template(TMP_TEST_METHOD).format(function_name='all',
                                                     function_body=test_in_all,
                                                     page_name=page_name)
     
-    re_test_code = template_testcode().format(class_name=className,class_body=class_body)
+    re_test_code = get_template(TMP_TEST_CLASS).format(author=AUTHOR,class_name=className,class_body=class_body)
 
     return re_test_code
+
+
+def get_dto_class(class_name, fields, isCustomOnly=False):
+
+    class_body = ''
+    # name, label, type, length, scale
+    for field in fields:
+        field_name = cap_low( get_api_name(xstr(field['name'])) )
+        field_type = sobj_to_apextype(xstr(field['type']))
+
+        if isCustomOnly and not field["custom"]:
+            show_in_panel(field_name.lower() + '\n\n')
+            if not (field_name.lower() == 'id' or field_name.lower() == 'name') :
+                continue
+
+        tmpVal = {}
+        tmpVal['declare_type'] = field_type
+        tmpVal['declare_name'] = field_name
+
+        # comment
+        comment = xstr(field['label']) + ' , ' + xstr(field['type'])
+        class_body += get_code_snippet(CS_COMMENT, comment)
+        # define
+        class_body += get_code_snippet(CS_DECLARE, tmpVal)
+
+    class_name = get_api_name(class_name)
+    dto_class = get_template(TMP_CLASS).format(author=AUTHOR,class_name=class_name,class_type='Dto', class_body=class_body)
+    return dto_class
+
+
+def sobj_to_apextype(data_type):
+    atype = data_type
+
+    if data_type == 'id' or data_type == 'string' or data_type == 'textarea' or data_type == 'url' or data_type == 'phone' or data_type == 'email' or data_type == 'ID' or data_type == 'picklist' or data_type == 'multipicklist' or data_type == 'reference':
+        atype = 'String' 
+    elif data_type == 'int' or data_type == 'percent':
+        atype = 'Integer'
+    elif data_type == 'long' :
+        atype = 'Long'
+    elif data_type == 'currency' or data_type == 'double' :
+        atype = 'Decimal'
+    elif data_type == 'boolean' or data_type == 'combobox':
+        atype = 'Boolean'
+    elif data_type == 'datetime' or data_type == 'date' :
+        atype = data_type
+
+    return atype
+
+
+##########################################################################################
+#Salesforce Template
+##########################################################################################
+AUTHOR = 'huangxy'
+TEM_FOLDER = 'template'
+TMP_DTO = 'DtoClass.cls'
+TMP_CLASS = 'class.cls'
+TMP_TEST_METHOD = 'testMethod.cls'
+TMP_TEST_CLASS = 'testClass.cls'
+
+CS_INSTANCE = 'INSTANCE'
+CS_CALL_FUN = 'CALL_FUN'
+CS_CALL_VOID_FUN = 'CALL_VOID_FUN'
+CS_COMMENT = 'CS_COMMENT'
+CS_DECLARE = 'CS_DECLARE'
+
+def get_code_snippet(type, value):
+    codeSnippet = ''
+    if type == CS_INSTANCE:
+        codeSnippet = ("\t\t{class_name} {instance_name} = new {class_name}({args});\n"
+                          .format(instance_name=value["instance_name"],
+                             class_name=value["class_name"],
+                             args=value["args"]))
+    elif type == CS_CALL_FUN:
+        codeSnippet = ("\t\t{return_type} {return_name} = {instance_name}.{function_name}({args});\n"
+                              .format(return_type=value['return_type'],
+                                     return_name=value['return_name'],
+                                     instance_name=value['instance_name'],
+                                     function_name=value['function_name'],
+                                     args=value['args']))
+    elif type == CS_CALL_VOID_FUN:
+        codeSnippet = ("\t\t{instance_name}.{function_name}({args});\n"
+                              .format(instance_name=value['instance_name'],
+                                      function_name=value['function_name'],
+                                      args=value['args']))
+    elif type == CS_COMMENT:
+        codeSnippet = "\t\t// " + value + "\n"
+    elif type == CS_DECLARE:
+        # codeSnippet = ("\t\tpublic {declare_type} {declare_name} {{get;set;}}\n\n"
+        codeSnippet = ("\t\tpublic {declare_type} {declare_name} {{get;set;}}\n\n"
+                            .format(declare_type=value['declare_type'],
+                                      declare_name=value['declare_name']))
+
+
+    return codeSnippet;
+
+
+
+def get_template(name=''):
+    if not name:
+        return '';
+    
+    path = os.path.join(get_plugin_path(), TEM_FOLDER, name)
+    template_arr = ''
+    if os.path.isfile(path): 
+        f = open(path)
+        template_arr = f.readlines()
+        f.close()
+    template = ''.join(template_arr)
+    return template
 
 
 ##########################################################################################
