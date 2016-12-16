@@ -93,6 +93,11 @@
                     {
                         "caption": "Create Test Code",
                         "command": "create_test_code"
+                    },
+                    { "caption": "-" },
+                    {
+                        "caption": "Create DTO Code",
+                        "command": "create_dto_code"
                     }
                 ]
             },
