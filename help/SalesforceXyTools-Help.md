@@ -49,16 +49,6 @@ Right Click, and find the click!
 ![select_all](https://github.com/exiahuang/XyHelp/blob/master/SalesforceXyTools/select_all.gif?raw=true)
 
 
-## Define your login browser
-Add your `browsers` setting as below
-```
-    // Add your browser which you like!
-    // examle:
-    // "firefox":"Path of firefox!",
-    // "Edge":"Path of Edge", or another
-    "browsers":
-    {
-        "chrome": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-        "IE": "C:\\Program Files\\Internet Explorer\\iexplore.exe"
-    },
-```
+## how to create dto 
+
+![dto_creator.gif](https://github.com/exiahuang/XyHelp/blob/master/SalesforceXyTools/dto_creator.gif?raw=true)
