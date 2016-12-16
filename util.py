@@ -10,6 +10,7 @@ import platform
 
 from .salesforce import *
 from . import setting
+from . import template
 
 ##########################################################################################
 #Salesforce Util
@@ -736,7 +737,6 @@ def get_dto_class(class_name, fields, isCustomOnly=False):
         field_type = sobj_to_apextype(xstr(field['type']))
 
         if isCustomOnly and not field["custom"]:
-            show_in_panel(field_name.lower() + '\n\n')
             if not (field_name.lower() == 'id' or field_name.lower() == 'name') :
                 continue
 
@@ -778,11 +778,9 @@ def sobj_to_apextype(data_type):
 #Salesforce Template
 ##########################################################################################
 AUTHOR = 'huangxy'
-TEM_FOLDER = 'template'
-TMP_DTO = 'DtoClass.cls'
-TMP_CLASS = 'class.cls'
-TMP_TEST_METHOD = 'testMethod.cls'
-TMP_TEST_CLASS = 'testClass.cls'
+TMP_CLASS = 'template_class'
+TMP_TEST_METHOD = 'template_test_method'
+TMP_TEST_CLASS = 'template_test_class'
 
 CS_INSTANCE = 'INSTANCE'
 CS_CALL_FUN = 'CALL_FUN'
@@ -821,19 +819,21 @@ def get_code_snippet(type, value):
     return codeSnippet;
 
 
-
 def get_template(name=''):
     if not name:
         return '';
-    
-    path = os.path.join(get_plugin_path(), TEM_FOLDER, name)
-    template_arr = ''
-    if os.path.isfile(path): 
-        f = open(path)
-        template_arr = f.readlines()
-        f.close()
-    template = ''.join(template_arr)
-    return template
+    method = getattr(template, name)
+    tmp_str = method()
+    return tmp_str
+
+    # path = os.path.join(get_plugin_path(), TEM_FOLDER, name)
+    # template_arr = ''
+    # if os.path.isfile(path): 
+    #     f = open(path)
+    #     template_arr = f.readlines()
+    #     f.close()
+    # template = ''.join(template_arr)
+    # return template
 
 
 ##########################################################################################
