@@ -4,6 +4,7 @@
 ####################################
 from .. import requests
 from . import Salesforce
+from . import SFType
 from . import util
 
 DEFAULT_API_VERSION = '37.0'
@@ -77,6 +78,18 @@ class Soap(Salesforce):
         print(self.apex_url)
         print(self.apex_api_url)
         print('------->')
+
+    # get SObject by name
+    def get_sobject(self, name):
+        # fix to enable serialization
+        # (https://github.com/heroku/simple-salesforce/issues/60)
+        if name.startswith('__'):
+            return super(Salesforce, self).__getattr__(name)
+
+        return SFType(
+            name, self.session_id, self.sf_instance, sf_version=self.sf_version,
+            proxies=self.proxies, session=self.session)
+
 
     def execute_anonymous(self, apex_string):
         body = util.get_soap_anonymous_body(apex_string)

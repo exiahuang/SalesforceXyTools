@@ -351,6 +351,37 @@ def get_soql_fields(soql):
     else:
         return ''
 
+def get_soql_src(sobject, fields, condition='', has_comment=False, is_custom_only=False, updateable_only=False):
+    soql_scr = ""
+    if has_comment:
+        fields_str = "\n"
+        counter = 0
+        for field in fields:
+            counter += 1
+            
+            field_name = xstr(field["name"])
+            if is_custom_only and not field["custom"]:
+                if not (field_name.lower() == 'id' or field_name.lower() == 'name') :
+                    continue
+
+            if counter == len(fields):
+                fields_str += "\t\t\t" + xstr(field["name"]) + "\t\t\t\t//" + xstr(field["label"])
+            else:
+                fields_str += "\t\t\t" + xstr(field["name"]) + ",\t\t\t\t//" + xstr(field["label"]) + "\n"
+    else:
+        tmp_fields = []
+        for field in fields:
+            field_name = xstr(field["name"])
+            if is_custom_only and not field["custom"]:
+                if not (field_name.lower() == 'id' or field_name.lower() == 'name') :
+                    continue
+            tmp_fields.append(xstr(field["name"]))
+        fields_str = ','.join(tmp_fields)
+
+    soql_scr = ("select %s\nfrom %s\n%s" % (fields_str, sobject, condition))
+
+    return soql_scr
+
 
 def get_soql_result(soql_str, soql_result):
     message = 'totalSize: ' + xstr(soql_result['totalSize']) + "\n\n"
@@ -728,7 +759,7 @@ def get_testclass(src_str):
     return re_test_code
 
 
-def get_dto_class(class_name, fields, isCustomOnly=False):
+def get_dto_class(class_name, fields, is_custom_only=False):
 
     class_body = ''
     # name, label, type, length, scale
@@ -736,7 +767,7 @@ def get_dto_class(class_name, fields, isCustomOnly=False):
         field_name = cap_low( get_api_name(xstr(field['name'])) )
         field_type = sobj_to_apextype(xstr(field['type']))
 
-        if isCustomOnly and not field["custom"]:
+        if is_custom_only and not field["custom"]:
             if not (field_name.lower() == 'id' or field_name.lower() == 'name') :
                 continue
 
@@ -753,6 +784,28 @@ def get_dto_class(class_name, fields, isCustomOnly=False):
     class_name = get_api_name(class_name)
     dto_class = get_template(TMP_CLASS).format(author=AUTHOR,class_name=class_name,class_type='Dto', class_body=class_body)
     return dto_class
+
+def get_dao_class(class_name, fields, is_custom_only=False):
+    class_body = ''
+    soql_src = get_soql_src(class_name, fields, condition='', has_comment=True , is_custom_only=is_custom_only)
+    class_body += get_template(TMP_DAO_METHOD).format(sobject=class_name,
+                                                     instance_name=get_api_name(class_name),
+                                                     instance_name_cap_low=cap_low(get_api_name(class_name)),
+                                                     soql_src=soql_src)
+
+    class_body += get_template(TMP_DAO_METHOD_GETBYID).format(sobject=class_name,
+                                                     instance_name=get_api_name(class_name),
+                                                     instance_name_cap_low=cap_low(get_api_name(class_name)),
+                                                     soql_src=soql_src)
+
+    src_code = get_template(TMP_NO_CON_CLASS).format(author=AUTHOR,
+                                                     class_name=get_api_name(class_name),
+                                                     class_type='Dao', 
+                                                     class_body=class_body)
+   
+    return src_code
+
+
 
 
 def sobj_to_apextype(data_type):
@@ -779,6 +832,9 @@ def sobj_to_apextype(data_type):
 ##########################################################################################
 AUTHOR = 'huangxy'
 TMP_CLASS = 'template_class'
+TMP_NO_CON_CLASS = 'template_no_con_class'
+TMP_DAO_METHOD = 'template_apex_dao_method'
+TMP_DAO_METHOD_GETBYID = 'template_apex_dao_method_getbyid'
 TMP_TEST_METHOD = 'template_test_method'
 TMP_TEST_CLASS = 'template_test_class'
 

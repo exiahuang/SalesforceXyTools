@@ -98,6 +98,10 @@
                     {
                         "caption": "Create DTO Code",
                         "command": "create_dto_code"
+                    },
+                    {
+                        "caption": "Create DAO Code",
+                        "command": "create_dao_code"
                     }
                 ]
             },

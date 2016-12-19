@@ -101,7 +101,7 @@ class SaveSfdcObjectAsExcelCommand(sublime_plugin.WindowCommand):
                   
                   # sftype = SFType(util.xstr(x["name"]), sf.session_id, sf.sf_instance, sf_version=sf.sf_version,
                   #               proxies=sf.proxies, session=sf.session)
-                  sftype = sf.getSobject(util.xstr(x["name"]))
+                  sftype = sf.get_sobject(util.xstr(x["name"]))
 
                   #print(x["name"])     
                   #write to xls
@@ -502,7 +502,7 @@ class SfdcDataviewerCommand(sublime_plugin.WindowCommand):
 
 
     def main_handle(self):
-        self.sftype = self.sf.getSobject(self.picked_name)
+        self.sftype = self.sf.get_sobject(self.picked_name)
 
         soql = 'SELECT '
         fields = []
@@ -614,7 +614,7 @@ class SfdcObjectDescCommand(sublime_plugin.WindowCommand):
 
     def main_handle(self):
 
-        self.sftype = self.sf.getSobject(self.picked_name)
+        self.sftype = self.sf.get_sobject(self.picked_name)
         message = 'name, label, type, length, scale' + "\n"
 
         sftypedesc = self.sftype.describe()
@@ -667,6 +667,16 @@ class SoqlCreateCommand(sublime_plugin.WindowCommand):
             return
         self.picked_name = self.results[picked]
         # print(self.picked_name)
+        # print(self.picked_name)
+        dirs = ["Custom Fields Only", "All Fields"]
+        self.custom_result = [True, False]
+        
+        sublime.set_timeout(lambda:self.window.show_quick_panel(dirs, self.select_panel), 10)
+
+    def select_panel(self, picked):
+        if 0 > picked < len(self.custom_result):
+            return
+        self.is_custom_only = self.custom_result[picked]    
 
         thread = threading.Thread(target=self.main_handle)
         thread.start()
@@ -675,10 +685,16 @@ class SoqlCreateCommand(sublime_plugin.WindowCommand):
 
     def main_handle(self):
         try:
+            # sobject = self.picked_name
+            # fields = get_sobject_fields(self.sf, sobject)
+            # fields_str = ",".join(fields)
+            # soql = ("select %s from %s " % (fields_str, sobject))
+            # util.show_in_new_tab(soql)
+            
             sobject = self.picked_name
-            fields = get_sobject_fields(self.sf, sobject)
-            fields_str = ",".join(fields)
-            soql = ("select %s from %s " % (fields_str, sobject))
+            sftype = self.sf.get_sobject(sobject)
+            sftypedesc = sftype.describe()
+            soql = util.get_soql_src(sobject, sftypedesc["fields"], condition='', has_comment=True, is_custom_only=self.is_custom_only)
             util.show_in_new_tab(soql)
         except Exception as e:
             util.show_in_panel(e)
@@ -701,7 +717,7 @@ class CreateAllTestDataCommand(sublime_plugin.WindowCommand):
                 if x["custom"]:
                     objectApiName = util.xstr(x["name"])
                     message += createTestDataStr(objectApiName=objectApiName, 
-                                        sftype=self.sf.getSobject(objectApiName), 
+                                        sftype=self.sf.get_sobject(objectApiName), 
                                         isAllField=False)
 
             util.show_in_new_tab(message)
@@ -771,7 +787,7 @@ class CreateTestDataNeedCommand(sublime_plugin.WindowCommand):
 
     def main_handle(self):
 
-        self.sftype = self.sf.getSobject(self.picked_name)
+        self.sftype = self.sf.get_sobject(self.picked_name)
         obj_name = util.get_obj_name(self.picked_name)
         message = createTestDataStr(objectApiName=self.picked_name, 
                                     sftype=self.sftype, 
@@ -789,7 +805,7 @@ class CreateTestDataFromSoqlCommand(sublime_plugin.TextCommand):
             object_name = util.get_query_object_name(soql_result)
 
             if object_name:
-                sftype = sf.getSobject(object_name)
+                sftype = sf.get_sobject(object_name)
                 sftypedesc = sftype.describe()
                 fields = {}
                 for field in sftypedesc["fields"]:
@@ -879,7 +895,7 @@ class CreateTestDataAllCommand(sublime_plugin.WindowCommand):
 
     def main_handle(self):
         # print(self.picked_name)
-        self.sftype = self.sf.getSobject(self.picked_name)
+        self.sftype = self.sf.get_sobject(self.picked_name)
 
         obj_name = util.get_obj_name(self.picked_name)
         message = createTestDataStr(objectApiName=self.picked_name, 
@@ -1028,11 +1044,72 @@ class CreateDtoCodeCommand(sublime_plugin.WindowCommand):
 
     def main_handle(self):
 
-        self.sftype = self.sf.getSobject(self.picked_name)
+        self.sftype = self.sf.get_sobject(self.picked_name)
 
         sftypedesc = self.sftype.describe()
           
         util.show_in_new_tab(util.get_dto_class(self.picked_name, sftypedesc["fields"], self.is_custom_only))
+
+
+class CreateDaoCodeCommand(sublime_plugin.WindowCommand):
+    def run(self):
+        try:
+            self.sf = util.sf_login()
+            dirs = []
+            self.results = []
+
+            for x in self.sf.describe()["sobjects"]:
+                # dirs.append([util.xstr(x["name"]), util.xstr(x["label"])])
+                dirs.append(util.xstr(x["name"])+' : '+util.xstr(x["label"]))
+                self.results.append(util.xstr(x["name"]))
+                # print(x)
+            self.window.show_quick_panel(dirs, self.panel_done,sublime.MONOSPACE_FONT)
+
+        except RequestException as e:
+            util.show_in_panel("Network connection timeout when issuing REST GET request")
+            return
+        except SalesforceExpiredSession as e:
+            util.show_in_dialog('session expired')
+            return
+        except SalesforceRefusedRequest as e:
+            util.show_in_panel('The request has been refused.')
+            return
+        except SalesforceError as e:
+            err = 'Error code: %s \nError message:%s' % (e.status,e.content)
+            util.show_in_panel(err)
+            return
+        except Exception as e:
+            util.show_in_panel(e)
+            # util.show_in_dialog('Exception Error!')
+            return
+
+    def panel_done(self, picked):
+        if 0 > picked < len(self.results):
+            return
+        self.picked_name = self.results[picked]
+        # print(self.picked_name)
+        dirs = ["Custom Fields Only", "All Fields"]
+        self.custom_result = [True, False]
+        
+        sublime.set_timeout(lambda:self.window.show_quick_panel(dirs, self.select_panel), 10)
+
+    def select_panel(self, picked):
+        if 0 > picked < len(self.custom_result):
+            return
+        self.is_custom_only = self.custom_result[picked]    
+
+        thread = threading.Thread(target=self.main_handle)
+        thread.start()
+        util.handle_thread(thread)
+
+
+    def main_handle(self):
+
+        self.sftype = self.sf.get_sobject(self.picked_name)
+
+        sftypedesc = self.sftype.describe()
+          
+        util.show_in_new_tab(util.get_dao_class(self.picked_name, sftypedesc["fields"], self.is_custom_only))
 
 
 
@@ -1225,7 +1302,7 @@ def soql_format(sf_instance,soql_str):
 # get all fields from sobject
 def get_sobject_fields(sf_instance, sobject):
     fields = []
-    sftype = sf_instance.getSobject(sobject)
+    sftype = sf_instance.get_sobject(sobject)
     sftypedesc = sftype.describe()
     for field in sftypedesc["fields"]:
         fields.append(util.xstr(field["name"]))
@@ -1272,7 +1349,7 @@ def get_sobject_fields(sf_instance, sobject):
                   
 #                   # sftype = SFType(util.xstr(x["name"]), sf.session_id, sf.sf_instance, sf_version=sf.sf_version,
 #                   #               proxies=sf.proxies, session=sf.session)
-#                   sftype = sf.getSobject(util.xstr(x["name"]))
+#                   sftype = sf.get_sobject(util.xstr(x["name"]))
 
 #                   #print(x["name"])     
 #                   #write to xls
