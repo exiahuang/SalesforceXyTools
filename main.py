@@ -179,8 +179,15 @@ class SoqlQueryCommand(sublime_plugin.TextCommand):
             sf = util.sf_login()
 
             soql_str = soql_format(sf,sel_string)
+
+            print('------>soql')
+            print(soql_str)
             
             soql_result = sf.query(soql_str)
+            print('----->soql_result')  
+            print(soql_result)  
+
+
             # header = [key for key in soql_result['records'].iterkeys()]
             # print(header)
             message = util.get_soql_result(soql_str, soql_result)
