@@ -74,6 +74,7 @@ class Soap(Salesforce):
                          .format(instance=self.sf_instance,
                                  version=self.sf_version))
 
+
         print(self.base_url)
         print(self.apex_url)
         print(self.apex_api_url)
@@ -100,12 +101,13 @@ class Soap(Salesforce):
             # print(self.soap_url)
             # print(self.headers)
             # print(request_body)
-            response = requests.post(
-                        self.apex_api_url, request_body, verify=False, headers=self.soap_headers,
-                        proxies=self.proxies)
+            # response = requests.post(
+            #             self.apex_api_url, request_body, verify=False, headers=self.soap_headers,
+            #             proxies=self.proxies)
+            response = self._soap_post(self.apex_api_url, request_body, self.soap_headers)
             # print(response)
-            print('response.text------->')
-            print(response.text)
+            # print('response.text------->')
+            # print(response.text)
             # print('response.content----->')
             # print(response.content)
             # print('response.status_code----->')
@@ -118,16 +120,51 @@ class Soap(Salesforce):
             }
             return self.result
 
+        # print('--->1')
         # session is expired ??
         if "INVALID_SESSION_ID" in response.text:
             return False
         content = response.content
         result = {"success": response.status_code < 399}
+        # print('--->2')
         if result["success"]:
-            # print('--->1')
-            result["debugLog"] = util.getUniqueElementValueFromXmlString(response.text, "debugLog")
+            response_result = util.getUniqueElementValueFromXmlString(response.text, "success")
+            # print('--->3')
+            if response_result == "false":
+                response_compileProblem = util.getUniqueElementValueFromXmlString(response.text, "compileProblem")
+                response_compiled = util.getUniqueElementValueFromXmlString(response.text, "compiled")
+                response_column = util.getUniqueElementValueFromXmlString(response.text, "column")
+                result["debugLog"] = "result : " + response_result
+                result["debugLog"] += "\n\ncompiled : " + response_compiled
+                result["debugLog"] += "\n\ncompileProblem : " + response_compileProblem
+                result["debugLog"] += "\n\nerror column : " + response_column
+            else:
+                result["debugLog"] = util.getUniqueElementValueFromXmlString(response.text, "debugLog")
         else:
-            # print('--->2')
+            # print('--->4')
             result["debugLog"] = util.getUniqueElementValueFromXmlString(response.text, "faultstring")
 
+        print(result["debugLog"])
         return result
+
+
+    def _soap_post(self, url, request_body, headers, **kwargs):
+        result = requests.post(url, request_body, headers=headers, proxies=self.proxies, verify=False)
+        if result.status_code >= 300:
+            raise SoapException(result, result.status_code)
+        return result
+
+    def _soap_get(self, url, request_body="", headers="", **kwargs):
+        result = requests.get(url, request_body, headers=headers, proxies=self.proxies, verify=False)
+        # if result.status_code >= 300:
+        #     raise SoapException(result, result.status_code)
+        return result
+
+
+class SoapException(Exception):
+
+    def __init__(self, message, status_code=None):
+        super(SoapException, self).__init__(message)
+        self.status_code = status_code
+
+

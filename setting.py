@@ -14,6 +14,7 @@ def load():
     settings["debug_levels"] = s.get("debug_levels")
     settings["use_mavensmate_setting"] = s.get("use_mavensmate_setting")
     settings["xyfloder"] = s.get("xy_output_floder")
+    settings["dataloader_encoding"] = s.get("dataloader_encoding")
     settings["soql_select_limit"] = s.get("soql_select_limit")
     settings["projects"] = projects = s.get("projects")
     settings["projects"] = projects

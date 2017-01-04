@@ -15,12 +15,14 @@
 	"soql_select_limit":50,
 
 	// Salesforce-xy-tools base workspace
-    "xy_output_floder": "huangxy",
+    "xy_output_floder": "sfdc-xy",
 
 	// the default project which you work with
 	"default_project":"huangxy1",
 
 	"default_api_version": 37.0,
+
+	"dataloader_encoding": "utf-8",
 
 	// "projects" is the base setting,
 	// if you set "use_mavensmate_setting" false, you must set "projects"

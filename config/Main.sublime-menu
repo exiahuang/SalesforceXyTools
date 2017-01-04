@@ -70,6 +70,16 @@
                     }
                 ]
             },
+            // {
+            //     "caption": "Data Loader",
+            //     "children":
+            //     [
+            //         {
+            //             "caption": "Export Sobject",
+            //             "command": "export_sobject"
+            //         }
+            //     ]
+            // },
             {
                 "caption": "SFDC Code Creator",
                 "children":

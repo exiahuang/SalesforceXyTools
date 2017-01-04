@@ -20,5 +20,9 @@ from .login import (
 
 
 from .soap import (
-    Soap
+    Soap,
+    SoapException
 )
+
+
+from .bulk import Bulk

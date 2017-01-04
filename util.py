@@ -15,7 +15,7 @@ from . import template
 ##########################################################################################
 #Salesforce Util
 ##########################################################################################
-def sf_login(project_name=''):
+def sf_login(project_name='', Soap_Type=Soap):
     try:
         settings = setting.load()
 
@@ -28,7 +28,7 @@ def sf_login(project_name=''):
             else:
                 api_version = settings["default_api_version"]
                 
-            sf = Soap(username=project["username"], 
+            sf = Soap_Type(username=project["username"], 
                         password=project["password"], 
                         security_token=project["security_token"], 
                         sandbox=project["is_sandbox"],
@@ -37,7 +37,7 @@ def sf_login(project_name=''):
                         )
 
         elif settings["use_mavensmate_setting"]:
-            sf = Soap(username=settings["username"],
+            sf = Soap_Type(username=settings["username"],
                             session_id=settings["sessionId"] ,
                             instance_url=settings["instanceUrl"],
                             sandbox=settings["is_sandbox"],
@@ -53,7 +53,7 @@ def sf_login(project_name=''):
                             # settings=None
                             )
         else:
-            sf = Soap(username=settings["username"], 
+            sf = Soap_Type(username=settings["username"], 
                         password=settings["password"], 
                         security_token=settings["security_token"], 
                         sandbox=settings["is_sandbox"],
@@ -137,6 +137,9 @@ class XyPanel(object):
         window.run_command('show_panel', {
                 'panel': 'output.' + panel_name
         })
+        if message_str:
+            message_str += '\n'
+
         panel.run_command("append", {
                 "characters": message_str
         })
@@ -322,7 +325,7 @@ def get_plugin_path():
 def del_comment(soql):
     result = soql
     if soql:
-        soql = soql.strip()
+        soql = soql.strip().replace('\t', ' ').replace('\r\n', ' ').replace('\n', ' ')
         result1, number = re.subn("//.*", "", soql)
         result, number = re.subn("/\*([\s|\S]*?)\*/", "", result1, flags=re.M)
         result = result.strip()
@@ -350,6 +353,17 @@ def get_soql_fields(soql):
         return fieldstr.split(",")
     else:
         return ''
+
+def get_simple_soql_str(sobject, fields, condition=''):
+    soql = 'SELECT '
+    fields_lst = []
+    for field in fields:
+        fields_lst.append(xstr(field["name"]))
+    soql += ' , '.join(fields_lst)
+    soql += ' FROM ' + sobject
+    soql += condition
+    return soql
+
 
 def get_soql_src(sobject, fields, condition='', has_comment=False, is_custom_only=False, updateable_only=False):
     soql_scr = ""
@@ -541,6 +555,25 @@ def parse_json_from_file(location):
         return data
     except:
         return {}
+
+def save_file(full_path, content):
+    if not os.path.exists(os.path.dirname(full_path)):
+        os.makedirs(os.path.dirname(full_path))
+
+    # fp = open(full_path, "w")
+    # print(content)
+    # fp.write(content)
+    # fp.close()
+
+    try:
+        fp = open(full_path, "w")
+        fp.write(content)
+    except Exception as e:
+        show_in_dialog('save file error!\n' + full_path)
+        print(e)
+    finally:
+        fp.close()
+
 
 ##########################################################################################
 #Apex String Util
