@@ -293,7 +293,7 @@ class Bulk(Soap):
         uri = self.bulk_api_url + "/job/%s/batch" % job_id
         headers = self.bulk_headers({"Content-Type": "text/csv"})
         for batch in batches:
-            resp = requests.post(uri, data=batch, headers=headers)
+            resp = requests.post(uri, data=batch, headers=headers, verify=False)
             content = resp.content
 
             if resp.status_code >= 400:
@@ -317,7 +317,7 @@ class Bulk(Soap):
     def post_bulk_batch(self, job_id, csv_generator):
         uri = self.bulk_api_url + "/job/%s/batch" % job_id
         headers = self.bulk_headers({"Content-Type": "text/csv"})
-        resp = requests.post(uri, data=csv_generator, headers=headers)
+        resp = requests.post(uri, data=csv_generator, headers=headers, verify=False)
         content = resp.content
 
         if resp.status_code >= 400:
@@ -352,7 +352,7 @@ class Bulk(Soap):
         uri = self.bulk_api_url + "/job/%s/batch" % job_id
         headers = self.bulk_headers({"Content-Type": "text/csv"})
         for batch in results:
-            resp = requests.post(uri, data=batch, headers=headers)
+            resp = requests.post(uri, data=batch, headers=headers, verify=False)
             content = resp.content
 
             if resp.status_code >= 400:
@@ -377,7 +377,7 @@ class Bulk(Soap):
         job_id = job_id or self.lookup_job_id(batch_id)
         uri = urlparse.urljoin(self.bulk_api_url +"/",
             'job/{0}'.format(job_id))
-        resp = requests.get(uri, headers=self.bulk_headers())
+        resp = requests.get(uri, headers=self.bulk_headers(), verify=False)
         if resp.status_code != 200:
             self.raise_error(resp.content, resp.status_code)
 
@@ -461,7 +461,7 @@ class Bulk(Soap):
             "job/{0}/batch/{1}/result".format(
                 job_id, batch_id),
         )
-        resp = requests.get(uri, headers=self.bulk_headers())
+        resp = requests.get(uri, headers=self.bulk_headers(), verify=False)
         if resp.status_code != 200:
             return False
 
@@ -504,7 +504,7 @@ class Bulk(Soap):
                 job_id, batch_id, result_id),
         )
         logger('Downloading bulk result file id=#{0}'.format(result_id))
-        resp = requests.get(uri, headers=self.bulk_headers(), stream=True)
+        resp = requests.get(uri, headers=self.bulk_headers(), stream=True, verify=False)
 
         if not parse_csv:
             iterator = resp.iter_lines()
@@ -540,13 +540,13 @@ class Bulk(Soap):
 
         uri = self.bulk_api_url + \
             "/job/%s/batch/%s/result" % (job_id, batch_id)
-        r = requests.get(uri, headers=self.bulk_headers(), stream=True)
+        r = requests.get(uri, headers=self.bulk_headers(), stream=True, verify=False)
 
         result_id = r.text.split("<result>")[1].split("</result>")[0]
 
         uri = self.bulk_api_url + \
             "/job/%s/batch/%s/result/%s" % (job_id, batch_id, result_id)
-        r = requests.get(uri, headers=self.bulk_headers(), stream=True)
+        r = requests.get(uri, headers=self.bulk_headers(), stream=True, verify=False)
 
         if parse_csv:
             return csv.DictReader(r.iter_lines(chunk_size=2048), delimiter=",",
