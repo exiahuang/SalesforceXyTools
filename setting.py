@@ -43,7 +43,7 @@ def load():
     settings["password"] = default_project_value["password"]
     settings["security_token"] = default_project_value["security_token"]
     settings["username"] = default_project_value["username"]
-    settings["workspace"] = default_project_value["workspace"]
+    settings["workspace"] = os.path.normpath(default_project_value["workspace"])
     if "api_version" in default_project_value:
         settings["api_version"] = default_project_value["api_version"]
     else:

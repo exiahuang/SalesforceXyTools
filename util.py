@@ -310,6 +310,9 @@ def jsonstr(json_str):
 def get_default_floder(iscreate=False):
     settings = setting.load()
     fullpath = os.path.join(settings["workspace"], settings["default_project"], settings["xyfloder"])
+    # fix windows slash 
+    fullpath = os.path.normpath(fullpath)
+    
     if iscreate:
         makedir(fullpath)
     return fullpath
@@ -560,6 +563,7 @@ def parse_json_from_file(location):
 
 def save_file(full_path, content):
     if not os.path.exists(os.path.dirname(full_path)):
+        print("mkdir: " + os.path.dirname(full_path))
         os.makedirs(os.path.dirname(full_path))
 
     # fp = open(full_path, "w")
