@@ -79,13 +79,13 @@ class ExportSobjectCommand(sublime_plugin.WindowCommand):
         try:
             self.sftype = self.sf.get_sobject(self.picked_name)
             sftypedesc = self.sftype.describe()
-            soql = util.get_simple_soql_str(self.picked_name, sftypedesc["fields"])
-            # print(soql)
+            soql = util.get_simple_soql_str(self.picked_name, sftypedesc["fields"], no_address=True)
 
             bulk = self.sf
             job = bulk.create_query_job(self.picked_name, contentType='CSV')
             batch = bulk.query(job, soql)
             
+            print("soql: " + soql)
             print("job:" + job)
             print("batch:" + batch)
 

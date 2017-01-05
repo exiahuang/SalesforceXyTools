@@ -354,10 +354,12 @@ def get_soql_fields(soql):
     else:
         return ''
 
-def get_simple_soql_str(sobject, fields, condition=''):
+def get_simple_soql_str(sobject, fields, no_address=False,condition=''):
     soql = 'SELECT '
     fields_lst = []
     for field in fields:
+        if no_address and (field["type"] == "address"):
+            continue
         fields_lst.append(xstr(field["name"]))
     soql += ' , '.join(fields_lst)
     soql += ' FROM ' + sobject
