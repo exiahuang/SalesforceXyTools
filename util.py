@@ -337,17 +337,22 @@ def del_comment(soql):
     return result
 
 
+# get sobject name from soql
 def get_soql_sobject(soql_str):
     soql = del_comment(soql_str)
-    # match = re.match(""select\s+\*\s+from[\s\t]+\w+"", soql.strip(), re.IGNORECASE)
-    # TODO
-    match = re.match("select\s+\*\s+from[\s\t]+(\w+)([\t\s\S]*)", soql, re.I|re.M)
+    # match = re.match("select\s+\*\s+from[\s\t]+(\w+)([\t\s\S]*)", soql, re.I|re.M)
+    match = re.match("select\\s+([\\w\\n,.:_\\s]*|\*)\\s+from[\s\t]+(\w+)([\t\s\S]*)", soql, re.I|re.M)
     sobject = ""
     if match:
-        sobject = match.group(1)
+        sobject = match.group(2)
+        # print('------>' + match.group(0))
+        # print('------>' + match.group(1))
+        # print('------>' + match.group(2))
+        # print('------>' + match.group(3))
     return sobject
 
 
+# get soql fields from soql,return list
 def get_soql_fields(soql):
     match = re.match("SELECT\\s+[\\w\\n,.:_\\s]*\\s+FROM", soql.strip(), re.IGNORECASE)
     show_in_panel(match)

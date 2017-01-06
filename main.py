@@ -218,10 +218,15 @@ class SoqlQueryCommand(sublime_plugin.TextCommand):
           util.show_in_dialog("Please select the SOQL !!")
           return
         else:
-            sel_string = self.view.substr(sel_area[0])
-            sel_string = util.del_comment(sel_string)
+            soql_string = self.view.substr(sel_area[0])
+            soql_string = util.del_comment(soql_string)
 
-        thread = threading.Thread(target=self.main_handle, args=(sel_string, ))
+        sobject_name = util.get_soql_sobject(soql_string)
+        if not sobject_name:
+            util.show_in_dialog("Please select SOQL !")
+            return
+
+        thread = threading.Thread(target=self.main_handle, args=(soql_string, ))
         thread.start()
         util.handle_thread(thread)
 
