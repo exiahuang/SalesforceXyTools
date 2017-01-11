@@ -388,6 +388,9 @@ def get_soql_src(sobject, fields, condition='', has_comment=False, is_custom_onl
                 if not (field_name.lower() == 'id' or field_name.lower() == 'name') :
                     continue
 
+            if updateable_only and not field["updateable"]:
+                continue
+
             if counter == len(fields):
                 fields_str += "\t\t\t" + xstr(field["name"]) + "\t\t\t\t//" + xstr(field["label"])
             else:

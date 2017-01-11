@@ -86,6 +86,8 @@ class SaveSfdcObjectAsExcelCommand(sublime_plugin.WindowCommand):
             sheetIndex = 0;
             sheetIndexMap[0] = newSheet_1Name
 
+            sheetNameList = []
+
             for x in sf.describe()["sobjects"]:
               #write to xls
               # book.get_sheet(0)
@@ -105,9 +107,18 @@ class SaveSfdcObjectAsExcelCommand(sublime_plugin.WindowCommand):
 
                   #print(x["name"])     
                   #write to xls
-                  worksheet_name = x["name"]
+                  # worksheet_name = x["name"]
+                  # if len(worksheet_name) > 31:
+                  #   worksheet_name = (x["name"].replace("_",""))[0:31]
+                  
+                  worksheet_name = x["label"]
                   if len(worksheet_name) > 31:
-                    worksheet_name = (x["name"].replace("_",""))[0:31]
+                    worksheet_name = (x["label"])[0:31]
+                  if worksheet_name in sheetNameList:
+                    worksheet_name = (x["label"])[0:25] + "_" + util.random_str(4)
+                  
+                  sheetNameList.append(worksheet_name)
+
 
                   fieldSheet_1 = book.add_worksheet(worksheet_name)
                   # book.get_sheet(sheetIndex)
@@ -117,6 +128,7 @@ class SaveSfdcObjectAsExcelCommand(sublime_plugin.WindowCommand):
                   fieldSheet_1.write(rowIndex, 2, "type")
                   fieldSheet_1.write(rowIndex, 3, "length")
                   fieldSheet_1.write(rowIndex, 4, "scale")
+                  fieldSheet_1.write(rowIndex, 5, "updateable")
 
                   sftypedesc = sftype.describe()
                   for field in sftypedesc["fields"]:
@@ -131,6 +143,7 @@ class SaveSfdcObjectAsExcelCommand(sublime_plugin.WindowCommand):
                      fieldSheet_1.write(rowIndex, 2, field["type"])
                      fieldSheet_1.write(rowIndex, 3, field["length"])
                      fieldSheet_1.write(rowIndex, 4, field["scale"])
+                     fieldSheet_1.write(rowIndex, 5, field["updateable"])
 
               #message += x["label"] + "\n"
 
@@ -680,15 +693,17 @@ class SoqlCreateCommand(sublime_plugin.WindowCommand):
         self.picked_name = self.results[picked]
         # print(self.picked_name)
         # print(self.picked_name)
-        dirs = ["Custom Fields Only", "All Fields"]
-        self.custom_result = [True, False]
+        dirs = ["Custom Fields Only", "Updateable", "All Fields"]
+        self.custom_result = [1, 2, 3]
         
         sublime.set_timeout(lambda:self.window.show_quick_panel(dirs, self.select_panel), 10)
 
     def select_panel(self, picked):
         if 0 > picked < len(self.custom_result):
             return
-        self.is_custom_only = self.custom_result[picked]    
+        self.is_custom_only = ( self.custom_result[picked] == 1 )
+        self.is_updateable = ( self.custom_result[picked] == 2 )
+
 
         thread = threading.Thread(target=self.main_handle)
         thread.start()
@@ -706,7 +721,9 @@ class SoqlCreateCommand(sublime_plugin.WindowCommand):
             sobject = self.picked_name
             sftype = self.sf.get_sobject(sobject)
             sftypedesc = sftype.describe()
-            soql = util.get_soql_src(sobject, sftypedesc["fields"], condition='', has_comment=True, is_custom_only=self.is_custom_only)
+            soql = util.get_soql_src(sobject, sftypedesc["fields"], condition='', has_comment=True, 
+                                    is_custom_only=self.is_custom_only,
+                                    updateable_only=self.is_updateable)
             util.show_in_new_tab(soql)
         except Exception as e:
             util.show_in_panel(e)
