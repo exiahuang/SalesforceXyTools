@@ -114,6 +114,13 @@ def show_in_panel(message_str):
     XyPanel.show_in_panel("xypanel", xstr(message_str))
 
 
+def save_and_open_in_panel(message_str, save_file_name , sub_folder='' ,default_path=get_default_floder() ):
+    savePath =  os.path.join(default_path, sub_folder, save_file_name)
+    save_file(savePath, message_str)
+    if os.path.isfile(savePath): 
+        sublime.active_window().open_file(savePath)
+
+
 class XyPanel(object):
     panels = {}
 
@@ -569,7 +576,7 @@ def parse_json_from_file(location):
     except:
         return {}
 
-def save_file(full_path, content):
+def save_file(full_path, content, encoding='utf-8'):
     if not os.path.exists(os.path.dirname(full_path)):
         print("mkdir: " + os.path.dirname(full_path))
         os.makedirs(os.path.dirname(full_path))
@@ -580,7 +587,7 @@ def save_file(full_path, content):
     # fp.close()
 
     try:
-        fp = open(full_path, "w")
+        fp = open(full_path, "w", encoding=encoding)
         fp.write(content)
     except Exception as e:
         show_in_dialog('save file error!\n' + full_path)
@@ -806,9 +813,11 @@ def get_testclass(src_str):
     return re_test_code
 
 
-def get_dto_class(class_name, fields, is_custom_only=False):
+def get_dto_class(class_name, fields, is_custom_only=False, include_validate=False):
 
+    sobj_name = class_name
     class_body = ''
+    constructor_body = ''
     # name, label, type, length, scale
     for field in fields:
         field_name = cap_low( get_api_name(xstr(field['name'])) )
@@ -828,9 +837,127 @@ def get_dto_class(class_name, fields, is_custom_only=False):
         # define
         class_body += get_code_snippet(CS_DECLARE, tmpVal)
 
+        # include validate string
+        if include_validate:
+            tmpVal = {}
+            tmpVal['declare_type'] = 'String'
+            tmpVal['declare_name'] = field_name + 'Msg'
+            # comment
+            comment = 'Validate string For ' + xstr(field['label']) 
+            class_body += get_code_snippet(CS_COMMENT, comment)
+            # define
+            class_body += get_code_snippet(CS_DECLARE, tmpVal)
+
+        # picklist
+        if xstr(field['type']) == 'picklist':
+            print(field)
+            tmpVal = {}
+            tmpVal['declare_type'] = 'List<SelectOption>'
+            tmpVal['declare_name'] = field_name + 'List'
+            # comment
+            comment = 'picklist SelectOption For ' + xstr(field['label']) 
+            class_body += get_code_snippet(CS_COMMENT, comment)
+            # define
+            class_body += get_code_snippet(CS_DECLARE, tmpVal)
+
+            # TODO
+            # constructor_body += ('\t\t\tthis.%s = CommonUtil.getSelectOptionList(%s.%s.getDescribe(),true);\n' % (tmpVal['declare_name'],sobj_name,xstr(field['name'])) )
+            picklistValues = field['picklistValues']
+
+            constructor_body += "\n";
+            constructor_body += ("\t\t\tList<SelectOption> %s = new List<SelectOption>();\n" % (tmpVal['declare_name']));
+            constructor_body += ("\t\t\t%s.add(new SelectOption('', '--None--'));\n" % (tmpVal['declare_name']));
+            for pick in picklistValues:
+                label = pick['label']
+                value = pick['value']
+                constructor_body += ("\t\t\t%s.add(new SelectOption('%s', '%s'));\n" % (tmpVal['declare_name'], value,label));
+
     class_name = get_api_name(class_name)
-    dto_class = get_template(TMP_CLASS).format(author=AUTHOR,class_name=class_name,class_type='Dto', class_body=class_body)
-    return dto_class
+    dto_class = get_template(TMP_CLASS).format(author=AUTHOR,class_name=class_name,class_type='Dto', class_body=class_body, constructor_body=constructor_body)
+    return dto_class, class_name
+
+def get_controller_class(class_name):
+    sobj_name = class_name
+    class_name = get_api_name(class_name)
+    class_body = ''
+    constructor_body = ''
+    
+    tmpVal = {}
+    tmpVal['declare_type'] = get_api_name(class_name) + 'Dto'
+    tmpVal['declare_name'] = 'dto'
+
+    # comment
+    # comment = 'DTO '
+    # class_body += get_code_snippet(CS_COMMENT, comment)
+    # define
+    class_body += get_code_snippet(CS_DECLARE, tmpVal)
+
+    constructor_body += ('\t\t\tthis.%s = new %s();\n' % (tmpVal['declare_name'],tmpVal['declare_type']))
+
+    class_name = get_api_name(class_name)
+    cls_source = get_template(TMP_CLASS_WITH_SHARING).format(author=AUTHOR,class_name=class_name,class_type='Controller', class_body=class_body, constructor_body=constructor_body)
+    return cls_source, class_name
+
+
+def get_vf_class(class_name, fields, is_custom_only=False, include_validate=False):
+
+    sobj_name = class_name
+    class_body = ''
+    constructor_body = ''
+    # name, label, type, length, scale
+    for field in fields:
+        field_name = cap_low( get_api_name(xstr(field['name'])) )
+        field_type = sobj_to_apextype(xstr(field['type']))
+
+        if field_name.lower() == 'id':
+            continue
+
+        if is_custom_only and not field["custom"]:
+            if not (field_name.lower() == 'id' or field_name.lower() == 'name') :
+                continue
+
+        tmpVal = {}
+        tmpVal['declare_type'] = field_type
+        tmpVal['declare_name'] = field_name
+
+        data_type = xstr(field['type'])
+        if data_type == 'id' or data_type == 'string' or data_type == 'url' or data_type == 'ID' or data_type == 'reference':
+            apex_code = 'String' 
+        elif data_type == 'email':
+            apex_code = 'Integer'
+        elif data_type == 'phone':
+            apex_code = 'Integer'
+        elif data_type == 'textarea':
+            apex_code = 'Integer'
+        elif data_type == 'picklist':
+            apex_code = '''
+                            <apex:selectList size="1" rendered="{{!item.isList}}" value="{{!item.value}}" >
+                                <apex:selectOptions value="{{!item.selList}}" />
+                            </apex:selectList>
+                        '''
+        elif data_type == 'multipicklist':
+            apex_code = 'Integer'
+        elif data_type == 'int' or data_type == 'percent':
+            apex_code = 'Integer'
+        elif data_type == 'long' :
+            apex_code = 'Long'
+        elif data_type == 'currency' or data_type == 'double' :
+            apex_code = 'Decimal'
+        elif data_type == 'boolean' or data_type == 'combobox':
+            apex_code = 'Boolean'
+        elif data_type == 'datetime' or data_type == 'date' :
+            apex_code = data_type
+
+        # comment
+        comment = xstr(field['label']) + ' , ' + xstr(field['type'])
+        class_body += get_code_snippet(CS_COMMENT, comment)
+        # define
+        class_body += get_code_snippet(CS_DECLARE, tmpVal)
+
+
+    class_name = get_api_name(class_name)
+    dto_class = get_template(TMP_HTML_TABLE_CONTENT).format(author=AUTHOR,class_name=class_name,class_type='Dto', class_body=class_body, constructor_body=constructor_body)
+    return dto_class, class_name
 
 def get_dao_class(class_name, fields, is_custom_only=False):
     class_body = ''
@@ -851,7 +978,6 @@ def get_dao_class(class_name, fields, is_custom_only=False):
                                                      class_body=class_body)
    
     return src_code
-
 
 
 
@@ -879,6 +1005,8 @@ def sobj_to_apextype(data_type):
 ##########################################################################################
 AUTHOR = 'huangxy'
 TMP_CLASS = 'template_class'
+TMP_CLASS_WITH_SHARING = 'template_class_with_sharing'
+TMP_HTML_TABLE_CONTENT = 'template_html_table_content'
 TMP_NO_CON_CLASS = 'template_no_con_class'
 TMP_DAO_METHOD = 'template_apex_dao_method'
 TMP_DAO_METHOD_GETBYID = 'template_apex_dao_method_getbyid'

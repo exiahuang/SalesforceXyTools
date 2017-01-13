@@ -24,6 +24,8 @@ from .salesforce import (
     )
 
 
+AUTO_CODE_DIR = "code-creator"
+
 ##########################################################################################
 #Sublime main menu
 ##########################################################################################
@@ -33,11 +35,13 @@ class ShowSfdcObjectListCommand(sublime_plugin.TextCommand):
     def main_handle(self):
         try:
             sf = util.sf_login()
-            message = 'id, label, name, keyPrefix' + "\n"
+            message = 'label, name, keyPrefix' + "\n"
             for x in sf.describe()["sobjects"]:
               message += util.xstr(x["label"]) + "," + util.xstr(x["name"]) + "," + util.xstr(x["keyPrefix"]) + "\n"
 
-            util.show_in_new_tab(message)
+            # util.show_in_new_tab(message)
+            file_name = sf.settings["default_project"] + '_sobject_lst.csv'
+            util.save_and_open_in_panel(message, file_name )
 
         except RequestException as e:
             util.show_in_panel("Network connection timeout when issuing REST GET request")
@@ -652,7 +656,10 @@ class SfdcObjectDescCommand(sublime_plugin.WindowCommand):
            message += util.xstr(field["name"]) + "," + util.xstr(field["label"]) \
                     + "," + util.xstr(field["type"]) + "," + util.xstr(field["length"]) + "," + util.xstr(field["scale"]) + "\n"
           
-        util.show_in_new_tab(message)
+        # util.show_in_new_tab(message)
+        file_name = self.picked_name + '_sobject_desc.csv'
+        sub_folder = 'sobject-desc'
+        util.save_and_open_in_panel(message, file_name, sub_folder )
 
 # soql create
 class SoqlCreateCommand(sublime_plugin.WindowCommand):
@@ -1056,15 +1063,17 @@ class CreateDtoCodeCommand(sublime_plugin.WindowCommand):
             return
         self.picked_name = self.results[picked]
         # print(self.picked_name)
-        dirs = ["Custom Fields Only", "All Fields"]
-        self.custom_result = [True, False]
+        dirs = ["Custom Fields Only-Exclude Validate", "All Fields-Exclude Validate",
+                "Custom Fields Only-Include Validate",  "All Fields-Include Validate"]
+        self.custom_result = [1, 2, 3, 4]
         
         sublime.set_timeout(lambda:self.window.show_quick_panel(dirs, self.select_panel), 10)
 
     def select_panel(self, picked):
         if 0 > picked < len(self.custom_result):
             return
-        self.is_custom_only = self.custom_result[picked]    
+        self.is_custom_only = (self.custom_result[picked]==1 or self.custom_result[picked]==3)
+        self.include_validate = (self.custom_result[picked]>2)
 
         thread = threading.Thread(target=self.main_handle)
         thread.start()
@@ -1077,7 +1086,77 @@ class CreateDtoCodeCommand(sublime_plugin.WindowCommand):
 
         sftypedesc = self.sftype.describe()
           
-        util.show_in_new_tab(util.get_dto_class(self.picked_name, sftypedesc["fields"], self.is_custom_only))
+        # util.show_in_new_tab(util.get_dto_class(self.picked_name, sftypedesc["fields"], self.is_custom_only))
+
+        dto_class, class_name = util.get_dto_class(self.picked_name, sftypedesc["fields"], self.is_custom_only, self.include_validate)
+        file_name = class_name + 'Dto.cls'
+        sub_folder = AUTO_CODE_DIR
+        util.save_and_open_in_panel(dto_class, file_name, sub_folder )
+
+class CreateVfCodeCommand(sublime_plugin.WindowCommand):
+    def run(self):
+        try:
+            self.sf = util.sf_login()
+            dirs = []
+            self.results = []
+
+            for x in self.sf.describe()["sobjects"]:
+                # dirs.append([util.xstr(x["name"]), util.xstr(x["label"])])
+                dirs.append(util.xstr(x["name"])+' : '+util.xstr(x["label"]))
+                self.results.append(util.xstr(x["name"]))
+                # print(x)
+            self.window.show_quick_panel(dirs, self.panel_done,sublime.MONOSPACE_FONT)
+
+        except RequestException as e:
+            util.show_in_panel("Network connection timeout when issuing REST GET request")
+            return
+        except SalesforceExpiredSession as e:
+            util.show_in_dialog('session expired')
+            return
+        except SalesforceRefusedRequest as e:
+            util.show_in_panel('The request has been refused.')
+            return
+        except SalesforceError as e:
+            err = 'Error code: %s \nError message:%s' % (e.status,e.content)
+            util.show_in_panel(err)
+            return
+        except Exception as e:
+            util.show_in_panel(e)
+            # util.show_in_dialog('Exception Error!')
+            return
+
+    def panel_done(self, picked):
+        if 0 > picked < len(self.results):
+            return
+        self.picked_name = self.results[picked]
+        # print(self.picked_name)
+        dirs = ["Custom Fields Only", "All Fields"]
+        self.custom_result = [1, 2]
+        
+        sublime.set_timeout(lambda:self.window.show_quick_panel(dirs, self.select_panel), 10)
+
+    def select_panel(self, picked):
+        if 0 > picked < len(self.custom_result):
+            return
+        self.is_custom_only = (self.custom_result[picked]==1 )
+
+        thread = threading.Thread(target=self.main_handle)
+        thread.start()
+        util.handle_thread(thread)
+
+
+    def main_handle(self):
+
+        self.sftype = self.sf.get_sobject(self.picked_name)
+
+        sftypedesc = self.sftype.describe()
+          
+        # util.show_in_new_tab(util.get_dto_class(self.picked_name, sftypedesc["fields"], self.is_custom_only))
+
+        source_code, class_name = util.get_vf_class(self.picked_name, sftypedesc["fields"], self.is_custom_only)
+        file_name = class_name + '.page'
+        sub_folder = AUTO_CODE_DIR
+        util.save_and_open_in_panel(source_code, file_name, sub_folder )
 
 
 class CreateDaoCodeCommand(sublime_plugin.WindowCommand):
@@ -1139,6 +1218,49 @@ class CreateDaoCodeCommand(sublime_plugin.WindowCommand):
         sftypedesc = self.sftype.describe()
           
         util.show_in_new_tab(util.get_dao_class(self.picked_name, sftypedesc["fields"], self.is_custom_only))
+
+
+class CreateControllerCodeCommand(sublime_plugin.WindowCommand):
+    def run(self):
+        try:
+            self.sf = util.sf_login()
+            dirs = []
+            self.results = []
+
+            for x in self.sf.describe()["sobjects"]:
+                # dirs.append([util.xstr(x["name"]), util.xstr(x["label"])])
+                dirs.append(util.xstr(x["name"])+' : '+util.xstr(x["label"]))
+                self.results.append(util.xstr(x["name"]))
+                # print(x)
+            self.window.show_quick_panel(dirs, self.panel_done,sublime.MONOSPACE_FONT)
+
+        except RequestException as e:
+            util.show_in_panel("Network connection timeout when issuing REST GET request")
+            return
+        except SalesforceExpiredSession as e:
+            util.show_in_dialog('session expired')
+            return
+        except SalesforceRefusedRequest as e:
+            util.show_in_panel('The request has been refused.')
+            return
+        except SalesforceError as e:
+            err = 'Error code: %s \nError message:%s' % (e.status,e.content)
+            util.show_in_panel(err)
+            return
+        except Exception as e:
+            util.show_in_panel(e)
+            # util.show_in_dialog('Exception Error!')
+            return
+
+    def panel_done(self, picked):
+        if 0 > picked < len(self.results):
+            return
+        self.picked_name = self.results[picked]
+
+        source_code, class_name = util.get_controller_class(self.picked_name)
+        file_name = class_name + 'Controller.cls'
+        sub_folder = AUTO_CODE_DIR
+        util.save_and_open_in_panel(source_code, file_name, sub_folder )
 
 
 

@@ -43,10 +43,10 @@ def template_class():
     return '''/**
 * @author {author}
 */
-public with sharing class {class_name}{class_type} {{
-         public {class_name}{class_type}() {{
-
-         }}
+public class {class_name}{class_type} {{
+        public {class_name}{class_type}() {{
+{constructor_body}
+        }}
 {class_body}
 }}
 '''
@@ -57,10 +57,24 @@ def template_no_con_class():
     return '''/**
 * @author {author}
 */
-public with sharing class {class_name}{class_type} {{
+public class {class_name}{class_type} {{
 {class_body}
 }}
 '''
+
+# Apex Class Template
+def template_class_with_sharing():
+    return '''/**
+* @author {author}
+*/
+public with sharing class {class_name}{class_type} {{
+        public {class_name}{class_type}() {{
+{constructor_body}
+        }}
+{class_body}
+}}
+'''
+
 
 # Apex Dao Method Template
 def template_apex_dao_method():
@@ -101,4 +115,18 @@ def template_apex_dao_method_getbyid():
         else
             return {instance_name_cap_low}List.get(0);
     }}
+'''
+
+
+# VisualForce Template
+def template_html_table_content():
+    return '''
+    <th class="has-w-20-pc">
+        <apex:outputPanel rendered="{{!item.isRequired}}" >
+            <span class="mod-icon-note">必須</span>
+        </apex:outputPanel>
+    </th>
+    <td>
+        {!td_body}
+    </td>
 '''

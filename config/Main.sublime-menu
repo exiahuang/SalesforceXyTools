@@ -82,6 +82,19 @@
                         "caption": "Export SOQL",
                         "command": "export_soql"
                     }
+                    // ,
+                    // {
+                    //     "caption": "Bulk Insert From CSV",
+                    //     "command": "bulk_insert"
+                    // },
+                    // {
+                    //     "caption": "Bulk Update From CSV",
+                    //     "command": "bulk_update"
+                    // },
+                    // {
+                    //     "caption": "Bulk Delete From CSV",
+                    //     "command": "bulk_delete"
+                    // }
                 ]
             },
             {
@@ -116,7 +129,16 @@
                     {
                         "caption": "Create DAO Code",
                         "command": "create_dao_code"
+                    },
+                    {
+                        "caption": "Create Controller Code",
+                        "command": "create_controller_code"
                     }
+                    // ,
+                    // {
+                    //     "caption": "Create VisualForce Code",
+                    //     "command": "create_vf_code"
+                    // }
                 ]
             },
             // {
