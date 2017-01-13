@@ -114,7 +114,9 @@ def show_in_panel(message_str):
     XyPanel.show_in_panel("xypanel", xstr(message_str))
 
 
-def save_and_open_in_panel(message_str, save_file_name , sub_folder='' ,default_path=get_default_floder() ):
+def save_and_open_in_panel(message_str, save_file_name , sub_folder='' ,default_path='' ):
+    if not default_path:
+        default_path=get_default_floder()
     savePath =  os.path.join(default_path, sub_folder, save_file_name)
     save_file(savePath, message_str)
     if os.path.isfile(savePath): 
