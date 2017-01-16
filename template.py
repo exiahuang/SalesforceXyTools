@@ -118,15 +118,42 @@ def template_apex_dao_method_getbyid():
 '''
 
 
-# VisualForce Template
+# VisualForce table td Template
 def template_html_table_content():
     return '''
-    <th class="has-w-20-pc">
-        <apex:outputPanel rendered="{{!item.isRequired}}" >
-            <span class="mod-icon-note">必須</span>
-        </apex:outputPanel>
-    </th>
-    <td>
-        {!td_body}
-    </td>
+    <tr>
+        <th class="has-w-20-pc">
+            <apex:outputPanel rendered="" >
+                <span class="mod-icon-note">必須</span>
+            </apex:outputPanel>
+            <apex:outputText value="{th_body}" />
+        </th>
+        <td>
+            {td_body}
+        </td>
+    </tr>
+'''
+
+# VisualForce Template
+def template_vf_inputform():
+    return '''<apex:page showHeader="false" standardStylesheets="false" applyHtmlTag="false" applyBodyTag="false" sidebar="false" showChat="false" cache="false" docType="html-5.0" controller="{controller}">
+    <html>
+        <head>
+            <meta charset="utf-8" />
+            <meta name="format-detection" content="telephone=no" />
+            <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <title>{title}</title>
+        </head>
+        <body>
+            <apex:form id="mainform">
+                <div class="frame-wrapper">
+                    <table class="mod-base-table">
+                        {table_body}
+                    </table>
+                </div>
+                <!-- // frame-wrapper -->
+            </apex:form>
+        </body>
+    </html>
+</apex:page>
 '''

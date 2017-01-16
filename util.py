@@ -337,8 +337,13 @@ def get_plugin_path():
 def del_comment(soql):
     result = soql
     if soql:
-        soql = soql.strip().replace('\t', ' ').replace('\r\n', ' ').replace('\n', ' ')
+        # TODO
+        # soql = soql.strip().replace('\t', ' ').replace('\r\n', ' ').replace('\n', ' ')
+        soql = soql.strip().replace('\t', ' ')
+        
+        # delete // comment
         result1, number = re.subn("//.*", "", soql)
+        # delete /**/ comment
         result, number = re.subn("/\*([\s|\S]*?)\*/", "", result1, flags=re.M)
         result = result.strip()
     # show_in_panel(result)
@@ -609,7 +614,6 @@ def get_functionList(src_str):
     pattern = r'(public[^(){};]*)\(([^)]*)\)\s*{'
     match = re.findall(pattern, en_src_str, re.I|re.M)
 
-
     functionList = []
     for m in match: 
         f={}
@@ -675,6 +679,20 @@ def get_class_name(src_str):
     return className
 
 
+def get_sfdc_namespace(sobject_name):
+    sfdc_name_map = {}
+    sfdc_name_map['sobject'] = sobject_name
+    sfdc_name_map['sobj_api'] = get_api_name(sobject_name)
+    sfdc_name_map['controller'] = sfdc_name_map['sobj_api'] + 'Controller'
+    sfdc_name_map['dto'] = sfdc_name_map['sobj_api'] + 'Dto'
+    sfdc_name_map['dao'] = sfdc_name_map['sobj_api'] + 'Dao'
+    sfdc_name_map['vf'] = sfdc_name_map['sobj_api']
+    sfdc_name_map['dto_instance'] = cap_low(sfdc_name_map['dto'])
+    sfdc_name_map['dao_instance'] = cap_low(sfdc_name_map['dao'])
+    sfdc_name_map['controller_instance'] = cap_low(sfdc_name_map['controller'])
+    return sfdc_name_map
+
+
 def get_testclass(src_str):
     src_str = del_comment(src_str)
 
@@ -737,6 +755,7 @@ def get_testclass(src_str):
                 #                      function_name=function_name,
                 #                      args=argsStr))
             function_body += codeSnippet
+            # test_in_all += ' // call static method\n'
             test_in_all += get_code_snippet(CS_COMMENT, " test " + function_name) 
             test_in_all += codeSnippet + "\n"
 
@@ -752,8 +771,12 @@ def get_testclass(src_str):
             #                      class_name=className,
             #                      args=argsStr))
             function_body += codeSnippet
-            test_in_all += get_code_snippet(CS_COMMENT, " test " + function_name) 
-            test_in_all += codeSnippet + "\n"
+
+            if test_in_all_flg:
+                # test_in_all += ' // call constructor method\n'
+                test_in_all += get_code_snippet(CS_COMMENT, " test " + function_name) 
+                test_in_all += codeSnippet + "\n"
+                test_in_all_flg = False
 
         # call other apex method
         else:
@@ -797,6 +820,8 @@ def get_testclass(src_str):
                 #                      function_name=function_name,
                 #                      args=argsStr))
             function_body += codeSnippet
+
+            # test_in_all += ' // call other apex method\n'
             test_in_all += get_code_snippet(CS_COMMENT, " test " + function_name) 
             test_in_all += codeSnippet + "\n"
 
@@ -867,12 +892,12 @@ def get_dto_class(class_name, fields, is_custom_only=False, include_validate=Fal
             picklistValues = field['picklistValues']
 
             constructor_body += "\n";
-            constructor_body += ("\t\t\tList<SelectOption> %s = new List<SelectOption>();\n" % (tmpVal['declare_name']));
-            constructor_body += ("\t\t\t%s.add(new SelectOption('', '--None--'));\n" % (tmpVal['declare_name']));
+            constructor_body += ("\t\t\tthis.%s = new List<SelectOption>();\n" % (tmpVal['declare_name']));
+            constructor_body += ("\t\t\tthis.%s.add(new SelectOption('', '--None--'));\n" % (tmpVal['declare_name']));
             for pick in picklistValues:
                 label = pick['label']
                 value = pick['value']
-                constructor_body += ("\t\t\t%s.add(new SelectOption('%s', '%s'));\n" % (tmpVal['declare_name'], value,label));
+                constructor_body += ("\t\t\tthis.%s.add(new SelectOption('%s', '%s'));\n" % (tmpVal['declare_name'], value,label));
 
     class_name = get_api_name(class_name)
     dto_class = get_template(TMP_CLASS).format(author=AUTHOR,class_name=class_name,class_type='Dto', class_body=class_body, constructor_body=constructor_body)
@@ -881,12 +906,15 @@ def get_dto_class(class_name, fields, is_custom_only=False, include_validate=Fal
 def get_controller_class(class_name):
     sobj_name = class_name
     class_name = get_api_name(class_name)
+
+    sfdc_name_map = get_sfdc_namespace(class_name)
+
     class_body = ''
     constructor_body = ''
     
     tmpVal = {}
-    tmpVal['declare_type'] = get_api_name(class_name) + 'Dto'
-    tmpVal['declare_name'] = 'dto'
+    tmpVal['declare_type'] = sfdc_name_map['dto']
+    tmpVal['declare_name'] = sfdc_name_map['dto_instance']
 
     # comment
     # comment = 'DTO '
@@ -906,6 +934,11 @@ def get_vf_class(class_name, fields, is_custom_only=False, include_validate=Fals
     sobj_name = class_name
     class_body = ''
     constructor_body = ''
+
+    sfdc_name_map = get_sfdc_namespace(class_name)
+
+    class_name = sfdc_name_map['sobj_api']
+
     # name, label, type, length, scale
     for field in fields:
         field_name = cap_low( get_api_name(xstr(field['name'])) )
@@ -922,44 +955,72 @@ def get_vf_class(class_name, fields, is_custom_only=False, include_validate=Fals
         tmpVal['declare_type'] = field_type
         tmpVal['declare_name'] = field_name
 
+        print('---> ' )
+        print('--->field_type ' + field_type)
+        print('--->field_name ' + field_name)
+
         data_type = xstr(field['type'])
-        if data_type == 'id' or data_type == 'string' or data_type == 'url' or data_type == 'ID' or data_type == 'reference':
-            apex_code = 'String' 
+        if data_type == 'id' or data_type == 'ID' or data_type == 'reference':
+            vf_code = '''
+                         <apex:outputText value="{{!{field_name}}}" />
+                        '''
+        elif data_type == 'string':
+            vf_code = '''
+                        <apex:input type="text" value="{{!{field_name}}}" />
+                    '''
+        elif data_type == 'url' :
+            vf_code = '''
+                        <apex:input type="text" value="{{!{field_name}}}" />
+                    '''
         elif data_type == 'email':
-            apex_code = 'Integer'
+            vf_code = '''
+                        <apex:input type="email" value="{{!{field_name}}}" />
+                    '''
         elif data_type == 'phone':
-            apex_code = 'Integer'
+            vf_code = '''
+                        <apex:input type="text" value="{{!{field_name}}}" />
+                    '''
         elif data_type == 'textarea':
-            apex_code = 'Integer'
+            vf_code = '''
+                        <apex:inputTextarea value="{{!{field_name}}}" />
+                    '''
         elif data_type == 'picklist':
-            apex_code = '''
-                            <apex:selectList size="1" rendered="{{!item.isList}}" value="{{!item.value}}" >
-                                <apex:selectOptions value="{{!item.selList}}" />
+            vf_code = '''
+                            <apex:selectList size="1" value="{{!{field_name}}}" >
+                                <apex:selectOptions value="{{!{field_name}List}}" />
                             </apex:selectList>
                         '''
         elif data_type == 'multipicklist':
-            apex_code = 'Integer'
-        elif data_type == 'int' or data_type == 'percent':
-            apex_code = 'Integer'
-        elif data_type == 'long' :
-            apex_code = 'Long'
-        elif data_type == 'currency' or data_type == 'double' :
-            apex_code = 'Decimal'
+            vf_code = '''
+                            <apex:selectList size="10" value="{{!{field_name}}}" multiselect="true">
+                                <apex:selectOptions value="{{!{field_name}List}}" />
+                            </apex:selectList>
+                        '''
+        elif data_type == 'int' or data_type == 'percent' or data_type == 'long' or data_type == 'currency' or data_type == 'double':
+            vf_code = '''
+                        <apex:input type="number" value="{{!{field_name}}}" />
+                    '''
         elif data_type == 'boolean' or data_type == 'combobox':
-            apex_code = 'Boolean'
-        elif data_type == 'datetime' or data_type == 'date' :
-            apex_code = data_type
+            vf_code = '''
+                        <apex:inputCheckbox value="{{!{field_name}}}" />
+                    '''
+        elif data_type == 'datetime' :
+            vf_code = '''
+                        <apex:input type="datetime-local" value="{{!{field_name}}}" />
+                    '''
+        elif data_type == 'date' :
+            vf_code = '''
+                        <apex:input type="date" value="{{!{field_name}}}" />
+                    '''
 
-        # comment
-        comment = xstr(field['label']) + ' , ' + xstr(field['type'])
-        class_body += get_code_snippet(CS_COMMENT, comment)
-        # define
-        class_body += get_code_snippet(CS_DECLARE, tmpVal)
+        field_name_with_dto = sfdc_name_map['dto_instance']  + "." + field_name
+        td_body = vf_code.format(field_name=field_name_with_dto)
+        class_body += get_template(TMP_HTML_TABLE_CONTENT).format(th_body=xstr(field['label']),td_body=td_body)
 
 
-    class_name = get_api_name(class_name)
-    dto_class = get_template(TMP_HTML_TABLE_CONTENT).format(author=AUTHOR,class_name=class_name,class_type='Dto', class_body=class_body, constructor_body=constructor_body)
-    return dto_class, class_name
+    title = sfdc_name_map['vf'] + ' Input Form'
+    source_code = get_template(TMP_VF_INPUTFORM).format(controller=sfdc_name_map['controller'],title=title,table_body=class_body)
+    return source_code, class_name
 
 def get_dao_class(class_name, fields, is_custom_only=False):
     class_body = ''
@@ -1014,6 +1075,8 @@ TMP_DAO_METHOD = 'template_apex_dao_method'
 TMP_DAO_METHOD_GETBYID = 'template_apex_dao_method_getbyid'
 TMP_TEST_METHOD = 'template_test_method'
 TMP_TEST_CLASS = 'template_test_class'
+# Visualforce page input form template
+TMP_VF_INPUTFORM = 'template_vf_inputform'
 
 CS_INSTANCE = 'INSTANCE'
 CS_CALL_FUN = 'CALL_FUN'
@@ -1023,6 +1086,7 @@ CS_DECLARE = 'CS_DECLARE'
 
 def get_code_snippet(type, value):
     codeSnippet = ''
+    # apex code snippet
     if type == CS_INSTANCE:
         codeSnippet = ("\t\t{class_name} {instance_name} = new {class_name}({args});\n"
                           .format(instance_name=value["instance_name"],
@@ -1047,6 +1111,7 @@ def get_code_snippet(type, value):
         codeSnippet = ("\t\tpublic {declare_type} {declare_name} {{get;set;}}\n\n"
                             .format(declare_type=value['declare_type'],
                                       declare_name=value['declare_name']))
+
 
 
     return codeSnippet;

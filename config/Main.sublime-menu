@@ -123,22 +123,9 @@
                     },
                     { "caption": "-" },
                     {
-                        "caption": "Create DTO Code",
-                        "command": "create_dto_code"
-                    },
-                    {
-                        "caption": "Create DAO Code",
-                        "command": "create_dao_code"
-                    },
-                    {
-                        "caption": "Create Controller Code",
-                        "command": "create_controller_code"
+                        "caption": "Create VisualForce/Controller/DTO/DAO Code",
+                        "command": "create_sfdc_code"
                     }
-                    // ,
-                    // {
-                    //     "caption": "Create VisualForce Code",
-                    //     "command": "create_vf_code"
-                    // }
                 ]
             },
             // {
