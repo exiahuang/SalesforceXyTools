@@ -867,7 +867,7 @@ def get_dto_class(class_name, fields, is_custom_only=False, include_validate=Fal
         # include validate string
         if include_validate:
             tmpVal = {}
-            tmpVal['declare_type'] = 'String'
+            tmpVal['declare_type'] = 'transient String'
             tmpVal['declare_name'] = field_name + 'Msg'
             # comment
             comment = 'Validate string For ' + xstr(field['label']) 
@@ -917,12 +917,14 @@ def get_controller_class(class_name):
     tmpVal['declare_name'] = sfdc_name_map['dto_instance']
 
     # comment
-    # comment = 'DTO '
-    # class_body += get_code_snippet(CS_COMMENT, comment)
+    comment = 'DTO Bean'
+    class_body += get_code_snippet(CS_COMMENT, comment)
     # define
     class_body += get_code_snippet(CS_DECLARE, tmpVal)
 
-    constructor_body += ('\t\t\tthis.%s = new %s();\n' % (tmpVal['declare_name'],tmpVal['declare_type']))
+    class_body += get_template(TMP_CONTROLLER_BASE_METHOD)
+
+    constructor_body += template.template_controller_constructor_body().format(dto=sfdc_name_map['dto'],dto_instance=sfdc_name_map['dto_instance'])
 
     class_name = get_api_name(class_name)
     cls_source = get_template(TMP_CLASS_WITH_SHARING).format(author=AUTHOR,class_name=class_name,class_type='Controller', class_body=class_body, constructor_body=constructor_body)
@@ -932,7 +934,8 @@ def get_controller_class(class_name):
 def get_vf_class(class_name, fields, is_custom_only=False, include_validate=False):
 
     sobj_name = class_name
-    class_body = ''
+    edit_table_body = ''
+    view_table_body = ''
     constructor_body = ''
 
     sfdc_name_map = get_sfdc_namespace(class_name)
@@ -960,66 +963,37 @@ def get_vf_class(class_name, fields, is_custom_only=False, include_validate=Fals
         print('--->field_name ' + field_name)
 
         data_type = xstr(field['type'])
-        if data_type == 'id' or data_type == 'ID' or data_type == 'reference':
-            vf_code = '''
-                         <apex:outputText value="{{!{field_name}}}" />
-                        '''
-        elif data_type == 'string':
-            vf_code = '''
-                        <apex:input type="text" value="{{!{field_name}}}" />
-                    '''
-        elif data_type == 'url' :
-            vf_code = '''
-                        <apex:input type="text" value="{{!{field_name}}}" />
-                    '''
-        elif data_type == 'email':
-            vf_code = '''
-                        <apex:input type="email" value="{{!{field_name}}}" />
-                    '''
-        elif data_type == 'phone':
-            vf_code = '''
-                        <apex:input type="text" value="{{!{field_name}}}" />
-                    '''
-        elif data_type == 'textarea':
-            vf_code = '''
-                        <apex:inputTextarea value="{{!{field_name}}}" />
-                    '''
-        elif data_type == 'picklist':
-            vf_code = '''
-                            <apex:selectList size="1" value="{{!{field_name}}}" >
-                                <apex:selectOptions value="{{!{field_name}List}}" />
-                            </apex:selectList>
-                        '''
-        elif data_type == 'multipicklist':
-            vf_code = '''
-                            <apex:selectList size="10" value="{{!{field_name}}}" multiselect="true">
-                                <apex:selectOptions value="{{!{field_name}List}}" />
-                            </apex:selectList>
-                        '''
-        elif data_type == 'int' or data_type == 'percent' or data_type == 'long' or data_type == 'currency' or data_type == 'double':
-            vf_code = '''
-                        <apex:input type="number" value="{{!{field_name}}}" />
-                    '''
-        elif data_type == 'boolean' or data_type == 'combobox':
-            vf_code = '''
-                        <apex:inputCheckbox value="{{!{field_name}}}" />
-                    '''
-        elif data_type == 'datetime' :
-            vf_code = '''
-                        <apex:input type="datetime-local" value="{{!{field_name}}}" />
-                    '''
-        elif data_type == 'date' :
-            vf_code = '''
-                        <apex:input type="date" value="{{!{field_name}}}" />
-                    '''
-
+        vf_edit_snippet = template.get_vf_edit_snippet(data_type)
         field_name_with_dto = sfdc_name_map['dto_instance']  + "." + field_name
-        td_body = vf_code.format(field_name=field_name_with_dto)
-        class_body += get_template(TMP_HTML_TABLE_CONTENT).format(th_body=xstr(field['label']),td_body=td_body)
+        edit_td_body = vf_edit_snippet.format(field_name=field_name_with_dto)
+
+        data_type = xstr(field['type'])
+        vf_edit_snippet = template.get_vf_show_snippet(data_type)
+        field_name_with_dto = sfdc_name_map['dto_instance']  + "." + field_name
+        view_td_body = vf_edit_snippet.format(field_name=field_name_with_dto)
+
+        if include_validate:
+            edit_table_body += get_template(TMP_HTML_TABLE_CONTENT2).format(th_body=xstr(field['label']),
+                                                                        td_body=edit_td_body,
+                                                                        td_body2= field_name_with_dto + 'Msg'
+                                                                        )
+            view_table_body += get_template(TMP_HTML_TABLE_CONTENT2).format(th_body=xstr(field['label']),
+                                                                        td_body=view_td_body,
+                                                                        td_body2= field_name_with_dto + 'Msg'
+                                                                        )
+        else:
+            edit_table_body += get_template(TMP_HTML_TABLE_CONTENT).format(th_body=xstr(field['label']),
+                                                                        td_body=edit_td_body)
+            view_table_body += get_template(TMP_HTML_TABLE_CONTENT).format(th_body=xstr(field['label']),
+                                                                        td_body=view_td_body)
+
 
 
     title = sfdc_name_map['vf'] + ' Input Form'
-    source_code = get_template(TMP_VF_INPUTFORM).format(controller=sfdc_name_map['controller'],title=title,table_body=class_body)
+    source_code = get_template(TMP_VF_INPUTFORM).format(controller=sfdc_name_map['controller'], 
+                                                        title=title,
+                                                        edit_table_body=edit_table_body,
+                                                        view_table_body=view_table_body)
     return source_code, class_name
 
 def get_dao_class(class_name, fields, is_custom_only=False):
@@ -1070,6 +1044,7 @@ AUTHOR = 'huangxy'
 TMP_CLASS = 'template_class'
 TMP_CLASS_WITH_SHARING = 'template_class_with_sharing'
 TMP_HTML_TABLE_CONTENT = 'template_html_table_content'
+TMP_HTML_TABLE_CONTENT2 = 'template_html_table_content_with_validate'
 TMP_NO_CON_CLASS = 'template_no_con_class'
 TMP_DAO_METHOD = 'template_apex_dao_method'
 TMP_DAO_METHOD_GETBYID = 'template_apex_dao_method_getbyid'
@@ -1077,6 +1052,7 @@ TMP_TEST_METHOD = 'template_test_method'
 TMP_TEST_CLASS = 'template_test_class'
 # Visualforce page input form template
 TMP_VF_INPUTFORM = 'template_vf_inputform'
+TMP_CONTROLLER_BASE_METHOD = 'template_controller_base_method'
 
 CS_INSTANCE = 'INSTANCE'
 CS_CALL_FUN = 'CALL_FUN'

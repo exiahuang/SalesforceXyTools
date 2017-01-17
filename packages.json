@@ -10,7 +10,7 @@
 			"platforms": {
 				"*": [
 					{
-						"version": "1.0.2",
+						"version": "1.0.3",
 						"release_notes": "",
 						"url": "https://nodeload.github.com/exiahuang/SalesforceXyTools/zipball/master"
 					}

@@ -92,6 +92,8 @@ class SaveSfdcObjectAsExcelCommand(sublime_plugin.WindowCommand):
 
             sheetNameList = []
 
+            headers = ['name','label','type','length','scale','updateable','unique','custom','picklistValues','aggregatable','autoNumber','byteLength','calculated','calculatedFormula','cascadeDelete','caseSensitive','controllerName','createable','defaultValue','defaultValueFormula','defaultedOnCreate','dependentPicklist','deprecatedAndHidden','digits','displayLocationInDecimal','encrypted','externalId','extraTypeInfo','filterable','filteredLookupInfo','groupable','highScaleNumber','htmlFormatted','idLookup','inlineHelpText','mask','maskType','nameField','namePointing','nillable','permissionable','precision','queryByDistance','referenceTargetField','referenceTo','relationshipName','relationshipOrder','restrictedDelete','restrictedPicklist','soapType','sortable','writeRequiresMasterRead']
+
             for x in sf.describe()["sobjects"]:
               #write to xls
               # book.get_sheet(0)
@@ -125,29 +127,40 @@ class SaveSfdcObjectAsExcelCommand(sublime_plugin.WindowCommand):
 
 
                   fieldSheet_1 = book.add_worksheet(worksheet_name)
+
+                  fieldSheet_1.write(0, 0, 'sobject')
+                  fieldSheet_1.write(0, 1, x["name"])
+                  fieldSheet_1.write(1, 0, 'label')
+                  fieldSheet_1.write(1, 1, x["label"])
+                  fieldSheet_1.write(2, 0, 'keyPrefix')
+                  fieldSheet_1.write(2, 1, x["keyPrefix"])
+
                   # book.get_sheet(sheetIndex)
-                  rowIndex = 0;
-                  fieldSheet_1.write(rowIndex, 0, "name")
-                  fieldSheet_1.write(rowIndex, 1, "label")
-                  fieldSheet_1.write(rowIndex, 2, "type")
-                  fieldSheet_1.write(rowIndex, 3, "length")
-                  fieldSheet_1.write(rowIndex, 4, "scale")
-                  fieldSheet_1.write(rowIndex, 5, "updateable")
+                  rowIndex = 4;
+                  headerIndex = 0
+                  for header in headers:
+                    fieldSheet_1.write(rowIndex, headerIndex, header)
+                    headerIndex = headerIndex + 1
 
                   sftypedesc = sftype.describe()
                   for field in sftypedesc["fields"]:
+                     print(field)  
                      #print(field["name"])  
                      #print(field["label"])  
                      #print(field["type"])  
                      #print(field["length"])  
                      #print(field["scale"])  
                      rowIndex += 1
-                     fieldSheet_1.write(rowIndex, 0, field["name"])
-                     fieldSheet_1.write(rowIndex, 1, field["label"])
-                     fieldSheet_1.write(rowIndex, 2, field["type"])
-                     fieldSheet_1.write(rowIndex, 3, field["length"])
-                     fieldSheet_1.write(rowIndex, 4, field["scale"])
-                     fieldSheet_1.write(rowIndex, 5, field["updateable"])
+                     headerIndex = 0
+                     for header in headers:
+                        if header == "picklistValues":
+                            picklistValuesStr = ''
+                            for pv in field[header]:
+                                picklistValuesStr += pv['label'] + ':' + pv['value'] + '\n'
+                            fieldSheet_1.write(rowIndex, headerIndex, picklistValuesStr)
+                        else:
+                            fieldSheet_1.write(rowIndex, headerIndex, util.xstr(field[header]))
+                        headerIndex = headerIndex + 1
 
               #message += x["label"] + "\n"
 
@@ -1108,7 +1121,7 @@ class CreateSfdcCodeCommand(sublime_plugin.WindowCommand):
         util.save_and_open_in_panel(controller_code, file_name, sub_folder )
 
         # visualforce code
-        vf_code, class_name = util.get_vf_class(self.picked_name, sftypedesc["fields"], self.is_custom_only)
+        vf_code, class_name = util.get_vf_class(self.picked_name, sftypedesc["fields"], self.is_custom_only, self.include_validate)
         file_name = sfdc_name_map['vf'] + '.page'
         util.save_and_open_in_panel(vf_code, file_name, sub_folder )
 
