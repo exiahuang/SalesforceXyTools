@@ -37,7 +37,7 @@ All issues are managed by the [SalesforceXyTools](https://github.com/exiahuang/S
 
 ### Plugin Installation(Use Source package)
 
-1. Download [SalesforceXyTools](https://github.com/exiahuang/SalesforceXyTools/archive/master.zip)
+1. Download [SalesforceXyTools](https://github.com/exiahuang/SalesforceXyTools/releases)
 2. Open Sublime Text 3
 3. Prefences -> Browse Packages 
 4. Extra zip file which you download

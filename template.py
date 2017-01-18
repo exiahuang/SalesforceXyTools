@@ -76,46 +76,14 @@ public with sharing class {class_name}{class_type} {{
 '''
 
 
-# Apex Dao Method Template
-def template_apex_dao_method():
+# constructor method
+def template_constructor_fun():
     return '''
-    /**
-    * get {sobject} by Set<id>
-    * @return list of {sobject} 
-    */
-    public static List<{sobject}> get{instance_name}List(Set<id> ids){{
-        List<{sobject}> {instance_name_cap_low}List = [
-            {soql_src}
-            WHERE id IN:ids
-            and deleted__c = false
-        ];
-
-        return {instance_name_cap_low}List;
-    }}
+        public {class_name}({args}) {{
+{constructor_body}
+        }}
 '''
 
-
-# Apex Dao Method Template
-def template_apex_dao_method_getbyid():
-    return '''
-    /**
-    * get {sobject} by id
-    * @return one of {sobject} 
-    */
-    public static {sobject} get{instance_name}ById(Id id){{
-        List<{sobject}> {instance_name_cap_low}List = [
-            {soql_src}
-            WHERE id =: id 
-            and deleted__c = false
-            limit 1
-        ];
-
-        if({instance_name_cap_low}List.isEmpty())
-            return null;
-        else
-            return {instance_name_cap_low}List.get(0);
-    }}
-'''
 
 
 # VisualForce table td Template
@@ -212,110 +180,222 @@ def template_vf_inputform():
 </apex:page>
 '''
 
-def template_controller_constructor_body():
-    return '''
-            this.{dto_instance} = new {dto}();
-            this.modeIndex = MODE_EDIT;
-            this.retUrl = ApexPages.currentPage().getParameters().get('retUrl');
-            this.currentUrl = ApexPages.currentPage().getURL();
-            this.retUrl = String.isBlank(this.retUrl) ? this.currentUrl : this.retUrl;
-'''
-
-def template_controller_base_method():
-    return '''
+def template_controller_class():
+    return '''/**
+* @author {author}
+*/
+public with sharing class {controller} {{
         //　Return URL
-        public String retUrl {get;set;}
+        public String retUrl {{get;set;}}
         //　Return Current Url
-        public String currentUrl {get;set;}
+        public String currentUrl {{get;set;}}
 
         //　Page Mode
-        public Integer modeIndex {get;set;}
+        public Integer modeIndex {{get;set;}}
         public static final Integer MODE_EDIT = 0;
         public static final Integer MODE_VIEW = 1;
         public static final Integer MODE_MESSAGE = 2;
 
-        public Boolean isEditMode {
-            get{
-                return (modeIndex == MODE_EDIT);
-            }
-        }
-        
-        public Boolean isViewMode {
-            get{
-                return (modeIndex == MODE_VIEW);
-            }
-        }
+        // DTO Bean
+        public {dto} {dto_instance} {{get;set;}}
 
-        public Boolean isMessageMode {
-            get{
+        public {controller}() {{
+            this.modeIndex = MODE_EDIT;
+            this.retUrl = ApexPages.currentPage().getParameters().get('retUrl');
+            this.currentUrl = ApexPages.currentPage().getURL();
+            this.retUrl = String.isBlank(this.retUrl) ? this.currentUrl : this.retUrl;
+
+            String id = ApexPages.currentPage().getParameters().get('id');
+            if(String.isBlank(id)){{
+                this.{dto_instance} = new {dto}();
+            }}else{{
+                this.{dto_instance} = new {dto}({dao}.get{sobj_api}ById(id));
+            }}
+        }}
+
+        public Boolean isEditMode {{
+            get{{
+                return (modeIndex == MODE_EDIT);
+            }}
+        }}
+        
+        public Boolean isViewMode {{
+            get{{
+                return (modeIndex == MODE_VIEW);
+            }}
+        }}
+
+        public Boolean isMessageMode {{
+            get{{
                 return (modeIndex == MODE_MESSAGE);
-            }
-        }
+            }}
+        }}
 
         /**
          * Go Next
          */
-        public PageReference doNext() {
+        public PageReference doNext() {{
             Boolean result = doCheck();
-            if(result){
+            if(result){{
                 System.debug('-->doCheck ok');
                 setNextMode();
 
-            }else{
+            }}else{{
                 System.debug('-->doCheck error');
-            }
+            }}
 
             return null;
-        }
+        }}
 
         /**
          * Go Back
          */
-        public PageReference doBack() {
+        public PageReference doBack() {{
             setBackMode();
             return null;
-        }
+        }}
 
         /**
          * Go Cancel
          */
-        public PageReference doCancel() {
-            if (String.isBlank(retUrl)) {
+        public PageReference doCancel() {{
+            if (String.isBlank(retUrl)) {{
                 retUrl = '/';
-            }
+            }}
 
             PageReference nextPage = new PageReference(retUrl);
             nextPage.setRedirect(true);
             return nextPage;
-        }
+        }}
 
         /**
          * do Check
          */
-        private Boolean doCheck() {
+        private Boolean doCheck() {{
             Boolean result = true;
 
             return result;
-        }
+        }}
 
         /**
          * set next mode
          */
-        private void setNextMode() {
+        private void setNextMode() {{
             if(modeIndex == MODE_EDIT) modeIndex = MODE_VIEW;
             else if(modeIndex == MODE_VIEW) modeIndex = MODE_MESSAGE;
             else if(modeIndex == MODE_MESSAGE) modeIndex = MODE_MESSAGE;
-        }
+        }}
 
         /**
          * set back mode
          */
-        private void setBackMode() {
+        private void setBackMode() {{
             if(modeIndex == MODE_EDIT) modeIndex = MODE_EDIT;
             else if(modeIndex == MODE_VIEW) modeIndex = MODE_EDIT;
             else if(modeIndex == MODE_MESSAGE) modeIndex = MODE_VIEW;
-        }
-        
+        }}
+
+        /**
+         * upsert Dto
+         */
+        private Boolean saveDto() {{
+            Boolean result;
+
+            Savepoint sp = Database.setSavepoint();
+            try {{
+                upsert {dto_instance}.getSobject();
+                result = true;
+            }} catch(DMLException e) {{
+                Database.rollback(sp);
+                System.debug('saveDto DMLException:' + e.getMessage());
+                result = false;
+            }} catch(Exception e) {{
+                Database.rollback(sp);
+                System.debug('saveDto Exception:' + e.getMessage());
+                result = false;
+            }}
+            return result;
+        }}
+}}
+'''
+
+
+def template_dao_class():
+    return '''/**
+* @author {author}
+*/
+public with sharing class {dao} {{
+    /**
+    * get {sobject} by Set<id>
+    * @return list of {sobject} 
+    */
+    public static List<{sobject}> get{sobj_api}List(Set<String> ids){{
+        List<{sobject}> {sobj_api_low_cap}List = [
+            {soql_src}
+            WHERE id IN:ids
+        ];
+
+        return {sobj_api_low_cap}List;
+    }}
+
+    /**
+    * get {sobject} by id
+    * @return one of {sobject} 
+    */
+    public static {sobject} get{sobj_api}ById(String id){{
+        List<{sobject}> {sobj_api_low_cap}List = [
+            {soql_src}
+            WHERE id =: id 
+            limit 1
+        ];
+
+        if({sobj_api_low_cap}List.isEmpty())
+            return null;
+        else
+            return {sobj_api_low_cap}List.get(0);
+    }}
+}}
+'''
+
+
+
+def template_dto_class():
+    return '''/**
+* @author {author}
+*/
+public with sharing class {dto} {{
+
+{class_body}
+
+    public {dto}() {{
+        init();
+    }}
+
+    public {dto}({sobject} sobj) {{
+        if(sobj != null){{
+{constructor_body}
+        }}
+        init();
+    }}
+
+    /**
+     * init method
+     */
+    public void init(){{
+{init_body}
+    }}
+
+    /**
+    * Change the dto to sobject
+    * get sobject {sobject} from dto
+    * @return {sobject} 
+    */
+    public {sobject} getSobject(){{
+        {sobject} sobj = new {sobject}();
+{getSobject_body}
+        return sobj;
+    }}
+}}
 '''
 
 

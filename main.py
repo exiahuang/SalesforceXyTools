@@ -10,6 +10,7 @@ import threading
 # from . import xlwt
 # from . import requests
 from . import util
+from . import codecreator
 from . import setting
 from . import xlsxwriter
 from .requests.exceptions import RequestException
@@ -1032,7 +1033,7 @@ class CreateTestCodeCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         try:
             sel_string = self.view.substr(sublime.Region(0, self.view.size()))
-            test_code = util.get_testclass(sel_string)
+            test_code = codecreator.get_testclass(sel_string)
             util.show_in_new_tab(test_code)
         except Exception as e:
             util.show_in_panel(e)
@@ -1103,26 +1104,26 @@ class CreateSfdcCodeCommand(sublime_plugin.WindowCommand):
 
 
         sub_folder = AUTO_CODE_DIR
-        sfdc_name_map = util.get_sfdc_namespace(self.picked_name)
+        sfdc_name_map = codecreator.get_sfdc_namespace(self.picked_name)
 
         # dto Code
-        dto_code, class_name = util.get_dto_class(self.picked_name, sftypedesc["fields"], self.is_custom_only, self.include_validate)
-        file_name = sfdc_name_map['dto'] + '.cls'
+        dto_code, class_name = codecreator.get_dto_class(self.picked_name, sftypedesc["fields"], self.is_custom_only, self.include_validate)
+        file_name = sfdc_name_map['dto_file']
         util.save_and_open_in_panel(dto_code, file_name, sub_folder )
 
         # dao Code
-        dao_code = util.get_dao_class(self.picked_name, sftypedesc["fields"], self.is_custom_only)
-        file_name = sfdc_name_map['dao'] + '.cls'
+        dao_code = codecreator.get_dao_class(self.picked_name, sftypedesc["fields"], self.is_custom_only)
+        file_name = sfdc_name_map['dao_file']
         util.save_and_open_in_panel(dao_code, file_name, sub_folder )
 
         # controller code
-        controller_code, class_name = util.get_controller_class(self.picked_name)
-        file_name = sfdc_name_map['controller'] + '.cls'
+        controller_code, class_name = codecreator.get_controller_class(self.picked_name)
+        file_name = sfdc_name_map['controller_file']
         util.save_and_open_in_panel(controller_code, file_name, sub_folder )
 
         # visualforce code
-        vf_code, class_name = util.get_vf_class(self.picked_name, sftypedesc["fields"], self.is_custom_only, self.include_validate)
-        file_name = sfdc_name_map['vf'] + '.page'
+        vf_code, class_name = codecreator.get_vf_class(self.picked_name, sftypedesc["fields"], self.is_custom_only, self.include_validate)
+        file_name = sfdc_name_map['vf_file']
         util.save_and_open_in_panel(vf_code, file_name, sub_folder )
 
 
