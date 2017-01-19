@@ -122,6 +122,21 @@ def template_html_table_content_with_validate():
     </tr>
 '''
 
+def template_list_vf_table_body():
+    return '''
+                            <tbody>
+                                <tr>
+{th_header}
+                                </tr>
+                                <apex:repeat value="{{!{list_dto_instance}}}" var="{dto_instance}" >
+                                    <tr>
+{table_body}
+                                    </tr>
+                                </apex:repeat>
+
+                            </tbody>
+'''
+
 # VisualForce Template
 def template_vf_inputform():
     return '''<apex:page showHeader="false" standardStylesheets="false" applyHtmlTag="false" applyBodyTag="false" sidebar="false" showChat="false" cache="false" docType="html-5.0" controller="{controller}">
@@ -146,6 +161,7 @@ def template_vf_inputform():
                         <apex:commandButton value="Return" action="{{!doBack}}" onclick=""/>
                         <apex:commandButton value="Next" action="{{!doNext}}" onclick=""/>
                     </div>
+                    {search_vf}
                 </apex:outputText>
                 <!-- END OF Edit Mode -->
 
@@ -159,7 +175,9 @@ def template_vf_inputform():
                     <div class="btn">
                         <apex:commandButton value="Return" action="{{!doBack}}" onclick=""/>
                         <apex:commandButton value="Next" action="{{!doNext}}" onclick=""/>
+                        <apex:commandButton value="Save" action="{{!doSave}}" onclick=""/>
                     </div>
+                    {search_vf}
                 </apex:outputText>
                 <!-- END OF View Mode -->
 
@@ -180,11 +198,20 @@ def template_vf_inputform():
 </apex:page>
 '''
 
-def template_controller_class():
+# VisualForce Template
+def template_vf_search():
+    return '''
+                    <div class="search">
+                        KeyWord: <apex:input type="text" value="{!keywords}" />
+                        <apex:commandButton value="Search" action="{!search}" onclick=""/>
+                    </div>
+'''
+
+def template_sfdcxycontroller():
     return '''/**
 * @author {author}
 */
-public with sharing class {controller} {{
+public virtual class SfdcXyController {{
         //　Return URL
         public String retUrl {{get;set;}}
         //　Return Current Url
@@ -195,23 +222,6 @@ public with sharing class {controller} {{
         public static final Integer MODE_EDIT = 0;
         public static final Integer MODE_VIEW = 1;
         public static final Integer MODE_MESSAGE = 2;
-
-        // DTO Bean
-        public {dto} {dto_instance} {{get;set;}}
-
-        public {controller}() {{
-            this.modeIndex = MODE_EDIT;
-            this.retUrl = ApexPages.currentPage().getParameters().get('retUrl');
-            this.currentUrl = ApexPages.currentPage().getURL();
-            this.retUrl = String.isBlank(this.retUrl) ? this.currentUrl : this.retUrl;
-
-            String id = ApexPages.currentPage().getParameters().get('id');
-            if(String.isBlank(id)){{
-                this.{dto_instance} = new {dto}();
-            }}else{{
-                this.{dto_instance} = new {dto}({dao}.get{sobj_api}ById(id));
-            }}
-        }}
 
         public Boolean isEditMode {{
             get{{
@@ -231,18 +241,19 @@ public with sharing class {controller} {{
             }}
         }}
 
+        public SfdcXyController() {{
+            this.modeIndex = MODE_EDIT;
+            this.retUrl = ApexPages.currentPage().getParameters().get('retUrl');
+            this.currentUrl = ApexPages.currentPage().getURL();
+            this.retUrl = String.isBlank(this.retUrl) ? this.currentUrl : this.retUrl;
+        }}
+
         /**
          * Go Next
          */
-        public PageReference doNext() {{
+        public virtual PageReference doNext() {{
             Boolean result = doCheck();
-            if(result){{
-                System.debug('-->doCheck ok');
-                setNextMode();
-
-            }}else{{
-                System.debug('-->doCheck error');
-            }}
+            setNextMode(result);
 
             return null;
         }}
@@ -250,15 +261,16 @@ public with sharing class {controller} {{
         /**
          * Go Back
          */
-        public PageReference doBack() {{
-            setBackMode();
+        public virtual PageReference doBack() {{
+            Boolean result = true; 
+            setBackMode(result);
             return null;
         }}
 
         /**
          * Go Cancel
          */
-        public PageReference doCancel() {{
+        public virtual PageReference doCancel() {{
             if (String.isBlank(retUrl)) {{
                 retUrl = '/';
             }}
@@ -271,7 +283,7 @@ public with sharing class {controller} {{
         /**
          * do Check
          */
-        private Boolean doCheck() {{
+        public virtual Boolean doCheck() {{
             Boolean result = true;
 
             return result;
@@ -280,7 +292,8 @@ public with sharing class {controller} {{
         /**
          * set next mode
          */
-        private void setNextMode() {{
+        public virtual void setNextMode(Boolean flg) {{
+            if(!flg) return;
             if(modeIndex == MODE_EDIT) modeIndex = MODE_VIEW;
             else if(modeIndex == MODE_VIEW) modeIndex = MODE_MESSAGE;
             else if(modeIndex == MODE_MESSAGE) modeIndex = MODE_MESSAGE;
@@ -289,16 +302,41 @@ public with sharing class {controller} {{
         /**
          * set back mode
          */
-        private void setBackMode() {{
+        public virtual void setBackMode(Boolean flg) {{
+            if(!flg) return;
             if(modeIndex == MODE_EDIT) modeIndex = MODE_EDIT;
             else if(modeIndex == MODE_VIEW) modeIndex = MODE_EDIT;
             else if(modeIndex == MODE_MESSAGE) modeIndex = MODE_VIEW;
+        }}
+}}
+'''
+
+def template_controller_class():
+    return '''/**
+* @author {author}
+*/
+public with sharing class {controller} extends SfdcXyController {{
+
+        // DTO Bean
+        public {dto} {dto_instance} {{get;set;}}
+
+        public {controller}() {{
+            search();
+        }}
+
+        private void search(){{
+            String id = ApexPages.currentPage().getParameters().get('id');
+            if(String.isBlank(id)){{
+                this.{dto_instance} = new {dto}();
+            }}else{{
+                this.{dto_instance} = new {dto}({dao}.get{sobj_api}ById(id));
+            }}
         }}
 
         /**
          * upsert Dto
          */
-        private Boolean saveDto() {{
+        public PageReference doSave() {{
             Boolean result;
 
             Savepoint sp = Database.setSavepoint();
@@ -314,6 +352,113 @@ public with sharing class {controller} {{
                 System.debug('saveDto Exception:' + e.getMessage());
                 result = false;
             }}
+            return null;
+        }}
+
+        /**
+         * Go Next
+         */
+        public override PageReference doNext() {{
+            Boolean result = doCheck();
+            setNextMode(result);
+            return null;
+        }}
+
+        /**
+         * Go Back
+         */
+        public override PageReference doBack() {{
+            Boolean result = true; 
+            setBackMode(result);
+            return null;
+        }}
+
+        /**
+         * do Check
+         */
+        public override Boolean doCheck() {{
+            Boolean result = true;
+
+            return result;
+        }}
+}}
+'''
+
+def template_list_controller_class():
+    return '''/**
+* @author {author}
+*/
+public with sharing class {list_controller} extends SfdcXyController {{
+
+        // DTO Bean
+        public {list_dto} {list_dto_instance} {{get;set;}}
+        // Search keywords
+        public String keywords {{get;set;}}
+
+        public {list_controller}() {{
+            search();
+        }}
+
+        public void search(){{
+            this.{list_dto_instance} = new {list_dto}();
+            for( {sobject__c} {sobj_api_low_cap} : {dao}.get{sobj_api}List(keywords)){{
+                this.{list_dto_instance}.add(new {dto}({sobj_api_low_cap}));
+            }}
+        }}
+
+        /**
+         * upsert Dto
+         */
+        public PageReference doSave() {{
+            Boolean result;
+
+            Savepoint sp = Database.setSavepoint();
+            try {{
+
+                List<{sobject__c}> {sobj_api_low_cap}List = new List<{sobject__c}>();
+                for({dto} dto : this.{list_dto_instance}){{
+                    {sobj_api_low_cap}List.add(dto.getSobject());
+                }}
+                update {sobj_api_low_cap}List;
+
+                result = true;
+            }} catch(DMLException e) {{
+                Database.rollback(sp);
+                System.debug('saveDto DMLException:' + e.getMessage());
+                result = false;
+            }} catch(Exception e) {{
+                Database.rollback(sp);
+                System.debug('saveDto Exception:' + e.getMessage());
+                result = false;
+            }}
+            return null;
+        }}
+
+        /**
+         * Go Next
+         */
+        public override PageReference doNext() {{
+            Boolean result = doCheck();
+            setNextMode(result);
+
+            return null;
+        }}
+
+        /**
+         * Go Back
+         */
+        public override PageReference doBack() {{
+            Boolean result = true; 
+            setBackMode(result);
+            return null;
+        }}
+
+        /**
+         * do Check
+         */
+        public override Boolean doCheck() {{
+            Boolean result = true;
+
             return result;
         }}
 }}
@@ -326,11 +471,24 @@ def template_dao_class():
 */
 public with sharing class {dao} {{
     /**
-    * get {sobject} by Set<id>
-    * @return list of {sobject} 
+    * get all {sobject__c}
+    * @return list of {sobject__c} 
     */
-    public static List<{sobject}> get{sobj_api}List(Set<String> ids){{
-        List<{sobject}> {sobj_api_low_cap}List = [
+    public static List<{sobject__c}> getAll{sobj_api}List(){{
+        List<{sobject__c}> {sobj_api_low_cap}List = [
+            {soql_src}
+            limit 10000
+        ];
+
+        return {sobj_api_low_cap}List;
+    }}
+
+    /**
+    * get {sobject__c} by Set<id>
+    * @return list of {sobject__c} 
+    */
+    public static List<{sobject__c}> get{sobj_api}List(Set<String> ids){{
+        List<{sobject__c}> {sobj_api_low_cap}List = [
             {soql_src}
             WHERE id IN:ids
         ];
@@ -339,11 +497,11 @@ public with sharing class {dao} {{
     }}
 
     /**
-    * get {sobject} by id
-    * @return one of {sobject} 
+    * get {sobject__c} by id
+    * @return one of {sobject__c} 
     */
-    public static {sobject} get{sobj_api}ById(String id){{
-        List<{sobject}> {sobj_api_low_cap}List = [
+    public static {sobject__c} get{sobj_api}ById(String id){{
+        List<{sobject__c}> {sobj_api_low_cap}List = [
             {soql_src}
             WHERE id =: id 
             limit 1
@@ -354,6 +512,30 @@ public with sharing class {dao} {{
         else
             return {sobj_api_low_cap}List.get(0);
     }}
+
+    /**
+    * get {sobject__c} by keywords
+    * @return list of {sobject__c} 
+    */
+    public static List<{sobject__c}> get{sobj_api}List(String keywords){{
+        if(String.isBlank(keywords)) return getAll{sobj_api}List();
+    
+        String[] keywordsArr = keywords.replace('　',' ').split(' ');
+        List<String> keywordsFilters = new List<String>();
+        for(String f: keywordsArr){{
+            if(String.isBlank(f)) continue;
+            f = f.replace('%', '\\\\%').replace('_','\\\\_');
+            keywordsFilters.add('%' + f + '%');
+        }}
+
+        List<{sobject__c}> {sobj_api_low_cap}List = [
+            {soql_src}
+            WHERE 
+                {keywords_conditions}
+        ];
+
+        return {sobj_api_low_cap}List;
+    }}
 }}
 '''
 
@@ -363,7 +545,7 @@ def template_dto_class():
     return '''/**
 * @author {author}
 */
-public with sharing class {dto} {{
+public class {dto} {{
 
 {class_body}
 
@@ -371,7 +553,7 @@ public with sharing class {dto} {{
         init();
     }}
 
-    public {dto}({sobject} sobj) {{
+    public {dto}({sobject__c} sobj) {{
         if(sobj != null){{
 {constructor_body}
         }}
@@ -387,11 +569,11 @@ public with sharing class {dto} {{
 
     /**
     * Change the dto to sobject
-    * get sobject {sobject} from dto
-    * @return {sobject} 
+    * get sobject {sobject__c} from dto
+    * @return {sobject__c} 
     */
-    public {sobject} getSobject(){{
-        {sobject} sobj = new {sobject}();
+    public {sobject__c} getSobject(){{
+        {sobject__c} sobj = new {sobject__c}();
 {getSobject_body}
         return sobj;
     }}

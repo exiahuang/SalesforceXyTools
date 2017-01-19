@@ -42,7 +42,7 @@ class ShowSfdcObjectListCommand(sublime_plugin.TextCommand):
 
             # util.show_in_new_tab(message)
             file_name = sf.settings["default_project"] + '_sobject_lst.csv'
-            util.save_and_open_in_panel(message, file_name )
+            util.save_and_open_in_panel(message, file_name, True )
 
         except RequestException as e:
             util.show_in_panel("Network connection timeout when issuing REST GET request")
@@ -673,7 +673,7 @@ class SfdcObjectDescCommand(sublime_plugin.WindowCommand):
         # util.show_in_new_tab(message)
         file_name = self.picked_name + '_sobject_desc.csv'
         sub_folder = 'sobject-desc'
-        util.save_and_open_in_panel(message, file_name, sub_folder )
+        util.save_and_open_in_panel(message, file_name, True, sub_folder )
 
 # soql create
 class SoqlCreateCommand(sublime_plugin.WindowCommand):
@@ -1106,26 +1106,42 @@ class CreateSfdcCodeCommand(sublime_plugin.WindowCommand):
         sub_folder = AUTO_CODE_DIR
         sfdc_name_map = codecreator.get_sfdc_namespace(self.picked_name)
 
+        is_open = True
+
         # dto Code
         dto_code, class_name = codecreator.get_dto_class(self.picked_name, sftypedesc["fields"], self.is_custom_only, self.include_validate)
         file_name = sfdc_name_map['dto_file']
-        util.save_and_open_in_panel(dto_code, file_name, sub_folder )
+        util.save_and_open_in_panel(dto_code, file_name, is_open, sub_folder )
 
         # dao Code
         dao_code = codecreator.get_dao_class(self.picked_name, sftypedesc["fields"], self.is_custom_only)
         file_name = sfdc_name_map['dao_file']
-        util.save_and_open_in_panel(dao_code, file_name, sub_folder )
+        util.save_and_open_in_panel(dao_code, file_name, is_open, sub_folder )
 
         # controller code
         controller_code, class_name = codecreator.get_controller_class(self.picked_name)
         file_name = sfdc_name_map['controller_file']
-        util.save_and_open_in_panel(controller_code, file_name, sub_folder )
+        util.save_and_open_in_panel(controller_code, file_name, is_open, sub_folder )
 
         # visualforce code
         vf_code, class_name = codecreator.get_vf_class(self.picked_name, sftypedesc["fields"], self.is_custom_only, self.include_validate)
         file_name = sfdc_name_map['vf_file']
-        util.save_and_open_in_panel(vf_code, file_name, sub_folder )
+        util.save_and_open_in_panel(vf_code, file_name, is_open, sub_folder )
 
+        # list controller code
+        list_controller_code, class_name = codecreator.get_list_controller_class(self.picked_name)
+        file_name = sfdc_name_map['list_controller_file']
+        util.save_and_open_in_panel(list_controller_code, file_name, is_open, sub_folder )
+
+        # visualforce code
+        list_vf_code, class_name = codecreator.get_list_vf_class(self.picked_name, sftypedesc["fields"], self.is_custom_only, self.include_validate)
+        file_name = sfdc_name_map['list_vf_file']
+        util.save_and_open_in_panel(list_vf_code, file_name, is_open, sub_folder )
+
+        # SfdcXyController
+        src_code = codecreator.get_sfdcxycontroller()
+        file_name = 'SfdcXyController.cls'
+        util.save_and_open_in_panel(src_code, file_name, is_open, sub_folder )
 
 
 class OpenControllerCommand(sublime_plugin.TextCommand):

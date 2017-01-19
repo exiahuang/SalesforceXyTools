@@ -17,8 +17,12 @@ TMP_TEST_CLASS = 'template_test_class'
 TMP_DAO_CLASS = 'template_dao_class'
 TMP_DTO_CLASS = 'template_dto_class'
 TMP_CONTROLLER_CLASS = 'template_controller_class'
+TMP_LIST_CONTROLLER_CLASS = 'template_list_controller_class'
+TMP_SFDCXYCONTROLLER = 'template_sfdcxycontroller'
 # Visualforce page input form template
 TMP_VF_INPUTFORM = 'template_vf_inputform'
+TMP_VF_SEARCH = 'template_vf_search'
+TMP_LIST_VF_TABLE_BODY = 'template_list_vf_table_body'
 TMP_CONTROLLER_BASE_METHOD = 'template_controller_base_method'
 
 CS_INSTANCE = 'INSTANCE'
@@ -111,7 +115,8 @@ def get_api_name(api_name):
 def get_sfdc_namespace(sobject_name):
     sfdc_name_map = {}
     sfdc_name_map['author'] = AUTHOR
-    sfdc_name_map['sobject'] = sobject_name
+    sfdc_name_map['sobject__c'] = sobject_name
+    sfdc_name_map['sobject'] = get_api_name(sobject_name)
     sfdc_name_map['sobj_api'] = get_api_name(sobject_name).capitalize()
     sfdc_name_map['sobj_api_low_cap'] = util.cap_low(sfdc_name_map['sobj_api'])
 
@@ -120,14 +125,25 @@ def get_sfdc_namespace(sobject_name):
     sfdc_name_map['dao'] = sfdc_name_map['sobj_api'] + 'Dao'
     sfdc_name_map['vf'] = sfdc_name_map['sobj_api']
 
+    sfdc_name_map['list_controller'] = sfdc_name_map['sobj_api'] + 'ListController'
+    sfdc_name_map['list_dto'] = 'List<' + sfdc_name_map['dto'] + '>'
+    sfdc_name_map['list_vf'] = sfdc_name_map['sobj_api'] + 'List'
+
     sfdc_name_map['dto_instance'] = util.cap_low(sfdc_name_map['dto'])
     sfdc_name_map['dao_instance'] = util.cap_low(sfdc_name_map['dao'])
     sfdc_name_map['controller_instance'] = util.cap_low(sfdc_name_map['controller'])
+
+
+    sfdc_name_map['list_dto_instance'] = sfdc_name_map['dto_instance'] + 'List'
+    # sfdc_name_map['list_dao_instance'] = util.cap_low(sfdc_name_map['dao'])
+    # sfdc_name_map['list_controller_instance'] = util.cap_low(sfdc_name_map['controller'])
     
     sfdc_name_map['dto_file'] = sfdc_name_map['dto'] + '.cls'
     sfdc_name_map['dao_file'] = sfdc_name_map['dao'] + '.cls'
     sfdc_name_map['vf_file'] = sfdc_name_map['vf'] + '.page'
     sfdc_name_map['controller_file'] = sfdc_name_map['controller'] + '.cls'
+    sfdc_name_map['list_vf_file'] = sfdc_name_map['list_vf'] + '.page'
+    sfdc_name_map['list_controller_file'] = sfdc_name_map['list_controller'] + '.cls'
     return sfdc_name_map
 
 
@@ -358,14 +374,24 @@ def get_dto_class(class_name, fields, is_custom_only=False, include_validate=Fal
 
 def get_controller_class(class_name):
     sobj_name = class_name
-    class_name = get_api_name(class_name)
 
     sfdc_name_map = get_sfdc_namespace(class_name)
+    class_name = sfdc_name_map['sobject']
 
     cls_source = get_template(TMP_CONTROLLER_CLASS).format(**sfdc_name_map)
 
     return cls_source, class_name
 
+
+def get_list_controller_class(class_name):
+    sobj_name = class_name
+
+    sfdc_name_map = get_sfdc_namespace(class_name)
+    class_name = sfdc_name_map['sobject']
+
+    cls_source = get_template(TMP_LIST_CONTROLLER_CLASS).format(**sfdc_name_map)
+
+    return cls_source, class_name
 
 def get_vf_class(class_name, fields, is_custom_only=False, include_validate=False):
 
@@ -383,6 +409,86 @@ def get_vf_class(class_name, fields, is_custom_only=False, include_validate=Fals
         field_name = util.cap_low( get_api_name(util.xstr(field['name'])) )
         field_type = sobj_to_apextype(util.xstr(field['type']))
 
+
+        if field_name.lower() == 'id' or field['autoNumber']:
+            continue
+
+        if is_custom_only and not field["custom"]:
+            if not (field_name.lower() == 'id' or field_name.lower() == 'name') :
+                continue
+
+
+        tmpVal = {}
+        tmpVal['declare_type'] = field_type
+        tmpVal['declare_name'] = field_name
+
+        #start of view table boday
+        data_type = util.xstr(field['type'])
+        vf_edit_snippet = template.get_vf_show_snippet(data_type)
+        field_name_with_dto = sfdc_name_map['dto_instance']  + "." + field_name
+        view_td_body = vf_edit_snippet.format(field_name=field_name_with_dto)
+
+        if include_validate:
+            view_table_body += get_template(TMP_HTML_TABLE_CONTENT2).format(th_body=util.xstr(field['label']),
+                                                                        td_body=view_td_body,
+                                                                        td_body2= field_name_with_dto + 'Msg'
+                                                                        )
+        else:
+            view_table_body += get_template(TMP_HTML_TABLE_CONTENT).format(th_body=util.xstr(field['label']),
+                                                                        td_body=view_td_body)
+        #end of view table boday
+       
+        #start of edit table boday
+        data_type = util.xstr(field['type'])
+        vf_edit_snippet = template.get_vf_edit_snippet(data_type)
+        field_name_with_dto = sfdc_name_map['dto_instance']  + "." + field_name
+        edit_td_body = vf_edit_snippet.format(field_name=field_name_with_dto)
+
+        if include_validate:
+            edit_table_body += get_template(TMP_HTML_TABLE_CONTENT2).format(th_body=util.xstr(field['label']),
+                                                                        td_body=edit_td_body,
+                                                                        td_body2= field_name_with_dto + 'Msg'
+                                                                        )
+
+        else:
+            edit_table_body += get_template(TMP_HTML_TABLE_CONTENT).format(th_body=util.xstr(field['label']),
+                                                                        td_body=edit_td_body)
+        #end of edit table boday
+
+
+    vf_param = {}
+    vf_param['title'] = sfdc_name_map['vf'] + ' Input Form'
+    vf_param['controller'] = sfdc_name_map['controller']
+    vf_param['edit_table_body'] = edit_table_body
+    vf_param['view_table_body'] = view_table_body
+    vf_param['search_vf'] = ''
+
+    source_code = get_template(TMP_VF_INPUTFORM).format(**vf_param)
+    return source_code, class_name
+
+def get_list_vf_class(class_name, fields, is_custom_only=False, include_validate=False):
+
+    sobj_name = class_name
+    view_th_header = ''
+    edit_th_header = ''
+    edit_td = ''
+    view_td = ''
+
+    constructor_body = ''
+
+    sfdc_name_map = get_sfdc_namespace(class_name)
+
+    class_name = sfdc_name_map['sobj_api']
+
+    # name, label, type, length, scale
+    for field in fields:
+        field_name = util.cap_low( get_api_name(util.xstr(field['name'])) )
+        field_type = sobj_to_apextype(util.xstr(field['type']))
+        
+        tmpVal = {}
+        tmpVal['declare_type'] = field_type
+        tmpVal['declare_name'] = field_name
+
         if field_name.lower() == 'id':
             continue
 
@@ -390,46 +496,28 @@ def get_vf_class(class_name, fields, is_custom_only=False, include_validate=Fals
             if not (field_name.lower() == 'id' or field_name.lower() == 'name') :
                 continue
 
-        tmpVal = {}
-        tmpVal['declare_type'] = field_type
-        tmpVal['declare_name'] = field_name
-
-        print('---> ' )
-        print('--->field_type ' + field_type)
-        print('--->field_name ' + field_name)
-
         data_type = util.xstr(field['type'])
+        vf_show_snippet = template.get_vf_show_snippet(data_type)
+        field_name_with_dto = sfdc_name_map['dto_instance']  + "." + field_name
+        view_td_body = vf_show_snippet.format(field_name=field_name_with_dto)
+        view_th_header += ('''\t\t\t\t\t<th>%s</th>\n''' % (util.xstr(field['label'])))
+        view_td += ('''\t\t\t\t\t<td>%s</td>\n''' % (view_td_body))
+        
+
         vf_edit_snippet = template.get_vf_edit_snippet(data_type)
         field_name_with_dto = sfdc_name_map['dto_instance']  + "." + field_name
         edit_td_body = vf_edit_snippet.format(field_name=field_name_with_dto)
+        edit_th_header += ('''\t\t\t\t\t<th>%s</th>\n''' % (util.xstr(field['label'])))
+        edit_td += ('''\t\t\t\t\t<td>%s</td>\n''' % (edit_td_body))
 
-        data_type = util.xstr(field['type'])
-        vf_edit_snippet = template.get_vf_show_snippet(data_type)
-        field_name_with_dto = sfdc_name_map['dto_instance']  + "." + field_name
-        view_td_body = vf_edit_snippet.format(field_name=field_name_with_dto)
+    vf_param = {}
+    vf_param['title'] = sfdc_name_map['list_vf'] + ' Input Form'
+    vf_param['controller'] = sfdc_name_map['list_controller']
+    vf_param['edit_table_body'] = get_template(TMP_LIST_VF_TABLE_BODY).format(th_header=edit_th_header,table_body=edit_td,**sfdc_name_map)
+    vf_param['view_table_body'] = get_template(TMP_LIST_VF_TABLE_BODY).format(th_header=view_th_header,table_body=view_td,**sfdc_name_map)
+    vf_param['search_vf'] = get_template(TMP_VF_SEARCH)
 
-        if include_validate:
-            edit_table_body += get_template(TMP_HTML_TABLE_CONTENT2).format(th_body=util.xstr(field['label']),
-                                                                        td_body=edit_td_body,
-                                                                        td_body2= field_name_with_dto + 'Msg'
-                                                                        )
-            view_table_body += get_template(TMP_HTML_TABLE_CONTENT2).format(th_body=util.xstr(field['label']),
-                                                                        td_body=view_td_body,
-                                                                        td_body2= field_name_with_dto + 'Msg'
-                                                                        )
-        else:
-            edit_table_body += get_template(TMP_HTML_TABLE_CONTENT).format(th_body=util.xstr(field['label']),
-                                                                        td_body=edit_td_body)
-            view_table_body += get_template(TMP_HTML_TABLE_CONTENT).format(th_body=util.xstr(field['label']),
-                                                                        td_body=view_td_body)
-
-
-
-    title = sfdc_name_map['vf'] + ' Input Form'
-    source_code = get_template(TMP_VF_INPUTFORM).format(controller=sfdc_name_map['controller'], 
-                                                        title=title,
-                                                        edit_table_body=edit_table_body,
-                                                        view_table_body=view_table_body)
+    source_code = get_template(TMP_VF_INPUTFORM).format(**vf_param)
     return source_code, class_name
 
 def get_dao_class(class_name, fields, is_custom_only=False):
@@ -439,11 +527,26 @@ def get_dao_class(class_name, fields, is_custom_only=False):
     sfdc_name_map = get_sfdc_namespace(class_name)
     sfdc_name_map['soql_src'] = soql_src
 
+    # search by keyword condition
+    conditions = []
+    for field in fields:
+        if (field['type'] == 'textarea'):
+            continue
+        if field['custom'] or field['name'].lower() == 'name':
+            conditions.append((' %s like :keywordsFilters\n' % (field['name'])))
+
+    sfdc_name_map['keywords_conditions'] = '\t\t\tor'.join(conditions)
+
     src_code = get_template(TMP_DAO_CLASS).format(**sfdc_name_map)
 
     return src_code
 
+def get_sfdcxycontroller():
+    sfdc_name_map = get_sfdc_namespace('')
 
+    src_code = get_template(TMP_SFDCXYCONTROLLER).format(**sfdc_name_map)
+
+    return src_code
 
 def sobj_to_apextype(data_type):
     atype = data_type

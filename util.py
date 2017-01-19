@@ -113,12 +113,14 @@ def show_in_panel(message_str):
     XyPanel.show_in_panel("xypanel", xstr(message_str))
 
 
-def save_and_open_in_panel(message_str, save_file_name , sub_folder='' ,default_path='' ):
+def save_and_open_in_panel(message_str, save_file_name , is_open=True, sub_folder='' ,default_path='' ):
+    print('----->save_file_name ' + save_file_name)
+    print('----->is_open ' + xstr(is_open))
     if not default_path:
         default_path=get_default_floder()
     savePath =  os.path.join(default_path, sub_folder, save_file_name)
     save_file(savePath, message_str)
-    if os.path.isfile(savePath): 
+    if is_open and os.path.isfile(savePath): 
         sublime.active_window().open_file(savePath)
 
 
