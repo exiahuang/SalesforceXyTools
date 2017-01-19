@@ -6,11 +6,11 @@
 			"description": "SalesforceXyTools for Sublime Text is Rapid development tools for Salesforce Development.",
 			"author": "Exia.Huangxy",
 			"homepage": "https://github.com/exiahuang/SalesforceXyTools",
-			"last_modified": "2017-1-18 00:00:00",
+			"last_modified": "2017-1-19 00:00:00",
 			"platforms": {
 				"*": [
 					{
-						"version": "1.0.3",
+						"version": "1.0.4",
 						"release_notes": "",
 						"url": "https://nodeload.github.com/exiahuang/SalesforceXyTools/zipball/master"
 					}
