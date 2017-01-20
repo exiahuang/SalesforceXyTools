@@ -28,7 +28,7 @@ SalesforceXyTools for Sublime Text is Rapid development tools for Salesforce Dev
 
 All issues are managed by the [SalesforceXyTools](https://github.com/exiahuang/SalesforceXyTools)
 
-## Install [more install help](https://github.com/exiahuang/SalesforceXyTools/blob/master/help/install-help.md)
+## Install [more install help](http://www.ibmer.info/salesforcexytools-install.html)
 
 ### Prerequisites
 
