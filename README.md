@@ -8,6 +8,14 @@ SalesforceXyTools for Sublime Text is Rapid development tools for Salesforce Dev
 * Atuo Login SFDC.
 * SOQL Query, Tooling Query, Run Apex Script.
 
+# SalesforceXyTools Help
+
+  * [SalesforceXyTools Introduce](http://www.ibmer.info/salesforcexytools.html)
+  * [SalesforceXyTools Install](http://www.ibmer.info/salesforcexytools-install.html)
+  * [SalesforceXyTools Auto Create VF-Controller-DTO-DAO-Code](http://www.ibmer.info/auto-create-sfdc-code.html)
+  * [SalesforceXyTools: Export Sobject To Excel](http://www.ibmer.info/export-sobject-excel.html)
+  * [SalesforceXyTools Sublime Package](https://packagecontrol.io/packages/SalesforceXyTools)
+
 
 ## Basic on OpenSource
 1. [xlsxwriter (License: BSD)](https://github.com/jmcnamara/XlsxWriter)
@@ -34,19 +42,6 @@ All issues are managed by the [SalesforceXyTools](https://github.com/exiahuang/S
 	- [Running commands from Sublime Text](http://docs.sublimetext.info/en/latest/extensibility/command_palette.html)
 3. Search for `SalesforceXyTools`
 4. Hit `Enter`
-
-### Plugin Installation(Use Source package)
-
-1. Download [SalesforceXyTools](https://github.com/exiahuang/SalesforceXyTools/releases)
-2. Open Sublime Text 3
-3. Prefences -> Browse Packages 
-4. Extra zip file which you download
-```
-    Extra path Example:
-    {Path Of Sublime Text}\Data\Packages\SalesforceXyTools
-    
-    Ensure the path is correct!!
-```
 
 ## Setup
 
@@ -109,7 +104,6 @@ Add your `browsers` setting as below
         "IE": "C:\\Program Files\\Internet Explorer\\iexplore.exe"
     },
 ```
-
 
 
 ## Usage [more usage help](https://github.com/exiahuang/SalesforceXyTools/blob/master/help/SalesforceXyTools-Help.md)
