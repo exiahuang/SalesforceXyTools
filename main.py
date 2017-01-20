@@ -1032,9 +1032,23 @@ def createTestDataStr(objectApiName, sftype, isAllField):
 class CreateTestCodeCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         try:
+            file_name = self.view.file_name()
+            if file_name is None:
+                return
+            check = os.path.isfile(file_name) and ( file_name.find(".cls") > -1 ) 
+            if not check:
+                util.show_in_dialog('Error file type! Please select a cls file.')
+                return
+
             sel_string = self.view.substr(sublime.Region(0, self.view.size()))
-            test_code = codecreator.get_testclass(sel_string)
-            util.show_in_new_tab(test_code)
+            test_code,sfdc_name_map = codecreator.get_testclass(sel_string)
+            # util.show_in_new_tab(test_code)
+            
+            is_open = True
+            file_name = sfdc_name_map['test_class_file']
+            sub_folder = AUTO_CODE_DIR
+            save_path = util.save_and_open_in_panel(test_code, file_name, is_open, sub_folder )
+            
         except Exception as e:
             util.show_in_panel(e)
             return
@@ -1106,42 +1120,54 @@ class CreateSfdcCodeCommand(sublime_plugin.WindowCommand):
         sub_folder = AUTO_CODE_DIR
         sfdc_name_map = codecreator.get_sfdc_namespace(self.picked_name)
 
-        is_open = True
+        is_open = False
+        save_path_list = []
 
         # dto Code
         dto_code, class_name = codecreator.get_dto_class(self.picked_name, sftypedesc["fields"], self.is_custom_only, self.include_validate)
         file_name = sfdc_name_map['dto_file']
-        util.save_and_open_in_panel(dto_code, file_name, is_open, sub_folder )
+        save_path = util.save_and_open_in_panel(dto_code, file_name, is_open, sub_folder )
+        save_path_list.append(save_path)
 
         # dao Code
         dao_code = codecreator.get_dao_class(self.picked_name, sftypedesc["fields"], self.is_custom_only)
         file_name = sfdc_name_map['dao_file']
-        util.save_and_open_in_panel(dao_code, file_name, is_open, sub_folder )
+        save_path = util.save_and_open_in_panel(dao_code, file_name, is_open, sub_folder )
+        save_path_list.append(save_path)
 
         # controller code
         controller_code, class_name = codecreator.get_controller_class(self.picked_name)
         file_name = sfdc_name_map['controller_file']
-        util.save_and_open_in_panel(controller_code, file_name, is_open, sub_folder )
+        save_path = util.save_and_open_in_panel(controller_code, file_name, is_open, sub_folder )
+        save_path_list.append(save_path)
 
         # visualforce code
         vf_code, class_name = codecreator.get_vf_class(self.picked_name, sftypedesc["fields"], self.is_custom_only, self.include_validate)
         file_name = sfdc_name_map['vf_file']
-        util.save_and_open_in_panel(vf_code, file_name, is_open, sub_folder )
+        save_path = util.save_and_open_in_panel(vf_code, file_name, is_open, sub_folder )
+        save_path_list.append(save_path)
 
         # list controller code
         list_controller_code, class_name = codecreator.get_list_controller_class(self.picked_name)
         file_name = sfdc_name_map['list_controller_file']
-        util.save_and_open_in_panel(list_controller_code, file_name, is_open, sub_folder )
+        save_path = util.save_and_open_in_panel(list_controller_code, file_name, is_open, sub_folder )
+        save_path_list.append(save_path)
 
         # visualforce code
         list_vf_code, class_name = codecreator.get_list_vf_class(self.picked_name, sftypedesc["fields"], self.is_custom_only, self.include_validate)
         file_name = sfdc_name_map['list_vf_file']
-        util.save_and_open_in_panel(list_vf_code, file_name, is_open, sub_folder )
+        save_path = util.save_and_open_in_panel(list_vf_code, file_name, is_open, sub_folder )
+        save_path_list.append(save_path)
 
         # SfdcXyController
         src_code = codecreator.get_sfdcxycontroller()
         file_name = 'SfdcXyController.cls'
-        util.save_and_open_in_panel(src_code, file_name, is_open, sub_folder )
+        save_path = util.save_and_open_in_panel(src_code, file_name, is_open, sub_folder )
+        save_path_list.append(save_path)
+
+        if sublime.ok_cancel_dialog('Create Source Over,Do you want to open the sources? '):
+            for save_path in save_path_list:
+                util.open_file(save_path)
 
 
 class OpenControllerCommand(sublime_plugin.TextCommand):

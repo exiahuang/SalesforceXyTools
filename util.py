@@ -113,15 +113,26 @@ def show_in_panel(message_str):
     XyPanel.show_in_panel("xypanel", xstr(message_str))
 
 
+def open_file(file_path):
+    if os.path.isfile(file_path): 
+        sublime.active_window().open_file(file_path)
+
 def save_and_open_in_panel(message_str, save_file_name , is_open=True, sub_folder='' ,default_path='' ):
     print('----->save_file_name ' + save_file_name)
     print('----->is_open ' + xstr(is_open))
     if not default_path:
         default_path=get_default_floder()
-    savePath =  os.path.join(default_path, sub_folder, save_file_name)
-    save_file(savePath, message_str)
-    if is_open and os.path.isfile(savePath): 
-        sublime.active_window().open_file(savePath)
+    save_path =  os.path.join(default_path, sub_folder, save_file_name)
+
+    # delete old file
+    if os.path.isfile(save_path): 
+        os.remove(save_path)
+
+    # save file
+    save_file(save_path, message_str)
+    if is_open: 
+        open_file(save_path)
+    return save_path
 
 
 class XyPanel(object):
@@ -259,12 +270,17 @@ def get_obj_name(sobj_name):
     # return cap_low(str)
 
 
-
 def cap_low(str):
     strlen = len(str)
     if strlen == 0:
         return str.lower()
     return str[0].lower() + str[1:strlen]
+
+def cap_upper(str):
+    strlen = len(str)
+    if strlen == 0:
+        return str.upper()
+    return str[0].upper() + str[1:strlen]
 
 def xstr(s):
     if s is None:

@@ -117,7 +117,7 @@ def get_sfdc_namespace(sobject_name):
     sfdc_name_map['author'] = AUTHOR
     sfdc_name_map['sobject__c'] = sobject_name
     sfdc_name_map['sobject'] = get_api_name(sobject_name)
-    sfdc_name_map['sobj_api'] = get_api_name(sobject_name).capitalize()
+    sfdc_name_map['sobj_api'] = util.cap_upper(get_api_name(sobject_name))
     sfdc_name_map['sobj_api_low_cap'] = util.cap_low(sfdc_name_map['sobj_api'])
 
     sfdc_name_map['controller'] = sfdc_name_map['sobj_api'] + 'Controller'
@@ -144,6 +144,11 @@ def get_sfdc_namespace(sobject_name):
     sfdc_name_map['controller_file'] = sfdc_name_map['controller'] + '.cls'
     sfdc_name_map['list_vf_file'] = sfdc_name_map['list_vf'] + '.page'
     sfdc_name_map['list_controller_file'] = sfdc_name_map['list_controller'] + '.cls'
+
+
+    sfdc_name_map['test_class'] = sfdc_name_map['sobj_api'] + 'Test'
+    sfdc_name_map['test_class_file'] = sfdc_name_map['test_class'] + '.cls'
+
     return sfdc_name_map
 
 
@@ -151,6 +156,8 @@ def get_testclass(src_str):
     src_str = util.del_comment(src_str)
 
     className = get_class_name(src_str)
+    sfdc_name_map = get_sfdc_namespace(className)
+
     page_name = className.replace('Controller', '')
     
     class_body = ''
@@ -197,7 +204,7 @@ def get_testclass(src_str):
             else:
                 tmpValue = {}
                 tmpValue['return_type'] = item['return_type']
-                tmpValue['return_name'] = 'result' + function_name.capitalize()
+                tmpValue['return_name'] = 'result' + util.cap_upper(function_name)
                 tmpValue['instance_name'] = className
                 tmpValue['function_name'] = function_name
                 tmpValue['args'] = argsStr
@@ -263,7 +270,7 @@ def get_testclass(src_str):
             else:
                 tmpValue = {}
                 tmpValue['return_type'] = item['return_type']
-                tmpValue['return_name'] = 'result' + function_name.capitalize()
+                tmpValue['return_name'] = 'result' + util.cap_upper(function_name)
                 tmpValue['instance_name'] = instance_name
                 tmpValue['function_name'] = function_name
                 tmpValue['args'] = argsStr
@@ -291,7 +298,7 @@ def get_testclass(src_str):
     
     re_test_code = get_template(TMP_TEST_CLASS).format(author=AUTHOR,class_name=className,class_body=class_body)
 
-    return re_test_code
+    return re_test_code,sfdc_name_map
 
 
 def get_dto_class(class_name, fields, is_custom_only=False, include_validate=False):
