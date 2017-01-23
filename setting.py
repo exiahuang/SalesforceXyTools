@@ -72,11 +72,21 @@ def load_mavensmate_setting(window=None):
         window = sublime.active_window()
 
     mm_session_path = os.path.join(window.folders()[0], "config", ".session")
-    if os.path.isfile(mm_session_path):
+    mm_credentials_path = os.path.join(window.folders()[0], "config", ".credentials")
+    # mavensmate v0.0.11, oauth2
+    if os.path.isfile(mm_credentials_path):
+        mm_session = parse_json_from_file(mm_credentials_path)
+        settings.update(mm_session)
+    # mavensmate v0.0.10
+    elif os.path.isfile(mm_session_path):
         mm_session = parse_json_from_file(mm_session_path)
         settings.update(mm_session)
     else:
-        raise Exception('mavensmate session file is missing')
+        msg = 'mavensmate session file is missing,\n'
+        msg += 'please re-auth again, Or Create project again!\n'
+        msg += 'Re-auth:\n'
+        msg += '\t\t「MavensMate -> Project -> Salesforce authentication.」\n'
+        raise Exception(msg)
 
     mm_settings_path = os.path.join(window.folders()[0], "config", ".settings")
     if os.path.isfile(mm_settings_path):
@@ -85,6 +95,7 @@ def load_mavensmate_setting(window=None):
     else:
         raise Exception('mavensmate settings file is missing')
 
+
     mm_debug_path = os.path.join(window.folders()[0], "config", ".debug")
     if os.path.isfile(mm_debug_path):
         mm_setting = parse_json_from_file(mm_debug_path)
@@ -92,8 +103,14 @@ def load_mavensmate_setting(window=None):
     # else:
     #     raise Exception('mavensmate debug file is missing')
         
-    if "environment" in settings:
+    # mavensmate v0.0.11, oauth2
+    if "orgType" in settings:
+        settings["is_sandbox"] = (settings["orgType"] == "sandbox") 
+    # mavensmate v0.0.10
+    elif "environment" in settings:
         settings["is_sandbox"] = (settings["environment"] == "sandbox") 
+    else:
+        raise Exception('mavensmate settings file error!!')
 
     if "accessToken" in settings:
         settings["sessionId"] = settings["accessToken"]

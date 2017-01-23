@@ -4,11 +4,11 @@
 	// please contact with me.
 	// Email: exia.huang@hotmail.com
 	
-	//Only Support for v0.0.10
-	//Not Support for v0.0.11-beta.2 to v0.0.11-beta.7
 	// If you use mavensmate setting , please set use_mavensmate_setting true.
 	// If use_mavensmate_setting is true, you need not to set anything below. 
 	// If you set the use_mavensmate_setting false, you need to set "projects" value below.
+	// mavensmate-destop v0.0.10 or below, please set mm_use_keyring true.
+	// mavensmate-destop v0.0.11-beta.2 to v0.0.11-beta.7, please set mm_use_keyring false.
 	"use_mavensmate_setting":true,
 
 	// SFDC Dataviewer Select Limit
