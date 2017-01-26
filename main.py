@@ -24,12 +24,16 @@ from .salesforce import (
     SalesforceError
     )
 
-
 AUTO_CODE_DIR = "code-creator"
 
 ##########################################################################################
 #Sublime main menu
 ##########################################################################################
+# Oauth2
+# class OauthCheckCommand(sublime_plugin.TextCommand):
+#     def run(self, edit):
+#         util.stop_server()
+        # util.open_in_default_browser(authorize_url)
 
 # print the SFDC Object
 class ShowSfdcObjectListCommand(sublime_plugin.TextCommand):
@@ -49,6 +53,7 @@ class ShowSfdcObjectListCommand(sublime_plugin.TextCommand):
             return
         except SalesforceExpiredSession as e:
             util.show_in_dialog('session expired')
+            util.re_auth()
             return
         except SalesforceRefusedRequest as e:
             util.show_in_panel('The request has been refused.')
@@ -176,6 +181,7 @@ class SaveSfdcObjectAsExcelCommand(sublime_plugin.WindowCommand):
             return
         except SalesforceExpiredSession as e:
             util.show_in_dialog('session expired')
+            util.re_auth()
             return
         except SalesforceRefusedRequest as e:
             util.show_in_panel('The request has been refused.')
@@ -230,6 +236,7 @@ class SoqlQueryCommand(sublime_plugin.TextCommand):
             return
         except SalesforceExpiredSession as e:
             util.show_in_dialog('session expired')
+            util.re_auth()
             return
         except SalesforceRefusedRequest as e:
             util.show_in_panel('The request has been refused.')
@@ -283,6 +290,7 @@ class ToolingQueryCommand(sublime_plugin.TextCommand):
             return
         except SalesforceExpiredSession as e:
             util.show_in_dialog('session expired')
+            util.re_auth()
             return
         except SalesforceRefusedRequest as e:
             util.show_in_panel('The request has been refused.')
@@ -330,6 +338,7 @@ class SfdcCoverageCommand(sublime_plugin.TextCommand):
             return
         except SalesforceExpiredSession as e:
             util.show_in_dialog('session expired')
+            util.re_auth()
             return
         except SalesforceRefusedRequest as e:
             util.show_in_panel('The request has been refused.')
@@ -363,6 +372,7 @@ class RunApexScriptCommand(sublime_plugin.TextCommand):
             return
         except SalesforceExpiredSession as e:
             util.show_in_dialog('session expired')
+            util.re_auth()
             return
         except SalesforceRefusedRequest as e:
             util.show_in_panel('The request has been refused.')
@@ -394,23 +404,23 @@ class RunApexScriptCommand(sublime_plugin.TextCommand):
 # Login Salesforce
 class LoginSfdcCommand(sublime_plugin.WindowCommand):
     def run(self):
-        try:
-            self.dirs = setting.get_browser_setting()
-            dirs = []
-            for dir in self.dirs:
-                dirs.append(dir[0])
+    #     try:
+    #         self.dirs = setting.get_browser_setting()
+    #         dirs = []
+    #         for dir in self.dirs:
+    #             dirs.append(dir[0])
 
-            self.window.show_quick_panel(dirs, self.panel_done,sublime.MONOSPACE_FONT)
+    #         self.window.show_quick_panel(dirs, self.panel_done,sublime.MONOSPACE_FONT)
 
-        except Exception as e:
-            util.show_in_panel(e)
-            return
+    #     except Exception as e:
+    #         util.show_in_panel(e)
+    #         return
 
-    def panel_done(self, picked):
-        if 0 > picked < len(self.dirs):
-            return
-        self.browser = self.dirs[picked][0]
-        self.broswer_path = self.dirs[picked][1]
+    # def panel_done(self, picked):
+    #     if 0 > picked < len(self.dirs):
+    #         return
+    #     self.browser = self.dirs[picked][0]
+    #     self.broswer_path = self.dirs[picked][1]
 
         thread = threading.Thread(target=self.main_handle)
         thread.start()
@@ -420,12 +430,13 @@ class LoginSfdcCommand(sublime_plugin.WindowCommand):
     def main_handle(self):
         try:
             sf = util.sf_login()
-            login_sf_home(self, sf, self.browser, self.broswer_path)
+            login_sf_home(self, sf)
         except RequestException as e:
             util.show_in_panel("Network connection timeout when issuing REST GET request")
             return
         except SalesforceExpiredSession as e:
             util.show_in_dialog('session expired')
+            util.re_auth()
             return
         except SalesforceRefusedRequest as e:
             util.show_in_panel('The request has been refused.')
@@ -485,6 +496,7 @@ class LoginProjectCommand(sublime_plugin.WindowCommand):
             return
         except SalesforceExpiredSession as e:
             util.show_in_dialog('session expired')
+            util.re_auth()
             return
         except SalesforceRefusedRequest as e:
             util.show_in_panel('The request has been refused.')
@@ -520,6 +532,7 @@ class SfdcDataviewerCommand(sublime_plugin.WindowCommand):
             return
         except SalesforceExpiredSession as e:
             util.show_in_dialog('session expired')
+            util.re_auth()
             return
         except SalesforceRefusedRequest as e:
             util.show_in_panel('The request has been refused.')
@@ -587,6 +600,7 @@ class SfdcOnlineDataviewerCommand(sublime_plugin.WindowCommand):
             return
         except SalesforceExpiredSession as e:
             util.show_in_dialog('session expired')
+            util.re_auth()
             return
         except SalesforceRefusedRequest as e:
             util.show_in_panel('The request has been refused.')
@@ -608,7 +622,7 @@ class SfdcOnlineDataviewerCommand(sublime_plugin.WindowCommand):
                      .format(instance=self.sf.sf_instance,
                              keyPrefix=self.value))
         # print(login_url)
-        util.open_in_browser(login_url)
+        util.open_in_default_browser(login_url)
 
 
 # sfdc_object_desc
@@ -631,6 +645,7 @@ class SfdcObjectDescCommand(sublime_plugin.WindowCommand):
             return
         except SalesforceExpiredSession as e:
             util.show_in_dialog('session expired')
+            util.re_auth()
             return
         except SalesforceRefusedRequest as e:
             util.show_in_panel('The request has been refused.')
@@ -695,6 +710,7 @@ class SoqlCreateCommand(sublime_plugin.WindowCommand):
             return
         except SalesforceExpiredSession as e:
             util.show_in_dialog('session expired')
+            util.re_auth()
             return
         except SalesforceRefusedRequest as e:
             util.show_in_panel('The request has been refused.')
@@ -777,6 +793,7 @@ class CreateAllTestDataCommand(sublime_plugin.WindowCommand):
             return
         except SalesforceExpiredSession as e:
             util.show_in_dialog('session expired')
+            util.re_auth()
             return
         except SalesforceRefusedRequest as e:
             util.show_in_panel('The request has been refused.')
@@ -811,6 +828,7 @@ class CreateTestDataNeedCommand(sublime_plugin.WindowCommand):
             return
         except SalesforceExpiredSession as e:
             util.show_in_dialog('session expired')
+            util.re_auth()
             return
         except SalesforceRefusedRequest as e:
             util.show_in_panel('The request has been refused.')
@@ -874,6 +892,7 @@ class CreateTestDataFromSoqlCommand(sublime_plugin.TextCommand):
             return
         except SalesforceExpiredSession as e:
             util.show_in_dialog('session expired')
+            util.re_auth()
             return
         except SalesforceRefusedRequest as e:
             util.show_in_panel('The request has been refused.')
@@ -920,6 +939,7 @@ class CreateTestDataAllCommand(sublime_plugin.WindowCommand):
             return
         except SalesforceExpiredSession as e:
             util.show_in_dialog('session expired')
+            util.re_auth()
             return
         except SalesforceRefusedRequest as e:
             util.show_in_panel('The request has been refused.')
@@ -1073,6 +1093,7 @@ class CreateSfdcCodeCommand(sublime_plugin.WindowCommand):
             return
         except SalesforceExpiredSession as e:
             util.show_in_dialog('session expired')
+            util.re_auth()
             return
         except SalesforceRefusedRequest as e:
             util.show_in_panel('The request has been refused.')
@@ -1279,6 +1300,120 @@ class CopyFilenameCommand(sublime_plugin.TextCommand):
             sublime.status_message("Copy File Name : %s " % file_name)
 
 
+class ChangeAuthTypeCommand(sublime_plugin.WindowCommand):
+    def run(self):
+        try:
+            settings = setting.load()
+            auth_type = settings["authentication"]
+            self.dirs = [setting.AUTHENTICATION_OAUTH2, setting.AUTHENTICATION_PASSWORD, setting.AUTHENTICATION_MAVENSMATE]
+            show_dirs = []
+            for dirstr in self.dirs:
+                if auth_type == dirstr:
+                    show_dirs.append('[○]' + dirstr)
+                else:
+                    show_dirs.append('[X]' + dirstr)
+
+            self.window.show_quick_panel(show_dirs, self.panel_done,sublime.MONOSPACE_FONT)
+
+        except Exception as e:
+            util.show_in_panel(e)
+            return
+
+    def panel_done(self, picked):
+        if 0 > picked < len(self.dirs):
+            return
+        self.auth_type = self.dirs[picked]
+
+        thread = threading.Thread(target=self.main_handle)
+        thread.start()
+        util.handle_thread(thread)
+
+    def main_handle(self):
+        # print('self.auth_type-->')
+        # print(self.auth_type)
+        setting.update_authentication_setting(self.auth_type)
+
+
+class SwitchBrowserCommand(sublime_plugin.WindowCommand):
+    def run(self):
+        try:
+            self.dirs = setting.get_browser_setting2()
+            dirs = []
+            for dir in self.dirs:
+                dirs.append(dir[0])
+
+            self.window.show_quick_panel(dirs, self.panel_done,sublime.MONOSPACE_FONT)
+
+        except Exception as e:
+            util.show_in_panel(e)
+            return
+
+    def panel_done(self, picked):
+        if 0 > picked < len(self.dirs):
+            return
+        self.browser = self.dirs[picked][0]
+        self.broswer_name = self.dirs[picked][1]
+
+        thread = threading.Thread(target=self.main_handle)
+        thread.start()
+        util.handle_thread(thread)
+
+    def main_handle(self):
+        setting.update_default_browser(self.broswer_name)
+
+class SwitchXyProjectCommand(sublime_plugin.TextCommand):
+    def run(self, edit):
+        settings = setting.load()
+        self.settings = settings
+        projects = settings["projects"]
+        default_project = settings["default_project"]
+        dirs = []
+        dirs_result = []
+        for project_key in projects.keys():
+            project_value = projects[project_key]
+
+            if default_project == project_key:
+                tmp = '[○]' + project_key
+            else:
+                tmp = '[X]' + project_key
+            dirs.append(tmp)
+            dirs_result.append(project_key)
+
+        self.results = dirs_result
+        window = sublime.active_window()
+        window.show_quick_panel(dirs, self.panel_done,
+            sublime.MONOSPACE_FONT)
+
+    def panel_done(self, picked):
+        if 0 > picked < len(self.results):
+            return
+        self.picked_project = self.results[picked]
+
+        thread = threading.Thread(target=self.main_handle)
+        thread.start()
+        util.handle_thread(thread)
+
+    def main_handle(self):
+        setting.update_default_project(self.picked_project)
+
+        # if self.settings["use_oauth2"]:
+        #     util.sf_oauth2()
+
+        # TODO
+        #　open project
+        # current_project_dir = setting.mm_project_directory()
+        # project = self.settings["projects"][self.picked_project]
+        # workspace = project["workspace"]
+        # project_file = self.picked_project + ".sublime-project"
+        # project_file_path = os.path.join(workspace, project_file)
+        # if os.path.normpath(current_project_dir) != os.path.normpath(workspace):
+        #     print('--->open project')
+        #     print(project_file_path)
+        #     if os.path.isfile(project_file_path):
+        #         util.subl(project_file_path)
+
+
+
 class AboutHxyCommand(sublime_plugin.ApplicationCommand):
     def run(command):
         version_info = sublime.load_settings("sfdc.version.sublime-settings")
@@ -1297,13 +1432,13 @@ class AboutHxyCommand(sublime_plugin.ApplicationCommand):
 class ReportIssueXyCommand(sublime_plugin.ApplicationCommand):
     def run(command):
         version_info = sublime.load_settings("sfdc.version.sublime-settings")
-        util.open_in_browser(version_info.get("issue"))
+        util.open_in_default_browser(version_info.get("issue"))
 
 
 class HomePageCommand(sublime_plugin.ApplicationCommand):
     def run(command):
         version_info = sublime.load_settings("sfdc.version.sublime-settings")
-        util.open_in_browser(version_info.get("homepage"))
+        util.open_in_default_browser(version_info.get("homepage"))
 
 
 
@@ -1315,18 +1450,25 @@ class HomePageCommand(sublime_plugin.ApplicationCommand):
 def login_sf_home(self, salesforce_instance, browser='default', broswer_path=''):
         try:
             sf = salesforce_instance
+            sfdesc = sf.describe()
+             
             returl = '/home/home.jsp'
             login_url = ('https://{instance}/secur/frontdoor.jsp?sid={sid}&retURL={returl}'
                          .format(instance=sf.sf_instance,
                                  sid=sf.session_id,
                                  returl=returl))
-            util.open_in_browser(login_url, browser, broswer_path)
+            if browser == 'default':
+                util.open_in_default_browser(login_url)
+            else:
+                util.open_in_browser(login_url,browser,broswer_path)
+
 
         except RequestException as e:
             util.show_in_panel("Network connection timeout when issuing REST GET request")
             return
         except SalesforceExpiredSession as e:
             util.show_in_dialog('session expired')
+            util.re_auth()
             return
         except SalesforceRefusedRequest as e:
             util.show_in_panel('The request has been refused.')

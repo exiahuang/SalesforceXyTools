@@ -1,5 +1,12 @@
 # SalesforceXyTools Update History
 
+## 1.0.6 (2017.01.26)
+1. Add oauth2
+2. Add Switch broswer
+3. Add Switch Project
+4. delete `use_mavensmate_setting` flag
+
+
 ##  1.0.5 (2017.01.19)
 1. support for MavensMate-destop v0.0.11-beta.2 to v0.0.11-beta.7
 	[Need more help?](https://github.com/exiahuang/XyHelp/blob/master/SalesforceXyTools/Setup/Readme.md)

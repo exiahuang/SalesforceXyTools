@@ -15,60 +15,151 @@ from . import setting
 #Salesforce Util
 ##########################################################################################
 def sf_login(project_name='', Soap_Type=Soap):
-    try:
-        settings = setting.load()
+    settings = setting.load()
 
+    try:
+        project = {}
         if project_name:
             projects = settings["projects"]
             project = projects[project_name]
+        else:
+            project = settings["default_project_value"]
 
-            if "api_version" in project:
-                api_version = project["api_version"]
-            else:
-                api_version = settings["default_api_version"]
-                
+        # print('settings--->')
+        # print(json.dumps(settings, indent=4))
+        print('project--->')
+        print(json.dumps(project, indent=4))
+
+
+        if project_name:
+            # TODO
             sf = Soap_Type(username=project["username"], 
                         password=project["password"], 
                         security_token=project["security_token"], 
                         sandbox=project["is_sandbox"],
-                        version=api_version,
+                        version=project["api_version"],
                         settings=settings
                         )
 
-        elif settings["use_mavensmate_setting"]:
-            sf = Soap_Type(username=settings["username"],
-                            session_id=settings["sessionId"] ,
-                            instance_url=settings["instanceUrl"],
-                            sandbox=settings["is_sandbox"],
-                            version=settings["api_version"],
-                            client_id=settings["id"],
+        elif settings["use_mavensmate_setting"] or settings["use_oauth2"]:
+            sf = Soap_Type( session_id=project["access_token"] ,
+                            instance_url=project["instance_url"],
+                            sandbox=project["is_sandbox"],
+                            version=project["api_version"],
                             settings=settings
-                            # password=None,
-                            # security_token=None,
-                            # instance=None,
-                            # organizationId=None,
-                            # proxies=None,
-                            # session=None,
-                            # settings=None
                             )
-        else:
-            sf = Soap_Type(username=settings["username"], 
-                        password=settings["password"], 
-                        security_token=settings["security_token"], 
-                        sandbox=settings["is_sandbox"],
-                        version=settings["api_version"],
+            # sf = Soap_Type(username=project["username"],
+            #                 session_id=project["sessionId"] ,
+            #                 instance_url=project["instanceUrl"],
+            #                 sandbox=project["is_sandbox"],
+            #                 version=project["api_version"],
+            #                 client_id=project["id"],
+            #                 settings=settings
+            #                 # password=None,
+            #                 # security_token=None,
+            #                 # instance=None,
+            #                 # organizationId=None,
+            #                 # proxies=None,
+            #                 # session=None,
+            #                 # project=None
+            #                 )
+
+        elif settings["use_password"]:
+            sf = Soap_Type(username=project["username"], 
+                        password=project["password"], 
+                        security_token=project["security_token"], 
+                        sandbox=project["is_sandbox"],
+                        version=project["api_version"],
                         settings=settings
                         )
 
         sf.settings = settings
-        # print(sf)
-        # print(sf.session_id)
-        # print('------->')
+        print(sf)
+        print(sf.session_id)
+        print('------->')
         return sf
     except Exception as e:
-        # print(e)
-        show_in_dialog('Login Error! ' + xstr(e))
+        if settings["use_oauth2"]:
+            print('----->sf_login error')
+            print(e)
+            sf_oauth2()
+        else:
+            show_in_dialog('Login Error! ' + xstr(e))
         return
+
+
+from .libs import server
+sfdc_oauth_server = None
+
+def re_auth():
+    settings = setting.load()
+    if settings["use_oauth2"]:
+        sf_oauth2()
+
+def sf_oauth2():
+    from .libs import auth
+    settings = setting.load()
+    default_project_value = settings["default_project_value"]
+    is_sandbox = default_project_value["is_sandbox"]
+
+    if refresh_token():
+        return
+
+    server_info = sublime.load_settings("sfdc.server.sublime-settings")
+    client_id = server_info.get("client_id")
+    client_secret = server_info.get("client_secret")
+    redirect_uri = server_info.get("redirect_uri")
+    oauth = auth.SalesforceOAuth2(client_id, client_secret, redirect_uri, is_sandbox)
+    authorize_url = oauth.authorize_url()
+    print('authorize_url-->')
+    print(authorize_url)
+    start_server()
+    open_in_default_browser(authorize_url)
+
+def start_server():
+    global sfdc_oauth_server
+    if sfdc_oauth_server is None:
+        sfdc_oauth_server = server.Server()
+
+def stop_server():
+    global sfdc_oauth_server
+    if sfdc_oauth_server is not None:
+        sfdc_oauth_server.stop()
+        sfdc_oauth_server = None
+        
+def refresh_token():
+    from .libs import auth
+    settings = setting.load()
+
+    if not settings["use_oauth2"]:
+        return False
+
+    default_project_value = settings["default_project_value"]
+    is_sandbox = default_project_value["is_sandbox"]
+
+    if "refresh_token" not in default_project_value:
+        print("refresh token missing")
+        return False
+
+    server_info = sublime.load_settings("sfdc.server.sublime-settings")
+    client_id = server_info.get("client_id")
+    client_secret = server_info.get("client_secret")
+    redirect_uri = server_info.get("redirect_uri")
+    oauth = auth.SalesforceOAuth2(client_id, client_secret, redirect_uri, is_sandbox)
+    refresh_token = default_project_value["refresh_token"]
+    print(refresh_token)
+    response_json = oauth.refresh_token(refresh_token)
+    print(response_json)
+
+    if "error" in response_json:
+        return False
+
+    if "refresh_token" not in response_json:
+        response_json["refresh_token"] = refresh_token
+
+    save_session(response_json)
+    print("------->refresh_token ok!")
+    return True
 
 
 ##########################################################################################
@@ -186,6 +277,27 @@ def handle_thread(thread, msg=None, counter=0, direction=1, width=8):
                             direction, width), 100)
     else:
         status(' ok ')
+
+# # Code lifted from https://github.com/randy3k/ProjectManager/blob/master/pm.py
+# def subl(args=[]):
+#     # learnt from SideBarEnhancements
+#     executable_path = sublime.executable_path()
+#     print('executable_path: '+ executable_path)
+
+#     if sublime.platform() == 'linux':
+#         subprocess.Popen([executable_path] + [args])
+#     if sublime.platform() == 'osx':
+#         app_path = executable_path[:executable_path.rfind(".app/") + 5]
+#         executable_path = app_path + "Contents/SharedSupport/bin/subl"
+#         subprocess.Popen([executable_path] + args)
+#     if sublime.platform() == "windows":
+#         def fix_focus():
+#             window = sublime.active_window()
+#             view = window.active_view()
+#             window.run_command('focus_neighboring_group')
+#             window.focus_view(view)
+#         sublime.set_timeout(fix_focus, 300)
+
 
 ##########################################################################################
 #Python Util
@@ -322,6 +434,15 @@ def xformat(str, data_type='string'):
 
     return val
 
+def save_session(session_str):
+    print('session_str--->')
+    print(session_str)
+    settings = setting.load()
+    full_path = os.path.join(get_default_floder(), 'config', '.session')
+    print('save .session path------->')
+    print(full_path)
+    content = json.dumps(session_str, indent=4)
+    save_file(full_path, content)
 
 def jsonstr(json_str):
     try:
@@ -333,7 +454,8 @@ def jsonstr(json_str):
 
 def get_default_floder(iscreate=False):
     settings = setting.load()
-    fullpath = os.path.join(settings["workspace"], settings["default_project"], settings["xyfloder"])
+    # fullpath = os.path.join(settings["workspace"], settings["default_project"], settings["xyfloder"])
+    fullpath = os.path.join(settings["default_project_value"]["workspace"], settings["xyfloder"])
     # fix windows slash 
     fullpath = os.path.normpath(fullpath)
     
@@ -640,6 +762,28 @@ def open_in_browser(url, browser_name = '', browser_path = ''):
         except Exception as e:
             webbrowser.open_new_tab(url)
 
+def open_in_default_browser(url):
+    browser_map = setting.get_default_browser()
+    browser_name = browser_map['name']
+    browser_path = browser_map['path']
+
+    if not browser_path or not os.path.exists(browser_path) or browser_name == "default":
+        webbrowser.open_new_tab(url)
+
+    elif browser_map['name'] == "chrome-private":
+        # chromex = "\"%s\" --incognito %s" % (browser_path, url)
+        # os.system(chromex)
+        browser = webbrowser.get('"' + browser_path +'" --incognito %s')
+        browser.open(url)
+
+        # os.system("\"%s\" -ArgumentList @('-incognito', %s)" % (browser_path, url))
+
+    else:
+        try:
+            webbrowser.register('chromex', None, webbrowser.BackgroundBrowser(browser_path))
+            webbrowser.get('chromex').open_new_tab(url)
+        except Exception as e:
+            webbrowser.open_new_tab(url)
 
 ##########################################################################################
 #END

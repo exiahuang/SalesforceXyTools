@@ -2,6 +2,9 @@ import sublime,sublime_plugin
 import os,time,json
 
 SFDC_HUANGXY_SETTINGS = "sfdc.huangxy.sublime-settings"
+AUTHENTICATION_OAUTH2 = "oauth2"
+AUTHENTICATION_PASSWORD = "password"
+AUTHENTICATION_MAVENSMATE = "mavensmate"
 
 def load():
     # Load all settings
@@ -12,57 +15,66 @@ def load():
     settings["default_project"] = s.get("default_project")
     settings["default_api_version"] = s.get("default_api_version")
     settings["debug_levels"] = s.get("debug_levels")
-    settings["use_mavensmate_setting"] = s.get("use_mavensmate_setting")
+    settings["authentication"] = s.get("authentication")
     settings["xyfloder"] = s.get("xy_output_floder")
     settings["dataloader_encoding"] = s.get("dataloader_encoding")
     settings["soql_select_limit"] = s.get("soql_select_limit")
     settings["projects"] = projects = s.get("projects")
     settings["projects"] = projects
     settings["browsers"] = s.get("browsers")
+    settings["default_browser"] = s.get("default_browser")
+    settings["home_workspace"] = s.get("home_workspace")
+    if not settings["home_workspace"]:
+        settings["home_workspace"] = os.path.expanduser('~')
+        # if os.name == 'nt':
+        #     settings["home_workspace"] = os.path.expanduser('~')
+        # else:
+        #     settings["home_workspace"] = os.path.expandvars('$HOME')
 
+
+    # settings["use_mavensmate_setting"] = s.get("use_mavensmate_setting")
+    settings["use_oauth2"] = (settings["authentication"] == AUTHENTICATION_OAUTH2)
+    settings["use_password"] = (settings["authentication"] == AUTHENTICATION_PASSWORD)
+    settings["use_mavensmate_setting"] = (settings["authentication"] == AUTHENTICATION_MAVENSMATE)
+
+    if not (settings["use_oauth2"] or settings["use_password"] or settings["use_mavensmate_setting"]):
+        settings["use_oauth2"] = True
+        update_authentication_setting()
+
+    settings["default_project_value"] = {}
+
+    print('------->load mm setting start')
     if settings["use_mavensmate_setting"]:
         mm_settings = load_mavensmate_setting()
-        settings.update(mm_settings)
-        return settings
+        settings["default_project_value"] = mm_settings
+        # print('------->load mm setting end')
+        # print(json.dumps(settings, indent=4))
+        # settings.update(mm_settings)
+        # return settings
+    print('------->load mm setting end')
 
-    usernames = []
     for project_key in projects.keys():
         project_value = projects[project_key]
-        if project_key == settings['default_project']: 
+        if "api_version" not in project_value:
+            project_value["api_version"] = settings["default_api_version"]
+
+        # load session file
+        session_path = os.path.join(project_value["workspace"],settings["xyfloder"], 'config', '.session')
+        if os.path.isfile(session_path):
+            session_json = parse_json_from_file(session_path)
+            # print('session_json-->')
+            # print(session_path)
+            # print(session_json)
+            project_value.update(session_json)
+
+        # find default_project
+        if project_key == settings['default_project'] and not settings["use_mavensmate_setting"]: 
             settings["default_project_value"] = project_value
-        else:
-            usernames.append(project_value["username"])
-
-    if not settings["default_project_value"]:
-        return
-
-    # print(settings["default_project_value"])
-    default_project_value = settings["default_project_value"]
-
-    settings["loginUrl"] = default_project_value["loginUrl"]
-    settings["password"] = default_project_value["password"]
-    settings["security_token"] = default_project_value["security_token"]
-    settings["username"] = default_project_value["username"]
-    settings["workspace"] = os.path.normpath(default_project_value["workspace"])
-    if "api_version" in default_project_value:
-        settings["api_version"] = default_project_value["api_version"]
-    else:
-        settings["api_version"] = settings["default_api_version"]
-        
-
-    # url bug???
-    settings["soap_login_url"] = settings["loginUrl"] + "/services/Soap/s/{0}".format(settings["api_version"])
-    settings["base_url"] = settings["loginUrl"] + "/services/data/v{0}".format(settings["api_version"])
-    settings["apex_url"] = settings["loginUrl"] + "/services/apexrest/v{0}".format(settings["api_version"])
-
-    # if settings["loginUrl"] == "https://login.salesforce.com":
-    #     isSandbox = False
-    settings["is_sandbox"] = default_project_value["is_sandbox"]
-
-    print('------->load end')
+    
+    # print('------->load end')
+    # print(json.dumps(settings, indent=4))
     return settings
-
-
+      
 
 def load_mavensmate_setting(window=None):
     # Load all settings
@@ -113,18 +125,30 @@ def load_mavensmate_setting(window=None):
         raise Exception('mavensmate settings file error!!')
 
     if "accessToken" in settings:
-        settings["sessionId"] = settings["accessToken"]
+        settings["access_token"] = settings["accessToken"]
     else:
         raise Exception('session error!! login again,please.')
 
+
+    if "instanceUrl" in settings:
+        settings["instance_url"] = settings["instanceUrl"]
+        
     # if "sid" in settings:
     #     settings["sessionId"] = settings["sid"]
-        
-    if "projectName" in settings:
+
+    # mavensmate v0.0.11, oauth2
+    if "project_name" in settings:
+        settings["default_project"] = settings["project_name"]
+    # mavensmate v0.0.10
+    elif "projectName" in settings:
         settings["default_project"] = settings["projectName"]
 
     if "api_version" not in settings:
         settings["api_version"] = "37.0"
+
+
+    if "workspace" in settings:
+        settings["workspace"] = os.path.join(settings["workspace"], settings["default_project"])
 
     # if "password" not in settings:
     #     settings["password"] = ""
@@ -132,6 +156,7 @@ def load_mavensmate_setting(window=None):
     # if "security_token" not in settings:
     #     settings["security_token"] = ""
 
+    # print('load_mavensmate_setting over')
     # print(settings)
 
     return settings
@@ -139,6 +164,8 @@ def load_mavensmate_setting(window=None):
 def get_browser_setting():
     dirs = []
     settings = load()
+    default_browser = settings["default_browser"]
+
     for browser in settings["browsers"]:
         broswer_path = settings["browsers"][browser]
         if os.path.exists(broswer_path):
@@ -146,11 +173,61 @@ def get_browser_setting():
     if settings["browsers"]["chrome"]:
         broswer_path = settings["browsers"]["chrome"]
         if os.path.exists(broswer_path):
-            dirs.append(["chrome-private",broswer_path])
+            browser = "chrome-private"
+            dirs.append([browser,broswer_path])
     # default browser
     if not dirs:
         dirs.append(["default",""])
     return dirs
+
+def get_browser_setting2():
+    dirs = []
+    settings = load()
+    default_browser = settings["default_browser"]
+
+    for browser in settings["browsers"]:
+        broswer_path = settings["browsers"][browser]
+        if os.path.exists(broswer_path):
+            if default_browser == browser:
+                browser_key = '[○]' + browser
+            else:
+                browser_key = '[X]' + browser
+            dirs.append([browser_key,browser])
+    if settings["browsers"]["chrome"]:
+        broswer_path = settings["browsers"]["chrome"]
+        if os.path.exists(broswer_path):
+            browser = "chrome-private"
+            if default_browser == browser:
+                browser_key = '[○]' + browser
+            else:
+                browser_key = '[X]' + browser
+            dirs.append([browser_key,browser])
+    # default browser
+    if not dirs:
+        dirs.append(["[○]default","default"])
+    return dirs
+
+
+def get_default_browser():
+    settings = load()
+    default_browser = settings["default_browser"]
+    browser_map = {}
+
+    for browser in settings["browsers"]:
+        broswer_path = settings["browsers"][browser]
+        if os.path.exists(broswer_path):
+            if default_browser == browser:
+                browser_map['name'] = browser
+                browser_map['path'] = broswer_path
+                return browser_map
+            elif default_browser == "chrome-private" and browser == "chrome":
+                browser_map['name'] = "chrome-private"
+                browser_map['path'] = broswer_path
+                return browser_map
+
+    browser_map['name'] = 'default'
+    browser_map['path'] = ''
+    return browser_map
 
 
 def mm_project_directory(window=None):
@@ -161,14 +238,30 @@ def mm_project_directory(window=None):
         return window.folders()[0]
 
 
-def get_project_settings(window=None):
-    if window == None:
-        window = sublime.active_window()
-    try:
-       return parse_json_from_file(os.path.join(window.folders()[0],"config",".settings"))
-    except:
-        # raise BaseException("Could not load project settings")
-        print("Could not load project settings")
+# def get_project_settings(window=None):
+#     if window == None:
+#         window = sublime.active_window()
+#     try:
+#        return parse_json_from_file(os.path.join(window.folders()[0],"config",".settings"))
+#     except:
+#         # raise BaseException("Could not load project settings")
+#         print("Could not load project settings")
+
+
+
+def get_project_settings(project_name=''):
+    settings = load()
+    projects = settings["projects"]
+
+    project = {}
+    if project_name:
+        projects = settings["projects"]
+        if project_name in projects:
+            project = projects[project_name]
+    else:
+        project = settings["default_project_value"]
+
+    return project
 
 
 def parse_json_from_file(location):
@@ -180,3 +273,29 @@ def parse_json_from_file(location):
     except:
         return {}
 
+def update_authentication_setting(auth_type=AUTHENTICATION_OAUTH2):
+    s = sublime.load_settings(SFDC_HUANGXY_SETTINGS)
+    s.set("authentication", auth_type)
+    sublime.save_settings(SFDC_HUANGXY_SETTINGS)
+
+
+
+def update_default_browser(browser_name):
+    s = sublime.load_settings(SFDC_HUANGXY_SETTINGS)
+    # Save the updated settings
+    s.set("default_browser", browser_name)
+    sublime.save_settings(SFDC_HUANGXY_SETTINGS)
+
+
+def update_default_project(default_project):
+    s = sublime.load_settings(SFDC_HUANGXY_SETTINGS)
+    # Save the updated settings
+    s.set("default_project", default_project)
+    sublime.save_settings(SFDC_HUANGXY_SETTINGS)
+
+
+def update_project_session(default_project):
+    s = sublime.load_settings(SFDC_HUANGXY_SETTINGS)
+    # Save the updated settings
+    s.set("default_project", default_project)
+    sublime.save_settings(SFDC_HUANGXY_SETTINGS)

@@ -47,13 +47,39 @@ All issues are managed by the [SalesforceXyTools](https://github.com/exiahuang/S
 
 ###Important Settings
 
+####Use OAuth2 Login
+There are three type to access salesforce: oauth2 or password or use mavensmate
+The default value is oauth2.
+You can set `authentication` as below : "oauth2","password","mavensmate".
+You can use [SFDC-XY] -> [Change Authentication Type] to set your authentication type.
+  ```
+"authentication":"oauth2",
+  ```
+
+####Use Password Login
+If you like to use password to access salesforce,you need to `authentication` as password.
+You never need to re-auth if you use this method.
+  ```
+"authentication":"password",
+  ```
+Please set the `default_project` and `projects` if you use this type to access salesforce.
+
+
 ####Use [Mavensmate](https://github.com/joeferraro/MavensMate-SublimeText) Session 
 
-You may set `use_mavensmate_setting` to a single path on your local filesystem or an array of paths.
-If you set `use_mavensmate_setting` true, you can use all the setting of mavensmate, you need not to set `projects` or `default_project` .
-```
-"use_mavensmate_setting" : true
-```
+If you like to use mavensmate's setting, you can set `authentication` mavensmate.
+mavensmate-destop v0.0.10 or below, please set mm_use_keyring true.
+mavensmate-destop v0.0.11-beta.2 to v0.0.11-beta.7, please set mm_use_keyring false.
+  ```
+"authentication":"oauth2",
+  ```
+
+*`use_mavensmate_setting` is No Longer Forever.*
+  
+~~You may set `use_mavensmate_setting` to a single path on your local filesystem or an array of paths.~~
+~~If you set `use_mavensmate_setting` true, you can use all the setting of mavensmate, you need not to set `projects` and `default_project` .~~
+  
+~~"use_mavensmate_setting" : true~~
 
 mavensmate-destop v0.0.10 or below, please set mm_use_keyring true.
 please re-auth again, Or Create project again!
@@ -71,36 +97,46 @@ If you set `use_mavensmate_setting` false, please set the `default_project` and 
 
 #####Examples of projects
 
-```
+  ```
 "default_project":"huangxy1",
  "projects":
     {
+        // the Example of the projects 
+        // If you set the use_mavensmate_setting false, 
+        // you need to set "projects" value below.
+
+        // if you use oauth2 to authenticate salesforce,
+        // you can use the setting as below
         "huangxy1":
         {
-            "loginUrl": "https://login.salesforce.com",
-            "password": "XXXXXXX",
-            "security_token": "XXXXXXXXXXXXXXX",
-            "username": "XXXXXXX@ibmer.info",
-            "api_version": 36.0,
-            "is_sandbox": false,
-            "workspace": "C:/workspace/huangxy1/"
+          "loginUrl": "https://login.salesforce.com",
+          "password": "XXXXXXX",
+          // if you have not security_token,please set ""
+          "security_token": "",
+          "username": "XXXXXXX@ibmer.info",
+          "is_sandbox": false,
+          // "api_version" is not Required, if not set, it will use default_api_version
+          "api_version": 36.0,
+          "workspace": "C:/workspace/huangxy1/"
         },
+        // if you use password to authenticate salesforce,
+        // you can use the setting as below
         "huangxy2":
         {
-            "loginUrl": "https://test.salesforce.com",
-            "password": "XXXXXXX",
-            "security_token": "XXXXXXX",
-            "username": "XXXXXXX@ibmer.info",
-            "api_version": 36.0,
-            "is_sandbox": true,
-            "workspace": "C:/workspace/huangxy2/"
+          "loginUrl": "https://test.salesforce.com",
+          "password": "XXXXXXX",
+          "security_token": "",
+          "username": "XXXXXXX@ibmer.info",
+          "is_sandbox": true,
+          "workspace": "C:\\workspace\\huangxy2\\"
         }
     }
-```
+  ```
 
 #### Define your login browser
-Add your `browsers` setting as below
-```
+Add your `browsers` setting as below.
+You can use [SFDC-XY] -> [Switch Broswer] to set your default browser.
+  ```
     // Add your browser which you like!
     // examle:
     // "firefox":"Path of firefox!",
@@ -110,7 +146,7 @@ Add your `browsers` setting as below
         "chrome": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
         "IE": "C:\\Program Files\\Internet Explorer\\iexplore.exe"
     },
-```
+  ```
 
 
 ## Usage [more usage help](https://github.com/exiahuang/SalesforceXyTools/blob/master/help/SalesforceXyTools-Help.md)

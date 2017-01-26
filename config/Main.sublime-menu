@@ -166,6 +166,18 @@
                         }     
                     }
                 ]  
+            },            
+            {
+                "caption": "Change Authentication Type",
+                "command": "change_auth_type"
+            },
+            {
+                "caption": "Switch Browser",
+                "command": "switch_browser"
+            },
+            {
+                "caption": "Switch Project",
+                "command": "switch_xy_project"
             },
             { "caption": "-" },
             {

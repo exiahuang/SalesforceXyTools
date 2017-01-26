@@ -60,8 +60,6 @@ class ExportSobjectCommand(sublime_plugin.WindowCommand):
         if 0 > picked < len(self.results):
             return
         self.picked_name = self.results[picked]
-        self.panel_done(picked)
-
 
         time_stamp = time.strftime("%Y%m%d%H%M", time.localtime())
         self.fullPath =  os.path.join(util.get_default_floder(), DIR_DATALOADER, "%s_%s.csv" % (self.picked_name, time_stamp))

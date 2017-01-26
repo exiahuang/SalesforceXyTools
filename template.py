@@ -623,12 +623,17 @@ def get_vf_show_snippet(data_type):
         or data_type == 'url' \
         or data_type == 'email' \
         or data_type == 'phone' \
-        or data_type == 'textarea' \
         or data_type == 'picklist' \
         or data_type == 'int' or data_type == 'percent' \
         or data_type == 'long' or data_type == 'currency' or data_type == 'double' \
         or data_type == 'boolean' or data_type == 'combobox':
             vf_code = '''<apex:outputText value="{{!{field_name}}}" />'''
+
+    elif data_type == 'textarea':
+        # white-space: pre; 
+        vf_code = '''<div style="white-space: pre-wrap; word-break: break-all; ">
+                        <apex:outputText value="{{!{field_name}}}" />
+                    </div>'''
     elif data_type == 'multipicklist':
         vf_code = '''<apex:outputText value="{{!{field_name}}}" />'''
         # vf_code = '''<apex:selectList size="10" value="{{!{field_name}}}" multiselect="true">

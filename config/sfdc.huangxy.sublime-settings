@@ -4,12 +4,21 @@
 	// please contact with me.
 	// Email: exia.huang@hotmail.com
 	
+	// you can access by using oauth2 or password or use mavensmate
+	// the default value is oauth2
+	// you can set it as below : 
+	// "oauth2","password","mavensmate"
+	////////////////////////////////////////////////////// 
+	// `use_mavensmate_setting` is No Longer Forever.
+	// please use "authentication" to set your authentication method.
 	// If you use mavensmate setting , please set use_mavensmate_setting true.
 	// If use_mavensmate_setting is true, you need not to set anything below. 
 	// If you set the use_mavensmate_setting false, you need to set "projects" value below.
 	// mavensmate-destop v0.0.10 or below, please set mm_use_keyring true.
 	// mavensmate-destop v0.0.11-beta.2 to v0.0.11-beta.7, please set mm_use_keyring false.
-	"use_mavensmate_setting":true,
+	// "use_mavensmate_setting":true,
+	//////////////////////////////////////////////////////
+	"authentication":"oauth2",
 
 	// SFDC Dataviewer Select Limit
 	"soql_select_limit":50,
@@ -20,9 +29,13 @@
 	// the default project which you work with
 	"default_project":"huangxy1",
 
+	// default_api_version will be overwrited by api_version of each project
 	"default_api_version": 37.0,
 
 	"dataloader_encoding": "utf-8",
+
+	// default home_workspace
+	"home_workspace": "",
 
 	// "projects" is the base setting,
 	// if you set "use_mavensmate_setting" false, you must set "projects"
@@ -32,25 +45,31 @@
 		// the Example of the projects 
 		// If you set the use_mavensmate_setting false, 
 		// you need to set "projects" value below.
+
+		// if you use oauth2 to authenticate salesforce,
+		// you can use the setting as below
 		"huangxy1":
 		{
 			"loginUrl": "https://login.salesforce.com",
 			"password": "XXXXXXX",
-			"security_token": "XXXXXXXXXXXXXXX",
+			// if you have not security_token,please set ""
+			"security_token": "",
 			"username": "XXXXXXX@ibmer.info",
-			"api_version": 36.0,
 			"is_sandbox": false,
+			// "api_version" is not Required, if not set, it will use default_api_version
+			"api_version": 36.0,
 			"workspace": "C:/workspace/huangxy1/"
 		},
+		// if you use password to authenticate salesforce,
+		// you can use the setting as below
 		"huangxy2":
 		{
 			"loginUrl": "https://test.salesforce.com",
 			"password": "XXXXXXX",
-			"security_token": "XXXXXXX",
+			"security_token": "",
 			"username": "XXXXXXX@ibmer.info",
-			"api_version": 36.0,
 			"is_sandbox": true,
-			"workspace": "C:/workspace/huangxy2/"
+			"workspace": "C:\\workspace\\huangxy2\\"
 		}
 	},
 
@@ -58,6 +77,7 @@
 	// examle:
 	// "firefox":"Path of firefox!",
 	// "Edge":"Path of Edge", or another
+	"default_browser":"chrome-private",
 	"browsers":
 	{
 		"chrome": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
