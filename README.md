@@ -45,37 +45,36 @@ All issues are managed by the [SalesforceXyTools](https://github.com/exiahuang/S
 
 ## Setup
 
-###Important Settings
-
-####Use OAuth2 Login
+###Important Settings  
+####Use OAuth2 Login  
 * There are three type to access salesforce: oauth2 or password or use mavensmate
 * The default value is oauth2.
 * You can set `authentication` as below : "oauth2","password","mavensmate".
-* You can use [SFDC-XY] -> [Change Authentication Type] to set your authentication type.
-  ```
+* You can use [SFDC-XY] -> [Change Authentication Type] to set your authentication type.  
+   
+```
 "authentication":"oauth2",
-  ```
+```
 
-####Use Password Login
-* If you like to use password to access salesforce,you need to `authentication` as password.
-* You never need to re-auth if you use this method.
-  ```
+####Use Password Login  
+* If you like to use password to access salesforce,you need to `authentication` as password.  
+* You never need to re-auth if you use this method.  
+* Please set the `default_project` and `projects` if you use this type to access salesforce.  
+  
+```
 "authentication":"password",
-  ```
-  
-* Please set the `default_project` and `projects` if you use this type to access salesforce.
+```  
 
-
-####Use [Mavensmate](https://github.com/joeferraro/MavensMate-SublimeText) Session 
-
+####Use [Mavensmate](https://github.com/joeferraro/MavensMate-SublimeText) Session  
 * If you like to use mavensmate's setting, you can set `authentication` mavensmate.
 * mavensmate-destop v0.0.10 or below, please set mm_use_keyring true.
 * mavensmate-destop v0.0.11-beta.2 to v0.0.11-beta.7, please set mm_use_keyring false.
-  ```
+  
+```
 "authentication":"oauth2",
-  ```
+```
 
-*`use_mavensmate_setting` is No Longer Forever.*
+*`use_mavensmate_setting` is No Longer Forever.
   
 ~~You may set `use_mavensmate_setting` to a single path on your local filesystem or an array of paths.~~
 ~~If you set `use_mavensmate_setting` true, you can use all the setting of mavensmate, you need not to set `projects` and `default_project` .~~
