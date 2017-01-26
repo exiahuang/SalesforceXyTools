@@ -74,7 +74,7 @@ All issues are managed by the [SalesforceXyTools](https://github.com/exiahuang/S
 "authentication":"oauth2",
 ```
 
-*`use_mavensmate_setting` is No Longer Forever.
+*`use_mavensmate_setting` is No Longer Forever.*
   
 ~~You may set `use_mavensmate_setting` to a single path on your local filesystem or an array of paths.~~
 ~~If you set `use_mavensmate_setting` true, you can use all the setting of mavensmate, you need not to set `projects` and `default_project` .~~
