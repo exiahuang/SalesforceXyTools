@@ -31,6 +31,7 @@ CS_CALL_VOID_FUN = 'CALL_VOID_FUN'
 CS_COMMENT = 'CS_COMMENT'
 CS_DECLARE = 'CS_DECLARE'
 
+NO_NEED_FIELDS = {'ownerid','isdeleted','createddate','createdbyid','lastmodifieddate','lastmodifiedbyid','systemmodstamp','lastactivitydate','lastvieweddate','lastreferenceddate'}
 
 
 ##########################################################################################
@@ -318,9 +319,13 @@ def get_dto_class(class_name, fields, is_custom_only=False, include_validate=Fal
         field_name = util.cap_low( get_api_name(util.xstr(field['name'])) )
         field_type = sobj_to_apextype(util.xstr(field['type']))
 
-        if is_custom_only and not field["custom"]:
-            if not (field_name.lower() == 'id' or field_name.lower() == 'name') :
-                continue
+        if is_custom_only and field_name.lower() in NO_NEED_FIELDS:
+            # print('---->no need field : '+ field_name.lower())
+            continue
+
+        # if is_custom_only and not field["custom"]:
+        #     if not (field_name.lower() == 'id' or field_name.lower() == 'name') :
+        #         continue
 
         tmpVal = {}
         tmpVal['declare_type'] = field_type
@@ -331,7 +336,10 @@ def get_dto_class(class_name, fields, is_custom_only=False, include_validate=Fal
         class_body += get_code_snippet(CS_COMMENT, comment)
         # define
         class_body += get_code_snippet(CS_DECLARE, tmpVal)
-
+        
+        # constructor function
+        constructor_body += ('\t\t\tthis.%s = sobj.%s;\n' % (field_name, util.xstr(field['name'])))
+        
         # include validate string
         if include_validate:
             tmpVal = {}
@@ -343,9 +351,33 @@ def get_dto_class(class_name, fields, is_custom_only=False, include_validate=Fal
             # define
             class_body += get_code_snippet(CS_DECLARE, tmpVal)
 
-        # picklist
-        if util.xstr(field['type']) == 'picklist':
-            print(field)
+        # 'reference'
+        if util.xstr(field['type']) == 'reference':
+            tmpVal = {}
+            ref_sbj = field['referenceTo'][0]
+            ref_sbj_namespace = get_sfdc_namespace(ref_sbj)
+            ref_sbj_namespace['dto_relationship_name'] = field['relationshipName']
+            tmpVal['declare_type'] = ref_sbj_namespace['dto']
+            tmpVal['declare_name'] = ref_sbj_namespace['dto_instance']
+            # comment
+            comment = 'reference to sobject : ' + ref_sbj
+            class_body += get_code_snippet(CS_COMMENT, comment)
+            # define
+            class_body += get_code_snippet(CS_DECLARE, tmpVal)
+
+            # init DTO at init()
+            init_body += "\n";
+            init_body += ("\t\tthis.{dto_instance} = new {dto}();\n").format(**ref_sbj_namespace);
+            
+            # constructor 'reference'
+            constructor_body += ('\t\t\tthis.{dto_instance} = new {dto}(sobj.{dto_relationship_name});\n').format(**ref_sbj_namespace);
+
+
+        # if picklist or multipicklist
+        # add List<SelectOption>
+        # add define init
+        if util.xstr(field['type']) == 'picklist' or util.xstr(field['type']) == 'multipicklist':
+            # print(field)
             tmpVal = {}
             tmpVal['declare_type'] = 'List<SelectOption>'
             tmpVal['declare_name'] = field_name + 'List'
@@ -357,8 +389,9 @@ def get_dto_class(class_name, fields, is_custom_only=False, include_validate=Fal
 
             # TODO
             # init_body += ('\t\t\tthis.%s = CommonUtil.getSelectOptionList(%s.%s.getDescribe(),true);\n' % (tmpVal['declare_name'],sobj_name,util.xstr(field['name'])) )
-            picklistValues = field['picklistValues']
 
+            # init List<SelectOption>class_body at init()
+            picklistValues = field['picklistValues']
             init_body += "\n";
             init_body += ("\t\tthis.%s = new List<SelectOption>();\n" % (tmpVal['declare_name']));
             init_body += ("\t\tthis.%s.add(new SelectOption('', '--None--'));\n" % (tmpVal['declare_name']));
@@ -370,7 +403,8 @@ def get_dto_class(class_name, fields, is_custom_only=False, include_validate=Fal
         # Dto To Sobject
         if field["updateable"] or field_name.lower() == 'id':
             dto_to_sobj_body += ('\t\tsobj.%s = %s;\n' % (util.xstr(field['name']),field_name))
-        constructor_body += ('\t\t%s = sobj.%s;\n' % (field_name, util.xstr(field['name'])))
+
+
 
     sfdc_name_map['class_body'] = class_body
     sfdc_name_map['getSobject_body'] = dto_to_sobj_body
@@ -527,22 +561,37 @@ def get_list_vf_class(class_name, fields, is_custom_only=False, include_validate
     source_code = get_template(TMP_VF_INPUTFORM).format(**vf_param)
     return source_code, class_name
 
-def get_dao_class(class_name, fields, is_custom_only=False):
+def get_dao_class(class_name, fields, sf_login_instance, is_custom_only=False):
     class_body = ''
-    soql_src = util.get_soql_src(class_name, fields, condition='', has_comment=True , is_custom_only=is_custom_only)
+    soql_src = get_soql_src(class_name, fields, sf_login_instance, 
+                            condition='', has_comment=True , is_custom_only=is_custom_only, 
+                            include_relationship=True,
+                            is_apex_code=True)
 
     sfdc_name_map = get_sfdc_namespace(class_name)
     sfdc_name_map['soql_src'] = soql_src
 
     # search by keyword condition
     conditions = []
+    tmp_index = 0
     for field in fields:
         if (field['type'] == 'textarea'):
             continue
         if field['custom'] or field['name'].lower() == 'name':
-            conditions.append((' %s like :keywordsFilters\n' % (field['name'])))
+            # conditions.append((' %s like :keywordsFilters\n' % (field['name'])))
 
-    sfdc_name_map['keywords_conditions'] = '\t\t\tor'.join(conditions)
+            if tmp_index == 0:
+                tmp_soql = (' ( %s like :keywordsFilters' % (field['name']))
+            else:
+                tmp_soql = (' or %s like :keywordsFilters' % (field['name']))
+            tmp_index += 1
+
+            tmp_apex_soql = ("\t\tquery_str += ' %s ';" % tmp_soql)
+            conditions.append(tmp_apex_soql)
+
+    # sfdc_name_map['keywords_conditions'] = '\t\t\tor'.join(conditions)
+    sfdc_name_map['keywords_conditions'] = '\n'.join(conditions)
+    sfdc_name_map['keywords_conditions'] += "\n\t\tquery_str += ' ) ';\n"
 
     src_code = get_template(TMP_DAO_CLASS).format(**sfdc_name_map)
 
@@ -623,3 +672,85 @@ def get_template(name=''):
     #     f.close()
     # template = ''.join(template_arr)
     # return template
+
+
+##########################################################################################
+#SOQL String Util
+##########################################################################################
+def get_soql_src(sobject, fields, sf_login_instance, condition='', has_comment=False, 
+                is_custom_only=False, updateable_only=False, include_relationship=False
+                ,is_apex_code=False):
+    soql_scr = ""
+    fields_str = "\n"
+    tmp_fields = []
+    tmp_fields.append('')
+
+    nocomment_tmp_fields = []
+    nocomment_fields_str = ""
+
+    for field in fields:
+        field_name = util.xstr(field["name"])
+
+        if is_custom_only and field_name.lower() in NO_NEED_FIELDS:
+            continue
+
+        if updateable_only and not field["updateable"]:
+            continue
+
+        if is_apex_code:
+            tmp_fields_str = ("\t\t\tquery_str += ' %s, ';\t\t\t\t// %s" % (util.xstr(field["name"]), util.xstr(field["label"] )))
+        else:
+            tmp_fields_str = "\t\t\t" + util.xstr(field["name"]) + ",\t\t\t\t//" + util.xstr(field["label"])
+        tmp_fields.append(tmp_fields_str)
+
+        nocomment_tmp_fields.append(util.xstr(field["name"]))
+
+        if include_relationship and util.xstr(field['type']) == 'reference':
+            ref_sbj = field['referenceTo'][0]
+            ref_sbj_namespace = get_sfdc_namespace(ref_sbj)
+            ref_sbj_namespace['dto_relationship_name'] = field['relationshipName']
+            ref_sftype = sf_login_instance.get_sobject(ref_sbj)
+            ref_sftypedesc = ref_sftype.describe()
+            for ref_field in ref_sftypedesc["fields"]:
+                if is_custom_only and util.xstr(ref_field["name"]).lower() in NO_NEED_FIELDS:
+                    continue
+                if updateable_only and not field["updateable"]:
+                    continue
+                loop_tmp_field = {}
+                loop_tmp_field['dto_relationship_name']  = field['relationshipName']
+                loop_tmp_field['field_name']  = util.xstr(ref_field["name"])
+                loop_tmp_field['label']  = util.xstr(ref_field["label"])
+                loop_tmp_field['sobj']  = ref_sbj
+
+                # if updateable_only and not field["updateable"]:
+                #     continue
+                if is_apex_code:
+                   tmp_fields_str = ("\t\t\tquery_str += ' {dto_relationship_name}.{field_name}, ';\t\t\t\t// {label}").format(**loop_tmp_field)
+                else:    
+                    tmp_fields_str = ("\t\t\t{dto_relationship_name}.{field_name},\t\t\t\t// {label}").format(**loop_tmp_field)
+
+                tmp_fields.append(tmp_fields_str)
+
+                nocomment_tmp_fields_str = ("{dto_relationship_name}.{field_name}").format(**loop_tmp_field)
+                nocomment_tmp_fields.append(nocomment_tmp_fields_str)
+
+    if len(tmp_fields) > 0:
+        tmp_fields[-1] = tmp_fields[-1].replace(',', '')
+    fields_str = '\n'.join(tmp_fields)
+
+    nocomment_fields_str = ','.join(nocomment_tmp_fields)
+
+    if is_apex_code:
+        apex_soql = "\t\tquery_str += ' SELECT ';\n"
+        apex_soql += fields_str
+        apex_soql += ("\n\t\tquery_str += ' FROM %s ';\n" % sobject)
+        if condition:
+            apex_soql += ("\t\tquery_str += ' %s ';\n" % condition)
+        return apex_soql
+
+    if has_comment:
+        soql_scr = ("select %s\nfrom %s\n%s" % (fields_str, sobject, condition))
+    else:
+        soql_scr = ("select %s\nfrom %s\n%s" % (nocomment_fields_str, sobject, condition))
+
+    return soql_scr

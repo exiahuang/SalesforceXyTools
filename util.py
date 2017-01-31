@@ -11,6 +11,9 @@ import re
 from .salesforce import *
 from . import setting
 
+NO_NEED_FIELDS = {'ownerid','isdeleted','createddate','createdbyid','lastmodifieddate','lastmodifiedbyid','systemmodstamp','lastactivitydate','lastvieweddate','lastreferenceddate'}
+
+
 ##########################################################################################
 #Salesforce Util
 ##########################################################################################
@@ -524,42 +527,6 @@ def get_simple_soql_str(sobject, fields, no_address=False,condition=''):
     soql += ' FROM ' + sobject
     soql += condition
     return soql
-
-
-def get_soql_src(sobject, fields, condition='', has_comment=False, is_custom_only=False, updateable_only=False):
-    soql_scr = ""
-    if has_comment:
-        fields_str = "\n"
-        tmp_fields = []
-        tmp_fields.append('')
-        for field in fields:
-            field_name = xstr(field["name"])
-            if is_custom_only and not field["custom"]:
-                if not (field_name.lower() == 'id' or field_name.lower() == 'name') :
-                    continue
-
-            if updateable_only and not field["updateable"]:
-                continue
-
-            tmp_fields_str = "\t\t\t" + xstr(field["name"]) + ",\t\t\t\t//" + xstr(field["label"])
-            tmp_fields.append(tmp_fields_str)
-
-        if len(tmp_fields) > 0:
-            tmp_fields[-1] = tmp_fields[-1].replace(',', '')
-        fields_str = '\n'.join(tmp_fields)
-    else:
-        tmp_fields = []
-        for field in fields:
-            field_name = xstr(field["name"])
-            if is_custom_only and not field["custom"]:
-                if not (field_name.lower() == 'id' or field_name.lower() == 'name') :
-                    continue
-            tmp_fields.append(xstr(field["name"]))
-        fields_str = ','.join(tmp_fields)
-
-    soql_scr = ("select %s\nfrom %s\n%s" % (fields_str, sobject, condition))
-
-    return soql_scr
 
 
 def get_soql_result(soql_str, soql_result):

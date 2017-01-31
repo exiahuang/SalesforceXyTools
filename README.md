@@ -1,11 +1,11 @@
-#SalesforceXyTools
+# SalesforceXyTools
 
 SalesforceXyTools for Sublime Text is Rapid development tools for Salesforce Development.
 
 * Auto Create Apex Test Class Code, Auto Create Test Data For Apex Test Class.
 * SFDC Dataviewer, SFDC Online Dataviewer.
 * SObject Viewer, SObject Description, Export SOjbect Fields to Excel
-* Atuo Login SFDC.
+* Atuo Login SFDC (three login type: oauth2 , password config and use mavensmate session).
 * SOQL Query, Tooling Query, Run Apex Script.
 
 # SalesforceXyTools Help
@@ -45,8 +45,8 @@ All issues are managed by the [SalesforceXyTools](https://github.com/exiahuang/S
 
 ## Setup
 
-###Important Settings  
-####Use OAuth2 Login  
+### Important Settings  
+#### Use OAuth2 Login  
 * There are three type to access salesforce: oauth2 or password or use mavensmate
 * The default value is oauth2.
 * You can set `authentication` as below : "oauth2","password","mavensmate".
@@ -56,7 +56,8 @@ All issues are managed by the [SalesforceXyTools](https://github.com/exiahuang/S
 "authentication":"oauth2",
 ```
 
-####Use Password Login  
+#### Use config file(Username/Password) Login 
+* You need to write your username/password into config.
 * If you like to use password to access salesforce,you need to `authentication` as password.  
 * You never need to re-auth if you use this method.  
 * Please set the `default_project` and `projects` if you use this type to access salesforce.  
@@ -91,13 +92,13 @@ please re-auth again, Or Create project again!
 ![SOS](https://github.com/exiahuang/XyHelp/blob/master/SalesforceXyTools/Setup/Image%20002.jpg?raw=true)
 
 
-####Use `projects` Setting
+#### Use `projects` Setting
 
 * If you set `use_mavensmate_setting` false, please set the `default_project` and `projects` as the example.    
   
-#####Examples of projects
+##### Examples of projects
 
-  ```
+```
 "default_project":"huangxy1",
  "projects":
     {
@@ -131,12 +132,12 @@ please re-auth again, Or Create project again!
           "workspace": "C:\\workspace\\huangxy2\\"
         }
     }
-  ```
+ ```
 
 #### Define your login browser
 Add your `browsers` setting as below.
 You can use [SFDC-XY] -> [Switch Broswer] to set your default browser.
-  ```
+```
     // Add your browser which you like!
     // examle:
     // "firefox":"Path of firefox!",
@@ -146,7 +147,7 @@ You can use [SFDC-XY] -> [Switch Broswer] to set your default browser.
         "chrome": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
         "IE": "C:\\Program Files\\Internet Explorer\\iexplore.exe"
     },
-  ```
+```
 
 
 ## Usage [more usage help](https://github.com/exiahuang/SalesforceXyTools/blob/master/help/SalesforceXyTools-Help.md)

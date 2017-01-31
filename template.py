@@ -464,21 +464,28 @@ public with sharing class {list_controller} extends SfdcXyController {{
 }}
 '''
 
-
 def template_dao_class():
     return '''/**
 * @author {author}
 */
 public with sharing class {dao} {{
     /**
+     * get soql query string
+     */
+    public static String getQueryField(){{
+        String query_str = '';
+{soql_src}
+        return query_str;
+    }}
+
+    /**
     * get all {sobject__c}
     * @return list of {sobject__c} 
     */
     public static List<{sobject__c}> getAll{sobj_api}List(){{
-        List<{sobject__c}> {sobj_api_low_cap}List = [
-            {soql_src}
-            limit 10000
-        ];
+        String query_str = getQueryField();
+        query_str += ' limit 10000';
+        List<{sobject__c}> {sobj_api_low_cap}List = Database.query(query_str);
 
         return {sobj_api_low_cap}List;
     }}
@@ -488,10 +495,9 @@ public with sharing class {dao} {{
     * @return list of {sobject__c} 
     */
     public static List<{sobject__c}> get{sobj_api}List(Set<String> ids){{
-        List<{sobject__c}> {sobj_api_low_cap}List = [
-            {soql_src}
-            WHERE id IN:ids
-        ];
+        String query_str = getQueryField();
+        query_str += ' WHERE id IN:ids ';
+        List<{sobject__c}> {sobj_api_low_cap}List = Database.query(query_str);
 
         return {sobj_api_low_cap}List;
     }}
@@ -501,11 +507,10 @@ public with sharing class {dao} {{
     * @return one of {sobject__c} 
     */
     public static {sobject__c} get{sobj_api}ById(String id){{
-        List<{sobject__c}> {sobj_api_low_cap}List = [
-            {soql_src}
-            WHERE id =: id 
-            limit 1
-        ];
+        String query_str = getQueryField();
+        query_str += ' WHERE id =: id  ';
+        query_str += ' limit 1  ';
+        List<{sobject__c}> {sobj_api_low_cap}List = Database.query(query_str);
 
         if({sobj_api_low_cap}List.isEmpty())
             return null;
@@ -528,16 +533,91 @@ public with sharing class {dao} {{
             keywordsFilters.add('%' + f + '%');
         }}
 
-        List<{sobject__c}> {sobj_api_low_cap}List = [
-            {soql_src}
-            WHERE 
-                {keywords_conditions}
-        ];
+        String query_str = getQueryField();
+        query_str += ' WHERE  ';
+{keywords_conditions}
+
+        List<{sobject__c}> {sobj_api_low_cap}List = Database.query(query_str);
 
         return {sobj_api_low_cap}List;
     }}
 }}
 '''
+
+
+# def template_dao_class():
+#     return '''/**
+# * @author {author}
+# */
+# public with sharing class {dao} {{
+#     /**
+#     * get all {sobject__c}
+#     * @return list of {sobject__c} 
+#     */
+#     public static List<{sobject__c}> getAll{sobj_api}List(){{
+#         List<{sobject__c}> {sobj_api_low_cap}List = [
+#             {soql_src}
+#             limit 10000
+#         ];
+
+#         return {sobj_api_low_cap}List;
+#     }}
+
+#     /**
+#     * get {sobject__c} by Set<id>
+#     * @return list of {sobject__c} 
+#     */
+#     public static List<{sobject__c}> get{sobj_api}List(Set<String> ids){{
+#         List<{sobject__c}> {sobj_api_low_cap}List = [
+#             {soql_src}
+#             WHERE id IN:ids
+#         ];
+
+#         return {sobj_api_low_cap}List;
+#     }}
+
+#     /**
+#     * get {sobject__c} by id
+#     * @return one of {sobject__c} 
+#     */
+#     public static {sobject__c} get{sobj_api}ById(String id){{
+#         List<{sobject__c}> {sobj_api_low_cap}List = [
+#             {soql_src}
+#             WHERE id =: id 
+#             limit 1
+#         ];
+
+#         if({sobj_api_low_cap}List.isEmpty())
+#             return null;
+#         else
+#             return {sobj_api_low_cap}List.get(0);
+#     }}
+
+#     /**
+#     * get {sobject__c} by keywords
+#     * @return list of {sobject__c} 
+#     */
+#     public static List<{sobject__c}> get{sobj_api}List(String keywords){{
+#         if(String.isBlank(keywords)) return getAll{sobj_api}List();
+    
+#         String[] keywordsArr = keywords.replace('　',' ').split(' ');
+#         List<String> keywordsFilters = new List<String>();
+#         for(String f: keywordsArr){{
+#             if(String.isBlank(f)) continue;
+#             f = f.replace('%', '\\\\%').replace('_','\\\\_');
+#             keywordsFilters.add('%' + f + '%');
+#         }}
+
+#         List<{sobject__c}> {sobj_api_low_cap}List = [
+#             {soql_src}
+#             WHERE 
+#                 {keywords_conditions}
+#         ];
+
+#         return {sobj_api_low_cap}List;
+#     }}
+# }}
+# '''
 
 
 
@@ -554,10 +634,10 @@ public class {dto} {{
     }}
 
     public {dto}({sobject__c} sobj) {{
+        init();
         if(sobj != null){{
 {constructor_body}
         }}
-        init();
     }}
 
     /**

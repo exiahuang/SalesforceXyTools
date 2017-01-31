@@ -1,5 +1,10 @@
 # SalesforceXyTools Update History
 
+## 1.0.7 (2017.01.31)
+1. Auto Create Child-Parent Query.
+2. Create DTO/DAO cls Include Child-Parent Relation.
+
+
 ## 1.0.6 (2017.01.26)
 1. Add oauth2
 2. Add Switch broswer

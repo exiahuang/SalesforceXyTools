@@ -730,17 +730,22 @@ class SoqlCreateCommand(sublime_plugin.WindowCommand):
         self.picked_name = self.results[picked]
         # print(self.picked_name)
         # print(self.picked_name)
-        dirs = ["Custom Fields Only", "Updateable", "All Fields"]
-        self.custom_result = [1, 2, 3]
-        
+        dirs = ["1. Custom Fields Only(Exclude Relation)", 
+                "2. Updateable(Exclude Relation)", 
+                "3. All Fields(Exclude Relation)",
+                "4. Custom Fields Only(Include Relation)", 
+                "5. Updateable(Include Relation)", 
+                "6. All Fields(Include Relation)"]
+        self.custom_result = dirs
+         
         sublime.set_timeout(lambda:self.window.show_quick_panel(dirs, self.select_panel), 10)
 
     def select_panel(self, picked):
         if 0 > picked < len(self.custom_result):
             return
-        self.is_custom_only = ( self.custom_result[picked] == 1 )
-        self.is_updateable = ( self.custom_result[picked] == 2 )
-
+        self.is_custom_only = ( picked == 0 or picked == 3 )
+        self.is_updateable = ( picked == 1 or picked == 4)
+        self.include_relationship = ( picked >= 3 )
 
         thread = threading.Thread(target=self.main_handle)
         thread.start()
@@ -758,9 +763,10 @@ class SoqlCreateCommand(sublime_plugin.WindowCommand):
             sobject = self.picked_name
             sftype = self.sf.get_sobject(sobject)
             sftypedesc = sftype.describe()
-            soql = util.get_soql_src(sobject, sftypedesc["fields"], condition='', has_comment=True, 
+            soql = codecreator.get_soql_src(sobject, sftypedesc["fields"],self.sf, condition='', has_comment=True, 
                                     is_custom_only=self.is_custom_only,
-                                    updateable_only=self.is_updateable)
+                                    updateable_only=self.is_updateable,
+                                    include_relationship=self.include_relationship)
             util.show_in_new_tab(soql)
         except Exception as e:
             util.show_in_panel(e)
@@ -1112,17 +1118,19 @@ class CreateSfdcCodeCommand(sublime_plugin.WindowCommand):
             return
         self.picked_name = self.results[picked]
         # print(self.picked_name)
-        dirs = ["Custom Fields Only-Exclude Validate", "All Fields-Exclude Validate",
-                "Custom Fields Only-Include Validate",  "All Fields-Include Validate"]
-        self.custom_result = [1, 2, 3, 4]
+        dirs = ["1. Custom Fields Only(Exclude Validate)", 
+                "2. All Fields(Exclude Validate)",
+                "3. Custom Fields Only(Include Validate)", 
+                "4. All Fields(Include Validate)"]
+        self.custom_result = dirs
         
         sublime.set_timeout(lambda:self.window.show_quick_panel(dirs, self.select_panel), 10)
 
     def select_panel(self, picked):
         if 0 > picked < len(self.custom_result):
             return
-        self.is_custom_only = (self.custom_result[picked]==1 or self.custom_result[picked]==3)
-        self.include_validate = (self.custom_result[picked]>2)
+        self.is_custom_only = (picked==0 or picked==2)
+        self.include_validate = (picked>1)
 
         thread = threading.Thread(target=self.main_handle)
         thread.start()
@@ -1151,7 +1159,7 @@ class CreateSfdcCodeCommand(sublime_plugin.WindowCommand):
         save_path_list.append(save_path)
 
         # dao Code
-        dao_code = codecreator.get_dao_class(self.picked_name, sftypedesc["fields"], self.is_custom_only)
+        dao_code = codecreator.get_dao_class(self.picked_name, sftypedesc["fields"], self.sf, self.is_custom_only)
         file_name = sfdc_name_map['dao_file']
         save_path = util.save_and_open_in_panel(dao_code, file_name, is_open, sub_folder )
         save_path_list.append(save_path)
@@ -1412,6 +1420,12 @@ class SwitchXyProjectCommand(sublime_plugin.TextCommand):
         #     if os.path.isfile(project_file_path):
         #         util.subl(project_file_path)
 
+    # def is_enabled(self):
+    #     use_mavensmate_setting = self.settings["use_mavensmate_setting"]
+    #     return (not use_mavensmate_setting)
+
+    # def is_visible(self):
+    #     return self.is_enabled()
 
 
 class AboutHxyCommand(sublime_plugin.ApplicationCommand):
