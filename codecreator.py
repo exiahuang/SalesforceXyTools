@@ -434,6 +434,7 @@ def get_list_controller_class(class_name):
 
     return cls_source, class_name
 
+# detail page
 def get_vf_class(class_name, fields, is_custom_only=False, include_validate=False):
 
     sobj_name = class_name
@@ -454,9 +455,12 @@ def get_vf_class(class_name, fields, is_custom_only=False, include_validate=Fals
         if field_name.lower() == 'id' or field['autoNumber']:
             continue
 
-        if is_custom_only and not field["custom"]:
-            if not (field_name.lower() == 'id' or field_name.lower() == 'name') :
-                continue
+        if is_custom_only and field_name.lower() in NO_NEED_FIELDS:
+            continue
+
+        # if is_custom_only and not field["custom"]:
+        #     if not (field_name.lower() == 'id' or field_name.lower() == 'name') :
+        #         continue
 
 
         tmpVal = {}
@@ -507,6 +511,7 @@ def get_vf_class(class_name, fields, is_custom_only=False, include_validate=Fals
     source_code = get_template(TMP_VF_INPUTFORM).format(**vf_param)
     return source_code, class_name
 
+# list page
 def get_list_vf_class(class_name, fields, is_custom_only=False, include_validate=False):
 
     sobj_name = class_name
@@ -514,6 +519,7 @@ def get_list_vf_class(class_name, fields, is_custom_only=False, include_validate
     edit_th_header = ''
     edit_td = ''
     view_td = ''
+    search_vf_item = ''
 
     constructor_body = ''
 
@@ -533,9 +539,13 @@ def get_list_vf_class(class_name, fields, is_custom_only=False, include_validate
         if field_name.lower() == 'id':
             continue
 
-        if is_custom_only and not field["custom"]:
-            if not (field_name.lower() == 'id' or field_name.lower() == 'name') :
-                continue
+        if is_custom_only and field_name.lower() in NO_NEED_FIELDS:
+            continue
+
+        # if is_custom_only and not field["custom"]:
+        #     if not (field_name.lower() == 'id' or field_name.lower() == 'name') :
+        #         continue
+
 
         data_type = util.xstr(field['type'])
         vf_show_snippet = template.get_vf_show_snippet(data_type)
@@ -551,12 +561,21 @@ def get_list_vf_class(class_name, fields, is_custom_only=False, include_validate
         edit_th_header += ('''\t\t\t\t\t<th>%s</th>\n''' % (util.xstr(field['label'])))
         edit_td += ('''\t\t\t\t\t<td>%s</td>\n''' % (edit_td_body))
 
+        # search input 
+        if data_type == 'picklist' or data_type == 'multipicklist':
+            vf_edit_snippet = template.template_search_snippet(data_type)
+            field_name_with_dto = "searchDto." + field_name
+            search_vf_item += vf_edit_snippet.format(field_name=field_name_with_dto,field_label=util.xstr(field['label']))
+            print('search_vf_item--->')
+            print(search_vf_item)
+            
+
     vf_param = {}
     vf_param['title'] = sfdc_name_map['list_vf'] + ' Input Form'
     vf_param['controller'] = sfdc_name_map['list_controller']
     vf_param['edit_table_body'] = get_template(TMP_LIST_VF_TABLE_BODY).format(th_header=edit_th_header,table_body=edit_td,**sfdc_name_map)
     vf_param['view_table_body'] = get_template(TMP_LIST_VF_TABLE_BODY).format(th_header=view_th_header,table_body=view_td,**sfdc_name_map)
-    vf_param['search_vf'] = get_template(TMP_VF_SEARCH)
+    vf_param['search_vf'] = get_template(TMP_VF_SEARCH).format(search_vf_item=search_vf_item)
 
     source_code = get_template(TMP_VF_INPUTFORM).format(**vf_param)
     return source_code, class_name
@@ -573,25 +592,45 @@ def get_dao_class(class_name, fields, sf_login_instance, is_custom_only=False):
 
     # search by keyword condition
     conditions = []
+    select_condition = ''
     tmp_index = 0
     for field in fields:
+        field_name = util.cap_low( get_api_name(util.xstr(field['name'])) )
+
+        # because textare can not be searched by like query
         if (field['type'] == 'textarea'):
             continue
+
+        # if is_custom_only and field_name.lower() in NO_NEED_FIELDS:
+        #     continue
+
         if field['custom'] or field['name'].lower() == 'name':
             # conditions.append((' %s like :keywordsFilters\n' % (field['name'])))
-
             if tmp_index == 0:
                 tmp_soql = (' ( %s like :keywordsFilters' % (field['name']))
             else:
                 tmp_soql = (' or %s like :keywordsFilters' % (field['name']))
             tmp_index += 1
 
-            tmp_apex_soql = ("\t\tquery_str += ' %s ';" % tmp_soql)
+            tmp_apex_soql = ("\t\t\tquery_str += ' %s ';" % tmp_soql)
             conditions.append(tmp_apex_soql)
+
+
+        if (field['type'] == 'picklist' or field['type'] == 'multipicklist'):
+            tmp_apex = '''
+        if(String.isNotBlank(searchDto.{field_name})){{
+            query_str = '  {field_name_api} = \\'' + searchDto.{field_name} + '\\'';
+            query_list.add(query_str);
+        }}
+        '''
+            select_condition += tmp_apex.format(field_name_api = field['name'], 
+                                                field_name = field_name)
+
 
     # sfdc_name_map['keywords_conditions'] = '\t\t\tor'.join(conditions)
     sfdc_name_map['keywords_conditions'] = '\n'.join(conditions)
-    sfdc_name_map['keywords_conditions'] += "\n\t\tquery_str += ' ) ';\n"
+    sfdc_name_map['keywords_conditions'] += "\n\t\t\tquery_str += ' ) ';\n"
+    sfdc_name_map['searchDto_conditions'] = select_condition
 
     src_code = get_template(TMP_DAO_CLASS).format(**sfdc_name_map)
 

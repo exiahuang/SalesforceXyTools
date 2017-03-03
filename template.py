@@ -147,13 +147,54 @@ def template_vf_inputform():
             <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
             <title>{title}</title>
         </head>
+        <style>
+            .ul-search {{
+                list-style-type: none;
+            }}
+            .li_search {{
+                display: table;
+                width: 100%;
+                margin-bottom: 20px;
+                
+            }}
+            .li_title {{
+                width: 120px
+            }}
+            .li_title,
+            .li_content {{
+                display: table-cell;
+                vertical-align: middle
+            }}
+            table.type1 {{
+                border-collapse: separate;
+                border-spacing: 1px;
+                text-align: center;
+                line-height: 1.5;
+            }}
+            table.type1 th {{
+                width: 155px;
+                padding: 10px;
+                font-weight: bold;
+                vertical-align: top;
+                color: #fff;
+                background: #036;
+            }}
+            table.type1 td {{
+                width: 155px;
+                padding: 10px;
+                vertical-align: top;
+                border-bottom: 1px solid #ccc;
+                background: #eee;
+            }}
+        </style>
         <body>
             <apex:form id="mainform">
 
                 <!-- START OF Edit Mode -->
                 <apex:outputText rendered="{{!isEditMode}}">
+                    {search_vf}
                     <div class="frame-wrapper">
-                        <table class="mod-base-table">
+                        <table class="type1">
                             {edit_table_body}
                         </table>
                     </div>
@@ -161,14 +202,14 @@ def template_vf_inputform():
                         <apex:commandButton value="Return" action="{{!doBack}}" onclick=""/>
                         <apex:commandButton value="Next" action="{{!doNext}}" onclick=""/>
                     </div>
-                    {search_vf}
                 </apex:outputText>
                 <!-- END OF Edit Mode -->
 
                 <!-- START OF View Mode -->
                 <apex:outputText rendered="{{!isViewMode}}">
+                    {search_vf}
                     <div class="frame-wrapper">
-                        <table class="mod-base-table">
+                        <table class="type1">
                             {view_table_body}
                         </table>
                     </div>
@@ -177,7 +218,6 @@ def template_vf_inputform():
                         <apex:commandButton value="Next" action="{{!doNext}}" onclick=""/>
                         <apex:commandButton value="Save" action="{{!doSave}}" onclick=""/>
                     </div>
-                    {search_vf}
                 </apex:outputText>
                 <!-- END OF View Mode -->
 
@@ -202,10 +242,36 @@ def template_vf_inputform():
 def template_vf_search():
     return '''
                     <div class="search">
-                        KeyWord: <apex:input type="text" value="{!keywords}" />
-                        <apex:commandButton value="Search" action="{!search}" onclick=""/>
+                        <ul class="ul-search">
+                            {search_vf_item}
+                            <li class="li-search">
+                                <div class="li_title">KeyWord</div>
+                                <div class="li_content"><apex:input type="text" value="{{!keywords}}" /></div>
+                            </li>
+                            <li class="li-search">
+                                <div class="li_title"></div>
+                                <div class="li_content"><apex:commandButton value="Search" action="{{!search}}" onclick=""/></div>
+                            </li>
+                        </ul>                  
                     </div>
 '''
+
+
+# VisualForce Template
+def template_search_snippet(data_type):
+        if data_type == 'picklist':
+            vf_code = '''
+                            <li class="li-search">
+                                <div class="li_title">{field_label}</div>
+                                <div class="li_content">
+                                    <apex:selectList size="1" value="{{!{field_name}}}" >
+                                            <apex:selectOptions value="{{!{field_name}List}}" />
+                                    </apex:selectList>
+                                </div>
+                            </li>
+'''
+        return vf_code
+
 
 def template_sfdcxycontroller():
     return '''/**
@@ -392,16 +458,19 @@ public with sharing class {list_controller} extends SfdcXyController {{
 
         // DTO Bean
         public {list_dto} {list_dto_instance} {{get;set;}}
+        // Search DTO Bean
+        public {dto} searchDto {{get;set;}}
         // Search keywords
         public String keywords {{get;set;}}
 
         public {list_controller}() {{
+            this.searchDto = new {dto}();
             search();
         }}
 
         public void search(){{
             this.{list_dto_instance} = new {list_dto}();
-            for( {sobject__c} {sobj_api_low_cap} : {dao}.get{sobj_api}List(keywords)){{
+            for( {sobject__c} {sobj_api_low_cap} : {dao}.get{sobj_api}List(keywords,searchDto)){{
                 this.{list_dto_instance}.add(new {dto}({sobj_api_low_cap}));
             }}
         }}
@@ -522,22 +591,33 @@ public with sharing class {dao} {{
     * get {sobject__c} by keywords
     * @return list of {sobject__c} 
     */
-    public static List<{sobject__c}> get{sobj_api}List(String keywords){{
-        if(String.isBlank(keywords)) return getAll{sobj_api}List();
-    
-        String[] keywordsArr = keywords.replace('　',' ').split(' ');
-        List<String> keywordsFilters = new List<String>();
-        for(String f: keywordsArr){{
-            if(String.isBlank(f)) continue;
-            f = f.replace('%', '\\\\%').replace('_','\\\\_');
-            keywordsFilters.add('%' + f + '%');
+    public static List<{sobject__c}> get{sobj_api}List(String keywords,{dto} searchDto){{
+
+        String soql = getQueryField();
+        String query_str = '';
+        List<String> query_list = new List<String>();
+
+        if(String.isNotBlank(keywords)){{
+            String[] keywordsArr = keywords.replace('　',' ').split(' ');
+            List<String> keywordsFilters = new List<String>();
+            for(String f: keywordsArr){{
+                if(String.isBlank(f)) continue;
+                f = f.replace('%', '\\\\%').replace('_','\\\\_');
+                keywordsFilters.add('%' + f + '%');
+            }}
+
+{keywords_conditions}
+            query_list.add(query_str);
         }}
 
-        String query_str = getQueryField();
-        query_str += ' WHERE  ';
-{keywords_conditions}
+{searchDto_conditions}
 
-        List<{sobject__c}> {sobj_api_low_cap}List = Database.query(query_str);
+        if(query_list.size() > 0){{
+            soql += ' WHERE  ';
+            soql += String.join(query_list, ' and ');
+        }}
+        soql += ' limit 10000';
+        List<{sobject__c}> {sobj_api_low_cap}List = Database.query(soql);
 
         return {sobj_api_low_cap}List;
     }}

@@ -47,7 +47,7 @@
 	// },
 	{
 	    "keys": ["alt+ctrl+d"],
-	    "command": "sfdc_online_dataviewer"
+	    "command": "sfdc_quick_viewer"
 	},
 
 

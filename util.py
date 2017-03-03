@@ -150,9 +150,9 @@ def refresh_token():
     redirect_uri = server_info.get("redirect_uri")
     oauth = auth.SalesforceOAuth2(client_id, client_secret, redirect_uri, is_sandbox)
     refresh_token = default_project_value["refresh_token"]
-    print(refresh_token)
+    # print(refresh_token)
     response_json = oauth.refresh_token(refresh_token)
-    print(response_json)
+    # print(response_json)
 
     if "error" in response_json:
         return False
@@ -566,6 +566,31 @@ def get_soql_result(soql_str, soql_result):
     message += xstr(rows)
     return message
 
+# def search_soql_to_list(soql_str, soql_result):
+#     table = []
+#     headers = get_soql_fields(soql_str)
+
+#     for record in soql_result['records']:
+#         row = []
+#         for header in headers:
+#             row_value = record
+
+#             # relation soql query
+#             for _header in header.split("."):
+#                 field_case_mapping = {}
+#                 for k in row_value:
+#                     field_case_mapping[k.lower()] = k
+
+#                 row_value = row_value[field_case_mapping[_header.lower()]]
+#                 if not isinstance(row_value, dict):
+#                     break
+
+#             value = xstr(row_value)
+#             row.append(value)
+#         table.append(row)
+#     return table
+
+
 def get_query_object_name(soql_result):
     try:
         sobj_name = soql_result['records'][0]['attributes']['type']
@@ -718,8 +743,10 @@ def open_in_browser(url, browser_name = '', browser_path = ''):
         webbrowser.open_new_tab(url)
 
     elif browser_name == "chrome-private":
-        os.system("\"%s\" --incognito %s" % (browser_path, url))
-
+        # os.system("\"%s\" --incognito %s" % (browser_path, url))
+        browser = webbrowser.get('"' + browser_path +'" --incognito %s')
+        browser.open(url)
+        
     else:
         try:
             # show_in_panel("33")

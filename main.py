@@ -259,10 +259,11 @@ class SoqlQueryCommand(sublime_plugin.TextCommand):
             soql_string = self.view.substr(sel_area[0])
             soql_string = util.del_comment(soql_string)
 
-        sobject_name = util.get_soql_sobject(soql_string)
-        if not sobject_name:
-            util.show_in_dialog("Please select SOQL !")
-            return
+        # TODO
+        # sobject_name = util.get_soql_sobject(soql_string)
+        # if not sobject_name:
+        #     util.show_in_dialog("Please select SOQL !")
+        #     return
 
         thread = threading.Thread(target=self.main_handle, args=(soql_string, ))
         thread.start()
@@ -581,48 +582,208 @@ class SfdcDataviewerCommand(sublime_plugin.WindowCommand):
 
 
 # sfdc_online_dataviewer
-class SfdcOnlineDataviewerCommand(sublime_plugin.WindowCommand):
+class SfdcQuickViewerCommand(sublime_plugin.WindowCommand):
     def run(self):
-        try:
+        self.menu = [
+                "0. Reload Cache",
+                "1. Search All", 
+                "2. SObject Data", 
+                "3. SObject Setting", 
+                "4. ApexClass", 
+                "5. Trigger", 
+                "6. VisualForce Page",
+                "7. VisualForce Components", 
+                "8. Email Template", 
+                "9. Static Resource" 
+                # "10. Workflow Rule", 
+                # "11. Validate Rule"
+                ]
+         
+        sublime.set_timeout(lambda:self.window.show_quick_panel(self.menu, self.select_menu), 10)
+
+    def select_menu(self, picked):
+        if 0 > picked < len(self.menu):
+            return
+        self.sel_menu = picked
+        self.sel_key = self.menu[picked]
+
+        self.tooling_soql = {}
+        self.tooling_soql[self.menu[3]] = 'SELECT id,developername FROM CustomObject'
+        self.tooling_soql[self.menu[4]] = 'SELECT id,name FROM ApexClass'
+        self.tooling_soql[self.menu[5]] = 'SELECT id,name FROM ApexTrigger'
+        self.tooling_soql[self.menu[6]] = 'SELECT id,name FROM ApexPage'
+        self.tooling_soql[self.menu[7]] = 'SELECT id,name FROM ApexComponent'
+        self.tooling_soql[self.menu[8]] = 'SELECT id,name FROM EmailTemplate'
+        self.tooling_soql[self.menu[9]] = 'SELECT id,name FROM StaticResource'
+        # self.tooling_soql[self.menu[10]] = 'SELECT id,fullname FROM WorkflowRule'
+        # self.tooling_soql[self.menu[11]] = 'SELECT Id,FullName FROM ValidationRule'
+
+
+        self.sf = util.sf_login()
+        self.settings = self.sf.settings
+        default_project = self.settings['default_project_value']['project_name']
+        
+        s = sublime.load_settings(setting.SFDC_CACHE_SETTINGS)
+        project_meta_map = s.get(default_project)
+        # print('project_meta_map-->')
+        # print(project_meta_map)
+
+        # Reload Cache
+        if picked == 0:
+            thread = threading.Thread(target=self.reload_cache)
+            thread.start()
+            util.handle_thread(thread)
+        else:
+            # reload cache
+            if (project_meta_map is None):
+                # thread = threading.Thread(target=self.reload_cache)
+                # thread.start()
+                # util.handle_thread(thread)
+                # print('reload_cache()-->')
+                self.reload_cache()
+                s = sublime.load_settings(setting.SFDC_CACHE_SETTINGS)
+                project_meta_map = s.get(default_project)
+
+
+            self.metadata = []
+            self.metadata_view = []
+            sel_key_str = self.menu[picked]
+
+            # Search All
+            if picked == 1:
+                self.metadata = []
+                self.metadata_view = []
+                for key in range(2,9):
+                    tmp = project_meta_map[self.menu[key]]
+                    if tmp is not None:
+                        self.metadata.extend(tmp)
+                        for obj in tmp:
+                            self.metadata_view.append(obj['name'])
+                sublime.set_timeout(lambda:self.window.show_quick_panel(self.metadata_view, self.select_metadata), 10)
+
+            # Custom Object Data 
+            elif picked >= 2:
+                self.metadata = project_meta_map[sel_key_str]
+                for obj in project_meta_map[sel_key_str]:
+                    self.metadata_view.append(obj['name'])
+                sublime.set_timeout(lambda:self.window.show_quick_panel(self.metadata_view, self.select_metadata), 10)
+
+    def select_metadata(self, picked):
+        if 0 > picked < len(self.metadata):
+            return
+
+        if self.sf is None:
             self.sf = util.sf_login()
-            self.settings = self.sf.settings
-            dirs = []
-            self.results = []
-            for x in self.sf.describe()["sobjects"]:
-                if x["keyPrefix"] is not None:
-                    # dirs.append([util.xstr(x["name"]), util.xstr(x["label"])])
-                    dirs.append(util.xstr(x["name"])+' : '+util.xstr(x["label"]) +' : '+ x["keyPrefix"])
-                    self.results.append(util.xstr(x["keyPrefix"]))
-            self.window.show_quick_panel(dirs, self.panel_done,sublime.MONOSPACE_FONT)
 
-        except RequestException as e:
-            util.show_in_panel("Network connection timeout when issuing REST GET request")
-            return
-        except SalesforceExpiredSession as e:
-            util.show_in_dialog('session expired')
-            util.re_auth()
-            return
-        except SalesforceRefusedRequest as e:
-            util.show_in_panel('The request has been refused.')
-            return
-        except SalesforceError as e:
-            err = 'Error code: %s \nError message:%s' % (e.status,e.content)
-            util.show_in_panel(err)
-            return
-        except Exception as e:
-            util.show_in_panel(e)
-            # util.show_in_dialog('Exception Error!')
-            return
-
-    def panel_done(self, picked):
-        if 0 > picked < len(self.results):
-            return
-        self.value = self.results[picked]
-        login_url = ('https://{instance}/{keyPrefix}'
+        sel_item = self.metadata[picked]
+        login_url = ('https://{instance}/{id}'
                      .format(instance=self.sf.sf_instance,
-                             keyPrefix=self.value))
+                             id=sel_item['id']))
         # print(login_url)
         util.open_in_default_browser(login_url)
+
+
+    def reload_cache(self):
+        # try:
+
+            sel_type = {}
+            sel_type[self.menu[2]] = ''
+            sel_type[self.menu[3]] = '__c Custom SObject Setting'
+            sel_type[self.menu[4]] = '.cls'
+            sel_type[self.menu[5]] = '.trigger'
+            sel_type[self.menu[6]] = '.page'
+            sel_type[self.menu[7]] = '.component'
+            sel_type[self.menu[8]] = '-EmailTemplate'
+            sel_type[self.menu[9]] = '-StaticResource'
+            # sel_type[self.menu[10]] = '-WorkflowRule'
+            # sel_type[self.menu[11]] = '-ValidationRule'
+
+            default_project = self.settings['default_project_value']['project_name']
+            # print('default_project -->')
+            # print(default_project)
+
+
+            s = sublime.load_settings(setting.SFDC_CACHE_SETTINGS)
+            project_meta_map = s.get(default_project)
+
+            if project_meta_map is None:
+                project_meta_map = {}
+            
+            for key in self.tooling_soql:
+                soql = self.tooling_soql[key]
+                params = {'q': soql}
+                soql_result = {}
+
+                # TODO
+                try:
+                   soql_result = self.sf.restful('tooling/query', params)
+                   # print(soql_result)
+                except Exception as e:
+                    print('------>reload_cache Exception')
+                    print(e)
+                    pass
+                
+                # util.show_in_new_tab(soql_result)
+                # table = util.search_soql_to_list(soql, soql_result)
+                if soql_result['records'] is not None:
+                    result = []
+                    name_key = 'Name'
+                    if self.menu[3] == key:
+                        name_key = 'DeveloperName'
+                    # TODO
+                    # elif self.menu[10] == key:
+                    #     name_key = 'FullName'
+                    
+                    for obj in soql_result['records']:
+                        tmp = {}
+                        tmp['id'] = obj['Id']
+                        tmp['name'] = obj[name_key] + sel_type[key]
+                        result.append(tmp)
+
+                    project_meta_map[key] = result
+
+            # "2. Custom Object Data"
+            custom_obj_meta = []
+            for x in self.sf.describe()["sobjects"]:
+                if x["keyPrefix"] is not None:
+                    tmp_map = {}
+                    tmp_map['id'] = util.xstr(x["keyPrefix"])
+                    tmp_map['name'] = (util.xstr(x["name"])+' : '+util.xstr(x["label"]) +' : '+ x["keyPrefix"])
+                    custom_obj_meta.append(tmp_map)
+
+                # stand sobject setting page
+                if not x['custom']:
+                    tmp_map = {}
+                    tmp_map['id'] = 'p/setup/layout/LayoutFieldList?type=' + util.xstr(x["name"])
+                    tmp_map['name'] = util.xstr(x["name"]) + ' ' + util.xstr(x["label"]) + ' Standard SObject Setting'
+                    if project_meta_map[self.menu[3]] is None:
+                        project_meta_map[self.menu[3]] = {}
+                    project_meta_map[self.menu[3]].append(tmp_map)
+
+            project_meta_map[self.menu[2]] = custom_obj_meta
+
+            s.set(default_project, project_meta_map)
+
+            sublime.save_settings(setting.SFDC_CACHE_SETTINGS)
+
+        # except RequestException as e:
+        #     util.show_in_panel("Network connection timeout when issuing REST GET request")
+        #     return
+        # except SalesforceExpiredSession as e:
+        #     util.show_in_dialog('session expired')
+        #     util.re_auth()
+        #     return
+        # except SalesforceRefusedRequest as e:
+        #     util.show_in_panel('The request has been refused.')
+        #     return
+        # except SalesforceError as e:
+        #     err = 'Error code: %s \nError message:%s' % (e.status,e.content)
+        #     util.show_in_panel(err)
+        #     return
+        # except Exception as e:
+        #     util.show_in_panel(e)
+        #     # util.show_in_dialog('Exception Error!')
+        #     return
 
 
 # sfdc_object_desc

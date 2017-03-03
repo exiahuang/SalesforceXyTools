@@ -206,8 +206,6 @@ class ExportSoqlCommand(sublime_plugin.TextCommand):
 #         if 0 > picked < len(self.results):
 #             return
 #         self.picked_name = self.results[picked]
-#         self.panel_done(picked)
-
 
 #         time_stamp = time.strftime("%Y%m%d%H%M", time.localtime())
 #         self.fullPath =  os.path.join(util.get_default_floder(), DIR_DATALOADER, "%s_%s.csv" % (self.picked_name, time_stamp))
@@ -220,22 +218,27 @@ class ExportSoqlCommand(sublime_plugin.TextCommand):
 #         util.handle_thread(thread)
 
 #     def main_handle(self):
-#         from .csv_adapter import CsvDictsAdapter
+#         from .libs import csv_adapter
 
 #         try:
 #             bulk = util.sf_login(Soap_Type=Bulk)
-#             job = bulk.create_insert_job(self.picked_name, contentType='CSV')
+#             # job = bulk.create_insert_job(self.picked_name, contentType='CSV', concurrency='Parallel')
+#             job = bulk.create_insert_job("Account", contentType='CSV', concurrency='Parallel')
 
-#             accounts = c
+#             accounts = [dict(Name="Account%d" % idx) for idx in xrange(5)]
+#             print('accounts--->')
+#             print(accounts)
 
-#             csv_iter = CsvDictsAdapter(iter(accounts))
+#             csv_iter = csv_adapter.CsvDictsAdapter(iter(accounts))
 
 #             batch = bulk.post_bulk_batch(job, csv_iter)
 
 #             bulk.wait_for_batch(job, batch)
 
+#             print("Done. Accounts uploaded.")
 #         except Exception as e:
 #             util.show_in_panel(e)
 #             print(e)
 #         finally:
 #             bulk.close_job(job)
+

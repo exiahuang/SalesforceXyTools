@@ -16,6 +16,10 @@
                 "command": "login_project"
             },
             {
+                "caption": "SFDC Quick Viewer",
+                "command": "sfdc_quick_viewer"
+            },
+            {
                 "caption": "SFDC SOQL",
                 "children":
                 [
@@ -63,10 +67,6 @@
                     {
                         "caption": "SFDC DataViewer",
                         "command": "sfdc_dataviewer"
-                    },
-                    {
-                        "caption": "SFDC Online DataViewer",
-                        "command": "sfdc_online_dataviewer"
                     }
                 ]
             },
@@ -79,7 +79,7 @@
                         "command": "export_sobject"
                     },
                     {
-                        "caption": "Export SOQL",
+                        "caption": "Export FROM SOQL",
                         "command": "export_soql"
                     }
                     // ,

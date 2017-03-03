@@ -1,5 +1,12 @@
 # SalesforceXyTools Update History
 
+## 1.0.8 (2017.03.03)
+1. Add SFDC Quick Viewer
+You can search SObject Data/SObject Setting/ApexClass/Trigger/VisualForce Page/VisualForce Components/Email Template/Static Resource and open on browser Quickly.
+usage:
+[SFDC-XY] -> [SFDC Quick Viewer]
+
+
 ## 1.0.7 (2017.01.31)
 1. Auto Create Child-Parent Query.
 2. Create DTO/DAO cls Include Child-Parent Relation.

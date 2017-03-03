@@ -2,6 +2,7 @@ import sublime,sublime_plugin
 import os,time,json
 
 SFDC_HUANGXY_SETTINGS = "sfdc.huangxy.sublime-settings"
+SFDC_CACHE_SETTINGS = "salesforcexytools.cache.sublime-settings"
 AUTHENTICATION_OAUTH2 = "oauth2"
 AUTHENTICATION_PASSWORD = "password"
 AUTHENTICATION_MAVENSMATE = "mavensmate"
@@ -55,6 +56,7 @@ def load():
 
     for project_key in projects.keys():
         project_value = projects[project_key]
+        project_value['project_name'] = project_key
         if "api_version" not in project_value:
             project_value["api_version"] = settings["default_api_version"]
 
@@ -74,7 +76,10 @@ def load():
     # print('------->load end')
     # print(json.dumps(settings, indent=4))
     return settings
-      
+
+# test = load()
+# print(test)
+# print(test["default_project_value"])
 
 def load_mavensmate_setting(window=None):
     # Load all settings
@@ -142,6 +147,7 @@ def load_mavensmate_setting(window=None):
     # mavensmate v0.0.10
     elif "projectName" in settings:
         settings["default_project"] = settings["projectName"]
+        settings["project_name"] = settings["projectName"]
 
     if "api_version" not in settings:
         settings["api_version"] = "37.0"
