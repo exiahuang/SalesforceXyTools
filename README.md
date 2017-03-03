@@ -7,6 +7,7 @@ SalesforceXyTools for Sublime Text is Rapid development tools for Salesforce Dev
 * SObject Viewer, SObject Description, Export SOjbect Fields to Excel
 * Atuo Login SFDC (three login type: oauth2 , password config and use mavensmate session).
 * SOQL Query, Tooling Query, Run Apex Script.
+* Quick Search SObject Data/SObject Setting/ApexClass/Trigger/VisualForce Page/VisualForce Components/Email Template/Static Resource and open on browser Quickly
 
 # SalesforceXyTools Help
 
