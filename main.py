@@ -676,9 +676,16 @@ class SfdcQuickViewerCommand(sublime_plugin.WindowCommand):
             self.sf = util.sf_login()
 
         sel_item = self.metadata[picked]
-        login_url = ('https://{instance}/{id}'
+        # login_url = ('https://{instance}/{id}'
+        #              .format(instance=self.sf.sf_instance,
+        #                      id=sel_item['id']))
+      
+        returl = '/' + sel_item['id']
+        login_url = ('https://{instance}/secur/frontdoor.jsp?sid={sid}&retURL={returl}'
                      .format(instance=self.sf.sf_instance,
-                             id=sel_item['id']))
+                             sid=self.sf.session_id,
+                             returl=returl))
+
         # print(login_url)
         util.open_in_default_browser(login_url)
 
