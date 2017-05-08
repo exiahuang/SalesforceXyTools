@@ -1,4 +1,4 @@
-# SalesforceXyTools
+# SalesforceXyTools For Sublime
 
 SalesforceXyTools for Sublime Text is Rapid development tools for Salesforce Development.
 
@@ -8,6 +8,10 @@ SalesforceXyTools for Sublime Text is Rapid development tools for Salesforce Dev
 * Atuo Login SFDC (three login type: oauth2 , password config and use mavensmate session).
 * SOQL Query, Tooling Query, Run Apex Script.
 * Quick Search SObject Data/SObject Setting/ApexClass/Trigger/VisualForce Page/VisualForce Components/Email Template/Static Resource and open on browser Quickly
+
+# [SalesforceXyTools For Chrome](http://salesforcexytools.com/Salesforce/SalesforceXyTools-For-Chrome.html)
+ [Install SalesforceXyTools For Chrome From Web Store](https://chrome.google.com/webstore/detail/salesforcexytools/ehklfkbacogbanjgekccnbfdgjechlmf)
+
 
 # SalesforceXyTools Help
 
