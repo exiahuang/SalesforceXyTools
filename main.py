@@ -1,17 +1,12 @@
 import sublime
 import sublime_plugin
 import os
-import threading
-# import datetime
-# import sys, xdrlib
-# import json
-# import random
-
-# from . import xlwt
-# from . import requests
+from . import baseutil
 from . import util
+from .baseutil import SysIo
 from . import codecreator
 from . import setting
+from .setting import SfBasicConfig
 from . import xlsxwriter
 from .requests.exceptions import RequestException
 from .salesforce import (
@@ -23,8 +18,10 @@ from .salesforce import (
     SalesforceGeneralError,
     SalesforceError
     )
+from .salesforce.core import ToolingApi, MetadataApi
+from .uiutil import SublConsole
 
-AUTO_CODE_DIR = "code-creator"
+
 
 ##########################################################################################
 #Sublime main menu
@@ -37,50 +34,87 @@ AUTO_CODE_DIR = "code-creator"
 
 # print the SFDC Object
 class ShowSfdcObjectListCommand(sublime_plugin.TextCommand):
+    def run(self, edit):
+        self.sf_basic_config = SfBasicConfig()
+        self.settings = self.sf_basic_config.get_setting()
+        self.sublconsole = SublConsole(self.sf_basic_config)
+        self.sublconsole.thread_run(target=self.main_handle)
+
     def main_handle(self):
         try:
-            sf = util.sf_login()
+            sf = util.sf_login(self.sf_basic_config)
             message = 'label, name, keyPrefix' + "\n"
             for x in sf.describe()["sobjects"]:
-              message += util.xstr(x["label"]) + "," + util.xstr(x["name"]) + "," + util.xstr(x["keyPrefix"]) + "\n"
+              message += baseutil.xstr(x["label"]) + "," + baseutil.xstr(x["name"]) + "," + baseutil.xstr(x["keyPrefix"]) + "\n"
 
-            # util.show_in_new_tab(message)
+            # self.sublconsole.show_in_new_tab(message)
             file_name = sf.settings["default_project"] + '_sobject_lst.csv'
-            util.save_and_open_in_panel(message, file_name, True )
+            save_dir = self.sf_basic_config.get_work_dir()
+            self.sublconsole.debug('file_name:' + file_name)
+            
+            self.sublconsole.save_and_open_in_panel(message, save_dir, file_name, True )
 
         except RequestException as e:
-            util.show_in_panel("Network connection timeout when issuing REST GET request")
+            self.sublconsole.showlog("Network connection timeout when issuing REST GET request")
             return
         except SalesforceExpiredSession as e:
-            util.show_in_dialog('session expired')
+            self.sublconsole.show_in_dialog('session expired')
             util.re_auth()
             return
         except SalesforceRefusedRequest as e:
-            util.show_in_panel('The request has been refused.')
+            self.sublconsole.showlog('The request has been refused.')
             return
         except SalesforceError as e:
             err = 'Error code: %s \nError message:%s' % (e.status,e.content)
-            util.show_in_panel(err)
+            self.sublconsole.showlog(err)
             return
         except Exception as e:
-            util.show_in_panel(e)
-            # util.show_in_dialog('Exception Error!')
+            self.sublconsole.showlog(e)
+            # self.sublconsole.show_in_dialog('Exception Error!')
             return    
-
-    def run(self, edit):
-        thread = threading.Thread(target=self.main_handle)
-        thread.start()
-        util.handle_thread(thread)
 
 # Save the SFDC Object As Excel
 # # use xlsxwriter to write excel
 class SaveSfdcObjectAsExcelCommand(sublime_plugin.WindowCommand):
+    def run(self):
+        self.sf_basic_config = SfBasicConfig()
+        self.settings = self.sf_basic_config.get_setting()
+        self.sublconsole = SublConsole(self.sf_basic_config)
+
+        self.dirs = ['Custom Sobject','Standard Sobject','All Sobject']
+        self.window.show_quick_panel(self.dirs, self.panel_done,sublime.MONOSPACE_FONT)
+
+    def panel_done(self, picked):
+        if 0 > picked < len(self.dirs):
+            return
+        sel_type = self.dirs[picked]
+        self.is_custom_sobject = sel_type == 'Custom Sobject'
+        self.is_standard_sobject = sel_type == 'Standard Sobject'
+        self.is_all_sobject = sel_type == 'All Sobject'
+        settings = self.settings
+        
+        if self.is_all_sobject :
+            self.fullPath =  os.path.join(self.sf_basic_config.get_work_dir(), settings["default_project"] + '_all_sobject.xlsx')
+        elif self.is_custom_sobject:
+            self.fullPath =  os.path.join(self.sf_basic_config.get_work_dir(), settings["default_project"] + '_custom_sobject.xlsx')
+        elif self.is_standard_sobject:
+            self.fullPath =  os.path.join(self.sf_basic_config.get_work_dir(), settings["default_project"] + '_standard_sobject.xlsx')
+        # show_input_panel(caption, initial_text, on_done, on_change, on_cancel)
+        self.window.show_input_panel("Please Input FullPath of fileName: " , 
+            self.fullPath, self.on_input, None, None)
+
+        self.sublconsole.thread_run(target=self.on_input)
+
+    def on_input(self, args):
+        self.sublconsole.thread_run(target=self.main_handle, args=(args, ))
+
     def main_handle(self, savePath = ''):
         try:
+            self.sublconsole.showlog('save path : ' + savePath)
             dirPath = os.path.dirname(savePath)
-            util.makedir(dirPath)
+            baseutil.makedir(dirPath)
 
-            sf = util.sf_login()
+            sf = util.sf_login(self.sf_basic_config)
             # contact = sf.query("SELECT Id, Email FROM Contact limit 1")
 
             sfdesc = sf.describe()
@@ -103,31 +137,25 @@ class SaveSfdcObjectAsExcelCommand(sublime_plugin.WindowCommand):
             for x in sf.describe()["sobjects"]:
               #write to xls
               # book.get_sheet(0)
-              newSheet_1.write(index, 0, util.xstr(x["label"]))
-              newSheet_1.write(index, 1, util.xstr(x["name"]))
-              newSheet_1.write(index, 2, util.xstr(x["keyPrefix"]))
+              newSheet_1.write(index, 0, baseutil.xstr(x["label"]))
+              newSheet_1.write(index, 1, baseutil.xstr(x["name"]))
+              newSheet_1.write(index, 2, baseutil.xstr(x["keyPrefix"]))
               index = index + 1
               #print(sf.Kind__c.describe())
               #print(x["name"])
               #print(x["custom"])
-              if x["custom"]:
+              if self.is_all_sobject or (x["custom"] and self.is_custom_sobject) or ( not x["custom"] and self.is_standard_sobject):
                   sheetIndex += 1
                   
-                  # sftype = SFType(util.xstr(x["name"]), sf.session_id, sf.sf_instance, sf_version=sf.sf_version,
+                  # sftype = SFType(baseutil.xstr(x["name"]), sf.session_id, sf.sf_instance, sf_version=sf.sf_version,
                   #               proxies=sf.proxies, session=sf.session)
-                  sftype = sf.get_sobject(util.xstr(x["name"]))
+                  sftype = sf.get_sobject(baseutil.xstr(x["name"]))
 
                   #print(x["name"])     
                   #write to xls
-                  # worksheet_name = x["name"]
-                  # if len(worksheet_name) > 31:
-                  #   worksheet_name = (x["name"].replace("_",""))[0:31]
-                  
-                  worksheet_name = x["label"]
-                  if len(worksheet_name) > 31:
-                    worksheet_name = (x["label"])[0:31]
+                  worksheet_name = baseutil.get_excel_sheet_name(x["label"])
                   if worksheet_name in sheetNameList:
-                    worksheet_name = (x["label"])[0:25] + "_" + util.random_str(4)
+                    worksheet_name = (x["label"])[0:25] + "_" + baseutil.random_str(4)
                   
                   sheetNameList.append(worksheet_name)
 
@@ -150,7 +178,7 @@ class SaveSfdcObjectAsExcelCommand(sublime_plugin.WindowCommand):
 
                   sftypedesc = sftype.describe()
                   for field in sftypedesc["fields"]:
-                     print(field)  
+                     #print(field)  
                      #print(field["name"])  
                      #print(field["label"])  
                      #print(field["type"])  
@@ -162,112 +190,103 @@ class SaveSfdcObjectAsExcelCommand(sublime_plugin.WindowCommand):
                         if header == "picklistValues":
                             picklistValuesStr = ''
                             for pv in field[header]:
-                                picklistValuesStr += pv['label'] + ':' + pv['value'] + '\n'
+                                if 'label' in pv and 'value' in pv:
+                                    picklistValuesStr += str(pv['label']) + ':' + str(pv['value']) + '\n'
                             fieldSheet_1.write(rowIndex, headerIndex, picklistValuesStr)
                         else:
-                            fieldSheet_1.write(rowIndex, headerIndex, util.xstr(field[header]))
+                            fieldSheet_1.write(rowIndex, headerIndex, baseutil.xstr(field[header]))
                         headerIndex = headerIndex + 1
 
               #message += x["label"] + "\n"
 
             # book.save( settings["default_project"] + '_sobject.xls')
-            util.show_in_dialog("Done! Please see the dir below: \n" + dirPath)
+            self.sublconsole.show_in_dialog("Done! Please see the dir below: \n" + dirPath)
             # isOpen = sublime.ok_cancel_dialog('Do you want to open the directory?')
             # if isOpen:
 
 
         except RequestException as e:
-            util.show_in_panel("Network connection timeout when issuing REST GET request")
+            self.sublconsole.showlog("Network connection timeout when issuing REST GET request")
             return
         except SalesforceExpiredSession as e:
-            util.show_in_dialog('session expired')
+            self.sublconsole.show_in_dialog('session expired')
             util.re_auth()
             return
         except SalesforceRefusedRequest as e:
-            util.show_in_panel('The request has been refused.')
+            self.sublconsole.showlog('The request has been refused.')
             return
         except SalesforceError as e:
             err = 'Error code: %s \nError message:%s' % (e.status,e.content)
-            util.show_in_panel(err)
+            self.sublconsole.showlog(err)
             return
         except Exception as e:
-            util.show_in_panel(e)
-            # util.show_in_dialog('Exception Error!')
+            self.sublconsole.showlog(e)
+            # self.sublconsole.show_in_dialog('Exception Error!')
             return
 
-    def on_input(self, args):
-        thread = threading.Thread(target=self.main_handle, args=(args, ))
-        thread.start()
-        util.handle_thread(thread)
 
 
-    def run(self):
-        settings = setting.load()
-        self.fullPath =  os.path.join(util.get_default_floder(), settings["default_project"] + '_sobject.xlsx')
-        # show_input_panel(caption, initial_text, on_done, on_change, on_cancel)
-        self.window.show_input_panel("Please Input FullPath of fileName: " , 
-            self.fullPath, self.on_input, None, None)
-        
 
 # Soql Query
 class SoqlQueryCommand(sublime_plugin.TextCommand):
+    def run(self, edit):
+        self.sf_basic_config = SfBasicConfig()
+        self.settings = self.sf_basic_config.get_setting()
+        self.sublconsole = SublConsole(self.sf_basic_config)
+
+        sel_area = self.view.sel()
+        if sel_area[0].empty():
+          self.sublconsole.show_in_dialog("Please select the SOQL !!")
+          return
+        else:
+            soql_string = self.view.substr(sel_area[0])
+            soql_string = baseutil.del_comment(soql_string)
+
+        # TODO
+        # sobject_name = baseutil.get_soql_sobject(soql_string)
+        # if not sobject_name:
+        #     self.sublconsole.show_in_dialog("Please select SOQL !")
+        #     return
+
+        self.sublconsole.thread_run(target=self.main_handle, args=(soql_string, ))
+
     def main_handle(self, sel_string = ''):
         try:
-            sf = util.sf_login()
+            sf = util.sf_login(self.sf_basic_config)
 
             soql_str = soql_format(sf,sel_string)
 
-            print('------>soql')
-            print(soql_str)
+            self.sublconsole.debug('------>soql')
+            self.sublconsole.debug(soql_str)
             
             soql_result = sf.query(soql_str)
-            print('----->soql_result')  
-            print(soql_result)  
+            self.sublconsole.debug('----->soql_result')  
+            self.sublconsole.debug(soql_result)  
 
 
             # header = [key for key in soql_result['records'].iterkeys()]
             # print(header)
-            message = util.get_soql_result(soql_str, soql_result)
+            message = baseutil.get_soql_result(soql_str, soql_result)
 
-            util.show_in_new_tab(message)
+            self.sublconsole.show_in_new_tab(message)
 
         except RequestException as e:
-            util.show_in_panel("Network connection timeout when issuing REST GET request")
+            self.sublconsole.showlog("Network connection timeout when issuing REST GET request")
             return
         except SalesforceExpiredSession as e:
-            util.show_in_dialog('session expired')
+            self.sublconsole.show_in_dialog('session expired')
             util.re_auth()
             return
         except SalesforceRefusedRequest as e:
-            util.show_in_panel('The request has been refused.')
+            self.sublconsole.showlog('The request has been refused.')
             return
         except SalesforceError as e:
             err = 'Error code: %s \nError message:%s' % (e.status,e.content)
-            util.show_in_panel(err)
+            self.sublconsole.showlog(err)
             return
         except Exception as e:
-            util.show_in_panel(e)
-            # util.show_in_dialog('Exception Error!')
+            self.sublconsole.showlog(e)
             return
-
-    def run(self, edit):
-        sel_area = self.view.sel()
-        if sel_area[0].empty():
-          util.show_in_dialog("Please select the SOQL !!")
-          return
-        else:
-            soql_string = self.view.substr(sel_area[0])
-            soql_string = util.del_comment(soql_string)
-
-        # TODO
-        # sobject_name = util.get_soql_sobject(soql_string)
-        # if not sobject_name:
-        #     util.show_in_dialog("Please select SOQL !")
-        #     return
-
-        thread = threading.Thread(target=self.main_handle, args=(soql_string, ))
-        thread.start()
-        util.handle_thread(thread)
 
 
 # ToolingQueryCommand
@@ -276,53 +295,61 @@ class ToolingQueryCommand(sublime_plugin.TextCommand):
         try:
             # print("ToolingQueryCommand Start")
 
-            sf = util.sf_login()
+            sf = util.sf_login(self.sf_basic_config)
             
             params = {'q': sel_string}
             soql_result = sf.restful('tooling/query', params)
             # header = [key for key in soql_result['records'].iterkeys()]
             # print(header)
-            message = util.get_soql_result(sel_string, soql_result)
+            message = baseutil.get_soql_result(sel_string, soql_result)
 
-            util.show_in_new_tab(message)
+            self.sublconsole.show_in_new_tab(message)
 
         except RequestException as e:
-            util.show_in_panel("Network connection timeout when issuing REST GET request")
+            self.sublconsole.showlog("Network connection timeout when issuing REST GET request")
             return
         except SalesforceExpiredSession as e:
-            util.show_in_dialog('session expired')
+            self.sublconsole.show_in_dialog('session expired')
             util.re_auth()
             return
         except SalesforceRefusedRequest as e:
-            util.show_in_panel('The request has been refused.')
+            self.sublconsole.showlog('The request has been refused.')
             return
         except SalesforceError as e:
             err = 'Error code: %s \nError message:%s' % (e.status,e.content)
-            util.show_in_panel(err)
+            self.sublconsole.showlog(err)
             return
         except Exception as e:
-            util.show_in_panel(e)
-            # util.show_in_dialog('Exception Error!')
+            self.sublconsole.showlog(e)
+            # self.sublconsole.show_in_dialog('Exception Error!')
             return
 
     def run(self, edit):
+        self.sf_basic_config = SfBasicConfig()
+        self.settings = self.sf_basic_config.get_setting()
+        self.sublconsole = SublConsole(self.sf_basic_config)
+
         sel_area = self.view.sel()
         if sel_area[0].empty():
-          util.show_in_dialog("Please select the Tooling SOQL !!")
+          self.sublconsole.show_in_dialog("Please select the Tooling SOQL !!")
           return
         else:            
             sel_string = self.view.substr(sel_area[0])
-            sel_string = util.del_comment(sel_string)
+            sel_string = baseutil.del_comment(sel_string)
 
-        thread = threading.Thread(target=self.main_handle, args=(sel_string, ))
-        thread.start()
-        util.handle_thread(thread)
+        self.sublconsole.thread_run(target=self.main_handle, args=(sel_string, ))
 
 # SFDC Coverage
 class SfdcCoverageCommand(sublime_plugin.TextCommand):
+    def run(self, edit):
+        self.sf_basic_config = SfBasicConfig()
+        self.settings = self.sf_basic_config.get_setting()
+        self.sublconsole = SublConsole(self.sf_basic_config)
+        self.sublconsole.thread_run(target=self.main_handle)
+
     def main_handle(self):
         try:
-            sf = util.sf_login()
+            sf = util.sf_login(self.sf_basic_config)
             apexClassSoql = "select Id, Name, ApiVersion, LengthWithoutComments from ApexClass where Status = 'Active'"
             apexClass = sf.query(apexClassSoql)
             
@@ -331,220 +358,158 @@ class SfdcCoverageCommand(sublime_plugin.TextCommand):
             params = {'q': apexCodeCoverageSoql}
             apexCodeCoverage = sf.restful('tooling/query', params)
 
-            util.show_in_new_tab(util.xstr(apexClass))
-            util.show_in_new_tab(util.xstr(apexCodeCoverage))
+            self.sublconsole.show_in_new_tab(baseutil.xstr(apexClass))
+            self.sublconsole.show_in_new_tab(baseutil.xstr(apexCodeCoverage))
 
         except RequestException as e:
-            util.show_in_panel("Network connection timeout when issuing REST GET request")
+            self.sublconsole.showlog("Network connection timeout when issuing REST GET request")
             return
         except SalesforceExpiredSession as e:
-            util.show_in_dialog('session expired')
+            self.sublconsole.show_in_dialog('session expired')
             util.re_auth()
             return
         except SalesforceRefusedRequest as e:
-            util.show_in_panel('The request has been refused.')
+            self.sublconsole.showlog('The request has been refused.')
             return
         except SalesforceError as e:
             err = 'Error code: %s \nError message:%s' % (e.status,e.content)
-            util.show_in_panel(err)
+            self.sublconsole.showlog(err)
             return
         except Exception as e:
-            util.show_in_panel(e)
-            # util.show_in_dialog('Exception Error!')
+            self.sublconsole.showlog(e)
+            # self.sublconsole.show_in_dialog('Exception Error!')
             return
-
-    def run(self, edit):
-        thread = threading.Thread(target=self.main_handle)
-        thread.start()
-        util.handle_thread(thread)
 
 # RunApexScript
 class RunApexScriptCommand(sublime_plugin.TextCommand):
-    def main_handle(self, sel_string = ''):
-        try:
-            sel_area = self.view.sel()
-            sf = util.sf_login()
-            result = sf.execute_anonymous(sel_string)
-            # print(result)
-            util.show_in_new_tab(result["debugLog"])
-             
-        except RequestException as e:
-            util.show_in_panel("Network connection timeout when issuing REST GET request")
-            return
-        except SalesforceExpiredSession as e:
-            util.show_in_dialog('session expired')
-            util.re_auth()
-            return
-        except SalesforceRefusedRequest as e:
-            util.show_in_panel('The request has been refused.')
-            return
-        except SalesforceError as e:
-            err = 'Error code: %s \nError message:%s' % (e.status,e.content)
-            util.show_in_panel(err)
-            return
-        except Exception as e:
-            util.show_in_panel(e)
-            # util.show_in_dialog('Exception Error!')
-            return
-
-
     def run(self, edit):
+        self.sf_basic_config = SfBasicConfig()
+        self.settings = self.sf_basic_config.get_setting()
+        self.sublconsole = SublConsole(self.sf_basic_config)
+
         sel_area = self.view.sel()
         if sel_area[0].empty():
-          util.show_in_dialog("Please select the Tooling SOQL !!")
+          self.sublconsole.show_in_dialog("Please select the Tooling SOQL !!")
           return
         else:
             sel_string = self.view.substr(sel_area[0])
-            sel_string = util.del_comment(sel_string)
-                        
-        thread = threading.Thread(target=self.main_handle, args=(sel_string, ))
-        thread.start()
-        util.handle_thread(thread)
+            sel_string = baseutil.del_comment(sel_string)
+        self.sublconsole.thread_run(target=self.main_handle, args=(sel_string, ))
+
+    def main_handle(self, sel_string = ''):
+        try:
+            sel_area = self.view.sel()
+            sf = util.sf_login(self.sf_basic_config)
+            settings = self.sf_basic_config.get_setting()
+            debug_levels = settings['debug_levels']
+            result = sf.execute_anonymous(sel_string, debug_levels)
+            # print(result)
+            self.sublconsole.show_in_new_tab(result["debugLog"])
+             
+        except RequestException as e:
+            self.sublconsole.showlog("Network connection timeout when issuing REST GET request")
+            return
+        except SalesforceExpiredSession as e:
+            self.sublconsole.show_in_dialog('session expired')
+            util.re_auth()
+            return
+        except SalesforceRefusedRequest as e:
+            self.sublconsole.showlog('The request has been refused.')
+            return
+        except SalesforceError as e:
+            err = 'Error code: %s \nError message:%s' % (e.status,e.content)
+            self.sublconsole.showlog(err)
+            return
+        except Exception as e:
+            self.sublconsole.showlog(e)
+            # self.sublconsole.show_in_dialog('Exception Error!')
+            return
 
 
 # Login Salesforce
 class LoginSfdcCommand(sublime_plugin.WindowCommand):
     def run(self):
-    #     try:
-    #         self.dirs = setting.get_browser_setting()
-    #         dirs = []
-    #         for dir in self.dirs:
-    #             dirs.append(dir[0])
-
-    #         self.window.show_quick_panel(dirs, self.panel_done,sublime.MONOSPACE_FONT)
-
-    #     except Exception as e:
-    #         util.show_in_panel(e)
-    #         return
-
-    # def panel_done(self, picked):
-    #     if 0 > picked < len(self.dirs):
-    #         return
-    #     self.browser = self.dirs[picked][0]
-    #     self.broswer_path = self.dirs[picked][1]
-
-        thread = threading.Thread(target=self.main_handle)
-        thread.start()
-        util.handle_thread(thread)
-
-
-    def main_handle(self):
         try:
-            sf = util.sf_login()
-            login_sf_home(self, sf)
-        except RequestException as e:
-            util.show_in_panel("Network connection timeout when issuing REST GET request")
-            return
-        except SalesforceExpiredSession as e:
-            util.show_in_dialog('session expired')
-            util.re_auth()
-            return
-        except SalesforceRefusedRequest as e:
-            util.show_in_panel('The request has been refused.')
-            return
-        except SalesforceError as e:
-            err = 'Error code: %s \nError message:%s' % (e.status,e.content)
-            util.show_in_panel(err)
-            return
+            self.sf_basic_config = SfBasicConfig()
+            self.settings = self.sf_basic_config.get_setting()
+            self.sublconsole = SublConsole(self.sf_basic_config)
+            self.dirs = self.sf_basic_config.get_browser_setting()
+            dirs = []
+            for dir in self.dirs:
+                dirs.append(dir[0])
+
+            self.window.show_quick_panel(dirs, self.panel_done,sublime.MONOSPACE_FONT)
+
         except Exception as e:
-            util.show_in_panel(e)
+            self.sublconsole.showlog(e)
             return
-
-# Login Project
-class LoginProjectCommand(sublime_plugin.WindowCommand):
-    def run(self):
-        settings = setting.load()
-        self.settings = settings
-        projects = settings["projects"]
-        dirs = []
-        for project_key in projects.keys():
-            project_value = projects[project_key]
-            dirs.append(project_key)
-
-        self.results = dirs
-        self.window.show_quick_panel(dirs, self.panel_done,
-            sublime.MONOSPACE_FONT)
 
     def panel_done(self, picked):
-        if 0 > picked < len(self.results):
-            return
-        self.picked_project = self.results[picked]
-
-        self.dirs = setting.get_browser_setting()
-        dirs = []
-        for dir in self.dirs:
-            dirs.append(dir[0])
-
-        sublime.set_timeout(lambda:self.window.show_quick_panel(dirs, self.browser_choose), 10)
-
-    def browser_choose(self, picked):
         if 0 > picked < len(self.dirs):
             return
         self.browser = self.dirs[picked][0]
         self.broswer_path = self.dirs[picked][1]
-        
-        thread = threading.Thread(target=self.main_handle)
-        thread.start()
-        util.handle_thread(thread)
+
+        self.sublconsole.thread_run(target=self.main_handle)
+
 
     def main_handle(self):
         try:
-            sf = util.sf_login(self.picked_project)
-            # login_sf_home(self, sf)
-            login_sf_home(self, sf, self.browser, self.broswer_path)
+            sf = util.sf_login(self.sf_basic_config)
+            login_sf_home(self, self.sf_basic_config,sf, self.browser, self.broswer_path)
         except RequestException as e:
-            util.show_in_panel("Network connection timeout when issuing REST GET request")
+            self.sublconsole.showlog("Network connection timeout when issuing REST GET request")
             return
         except SalesforceExpiredSession as e:
-            util.show_in_dialog('session expired')
+            self.sublconsole.show_in_dialog('session expired')
             util.re_auth()
             return
         except SalesforceRefusedRequest as e:
-            util.show_in_panel('The request has been refused.')
+            self.sublconsole.showlog('The request has been refused.')
             return
         except SalesforceError as e:
             err = 'Error code: %s \nError message:%s' % (e.status,e.content)
-            util.show_in_panel(err)
+            self.sublconsole.showlog(err)
             return
         except Exception as e:
-            util.show_in_panel(e)
+            self.sublconsole.showlog(e)
             return
-
-
 
 
 # sfdc_dataviewer
 class SfdcDataviewerCommand(sublime_plugin.WindowCommand):
     def run(self):
         try:
-            self.sf = util.sf_login()
-            self.settings = self.sf.settings
+            self.sf_basic_config = SfBasicConfig()
+            self.settings = self.sf_basic_config.get_setting()
+            self.sublconsole = SublConsole(self.sf_basic_config)
+            self.sf = util.sf_login(self.sf_basic_config)
 
             dirs = []
             self.results = []
             for x in self.sf.describe()["sobjects"]:
-                # dirs.append([util.xstr(x["name"]), util.xstr(x["label"])])
-                dirs.append(util.xstr(x["name"])+' : '+util.xstr(x["label"]) +' : Export to Tab ')
-                self.results.append(util.xstr(x["name"]))
+                # dirs.append([baseutil.xstr(x["name"]), baseutil.xstr(x["label"])])
+                dirs.append(baseutil.xstr(x["name"])+' : '+baseutil.xstr(x["label"]) +' : Export to Tab ')
+                self.results.append(baseutil.xstr(x["name"]))
             self.window.show_quick_panel(dirs, self.panel_done,sublime.MONOSPACE_FONT)
 
         except RequestException as e:
-            util.show_in_panel("Network connection timeout when issuing REST GET request")
+            self.sublconsole.showlog("Network connection timeout when issuing REST GET request")
             return
         except SalesforceExpiredSession as e:
-            util.show_in_dialog('session expired')
+            self.sublconsole.show_in_dialog('session expired')
             util.re_auth()
             return
         except SalesforceRefusedRequest as e:
-            util.show_in_panel('The request has been refused.')
+            self.sublconsole.showlog('The request has been refused.')
             return
         except SalesforceError as e:
             err = 'Error code: %s \nError message:%s' % (e.status,e.content)
-            util.show_in_panel(err)
+            self.sublconsole.showlog(err)
             return
         except Exception as e:
-            util.show_in_panel(e)
-            # util.show_in_dialog('Exception Error!')
+            self.sublconsole.showlog(e)
+            # self.sublconsole.show_in_dialog('Exception Error!')
             return
 
     def panel_done(self, picked):
@@ -553,10 +518,7 @@ class SfdcDataviewerCommand(sublime_plugin.WindowCommand):
         self.picked_name = self.results[picked]
         # print(self.picked_name)
 
-        thread = threading.Thread(target=self.main_handle)
-        thread.start()
-        util.handle_thread(thread)
-
+        self.sublconsole.thread_run(target=self.main_handle)
 
     def main_handle(self):
         self.sftype = self.sf.get_sobject(self.picked_name)
@@ -566,265 +528,59 @@ class SfdcDataviewerCommand(sublime_plugin.WindowCommand):
 
         sftypedesc = self.sftype.describe()
         for field in sftypedesc["fields"]:
-            fields.append(util.xstr(field["name"]))
+            fields.append(baseutil.xstr(field["name"]))
         soql += ' , '.join(fields)
         soql += ' FROM ' + self.picked_name
         if 'soql_select_limit' in self.settings:
-            soql += ' LIMIT ' + util.xstr(self.settings["soql_select_limit"])
+            soql += ' LIMIT ' + baseutil.xstr(self.settings["soql_select_limit"])
 
         message = 'soql : ' + soql + '\n\n\n\n'
 
         soql_result = self.sf.query(soql)
-        message += util.get_soql_result(soql, soql_result)
+        message += baseutil.get_soql_result(soql, soql_result)
 
-        util.show_in_new_tab(message)
-
-
-
-# sfdc_online_dataviewer
-class SfdcQuickViewerCommand(sublime_plugin.WindowCommand):
-    def run(self):
-        self.menu = [
-                "0. Reload Cache",
-                "1. Search All", 
-                "2. SObject Data", 
-                "3. SObject Setting", 
-                "4. ApexClass", 
-                "5. Trigger", 
-                "6. VisualForce Page",
-                "7. VisualForce Components", 
-                "8. Email Template", 
-                "9. Static Resource" 
-                # "10. Workflow Rule", 
-                # "11. Validate Rule"
-                ]
-         
-        sublime.set_timeout(lambda:self.window.show_quick_panel(self.menu, self.select_menu), 10)
-
-    def select_menu(self, picked):
-        if 0 > picked < len(self.menu):
-            return
-        self.sel_menu = picked
-        self.sel_key = self.menu[picked]
-
-        self.tooling_soql = {}
-        self.tooling_soql[self.menu[3]] = 'SELECT id,developername FROM CustomObject'
-        self.tooling_soql[self.menu[4]] = 'SELECT id,name FROM ApexClass'
-        self.tooling_soql[self.menu[5]] = 'SELECT id,name FROM ApexTrigger'
-        self.tooling_soql[self.menu[6]] = 'SELECT id,name FROM ApexPage'
-        self.tooling_soql[self.menu[7]] = 'SELECT id,name FROM ApexComponent'
-        self.tooling_soql[self.menu[8]] = 'SELECT id,name FROM EmailTemplate'
-        self.tooling_soql[self.menu[9]] = 'SELECT id,name FROM StaticResource'
-        # self.tooling_soql[self.menu[10]] = 'SELECT id,fullname FROM WorkflowRule'
-        # self.tooling_soql[self.menu[11]] = 'SELECT Id,FullName FROM ValidationRule'
+        self.sublconsole.show_in_new_tab(message)
 
 
-        self.sf = util.sf_login()
-        self.settings = self.sf.settings
-        default_project = self.settings['default_project_value']['project_name']
-        
-        s = sublime.load_settings(setting.SFDC_CACHE_SETTINGS)
-        project_meta_map = s.get(default_project)
-        # print('project_meta_map-->')
-        # print(project_meta_map)
 
-        # Reload Cache
-        if picked == 0:
-            thread = threading.Thread(target=self.reload_cache)
-            thread.start()
-            util.handle_thread(thread)
-        else:
-            # reload cache
-            if (project_meta_map is None):
-                # thread = threading.Thread(target=self.reload_cache)
-                # thread.start()
-                # util.handle_thread(thread)
-                # print('reload_cache()-->')
-                self.reload_cache()
-                s = sublime.load_settings(setting.SFDC_CACHE_SETTINGS)
-                project_meta_map = s.get(default_project)
-
-
-            self.metadata = []
-            self.metadata_view = []
-            sel_key_str = self.menu[picked]
-
-            # Search All
-            if picked == 1:
-                self.metadata = []
-                self.metadata_view = []
-                for key in range(2,9):
-                    tmp = project_meta_map[self.menu[key]]
-                    if tmp is not None:
-                        self.metadata.extend(tmp)
-                        for obj in tmp:
-                            self.metadata_view.append(obj['name'])
-                sublime.set_timeout(lambda:self.window.show_quick_panel(self.metadata_view, self.select_metadata), 10)
-
-            # Custom Object Data 
-            elif picked >= 2:
-                self.metadata = project_meta_map[sel_key_str]
-                for obj in project_meta_map[sel_key_str]:
-                    self.metadata_view.append(obj['name'])
-                sublime.set_timeout(lambda:self.window.show_quick_panel(self.metadata_view, self.select_metadata), 10)
-
-    def select_metadata(self, picked):
-        if 0 > picked < len(self.metadata):
-            return
-
-        if self.sf is None:
-            self.sf = util.sf_login()
-
-        sel_item = self.metadata[picked]
-        # login_url = ('https://{instance}/{id}'
-        #              .format(instance=self.sf.sf_instance,
-        #                      id=sel_item['id']))
-      
-        returl = '/' + sel_item['id']
-        login_url = ('https://{instance}/secur/frontdoor.jsp?sid={sid}&retURL={returl}'
-                     .format(instance=self.sf.sf_instance,
-                             sid=self.sf.session_id,
-                             returl=returl))
-
-        # print(login_url)
-        util.open_in_default_browser(login_url)
-
-
-    def reload_cache(self):
-        # try:
-
-            sel_type = {}
-            sel_type[self.menu[2]] = ''
-            sel_type[self.menu[3]] = '__c Custom SObject Setting'
-            sel_type[self.menu[4]] = '.cls'
-            sel_type[self.menu[5]] = '.trigger'
-            sel_type[self.menu[6]] = '.page'
-            sel_type[self.menu[7]] = '.component'
-            sel_type[self.menu[8]] = '-EmailTemplate'
-            sel_type[self.menu[9]] = '-StaticResource'
-            # sel_type[self.menu[10]] = '-WorkflowRule'
-            # sel_type[self.menu[11]] = '-ValidationRule'
-
-            default_project = self.settings['default_project_value']['project_name']
-            # print('default_project -->')
-            # print(default_project)
-
-
-            s = sublime.load_settings(setting.SFDC_CACHE_SETTINGS)
-            project_meta_map = s.get(default_project)
-
-            if project_meta_map is None:
-                project_meta_map = {}
-            
-            for key in self.tooling_soql:
-                soql = self.tooling_soql[key]
-                params = {'q': soql}
-                soql_result = {}
-
-                # TODO
-                try:
-                   soql_result = self.sf.restful('tooling/query', params)
-                   # print(soql_result)
-                except Exception as e:
-                    print('------>reload_cache Exception')
-                    print(e)
-                    pass
-                
-                # util.show_in_new_tab(soql_result)
-                # table = util.search_soql_to_list(soql, soql_result)
-                if soql_result['records'] is not None:
-                    result = []
-                    name_key = 'Name'
-                    if self.menu[3] == key:
-                        name_key = 'DeveloperName'
-                    # TODO
-                    # elif self.menu[10] == key:
-                    #     name_key = 'FullName'
-                    
-                    for obj in soql_result['records']:
-                        tmp = {}
-                        tmp['id'] = obj['Id']
-                        tmp['name'] = obj[name_key] + sel_type[key]
-                        result.append(tmp)
-
-                    project_meta_map[key] = result
-
-            # "2. Custom Object Data"
-            custom_obj_meta = []
-            for x in self.sf.describe()["sobjects"]:
-                if x["keyPrefix"] is not None:
-                    tmp_map = {}
-                    tmp_map['id'] = util.xstr(x["keyPrefix"])
-                    tmp_map['name'] = (util.xstr(x["name"])+' : '+util.xstr(x["label"]) +' : '+ x["keyPrefix"])
-                    custom_obj_meta.append(tmp_map)
-
-                # stand sobject setting page
-                if not x['custom']:
-                    tmp_map = {}
-                    tmp_map['id'] = 'p/setup/layout/LayoutFieldList?type=' + util.xstr(x["name"])
-                    tmp_map['name'] = util.xstr(x["name"]) + ' ' + util.xstr(x["label"]) + ' Standard SObject Setting'
-                    if project_meta_map[self.menu[3]] is None:
-                        project_meta_map[self.menu[3]] = {}
-                    project_meta_map[self.menu[3]].append(tmp_map)
-
-            project_meta_map[self.menu[2]] = custom_obj_meta
-
-            s.set(default_project, project_meta_map)
-
-            sublime.save_settings(setting.SFDC_CACHE_SETTINGS)
-
-        # except RequestException as e:
-        #     util.show_in_panel("Network connection timeout when issuing REST GET request")
-        #     return
-        # except SalesforceExpiredSession as e:
-        #     util.show_in_dialog('session expired')
-        #     util.re_auth()
-        #     return
-        # except SalesforceRefusedRequest as e:
-        #     util.show_in_panel('The request has been refused.')
-        #     return
-        # except SalesforceError as e:
-        #     err = 'Error code: %s \nError message:%s' % (e.status,e.content)
-        #     util.show_in_panel(err)
-        #     return
-        # except Exception as e:
-        #     util.show_in_panel(e)
-        #     # util.show_in_dialog('Exception Error!')
-        #     return
 
 
 # sfdc_object_desc
 class SfdcObjectDescCommand(sublime_plugin.WindowCommand):
     def run(self):
         try:
-            self.sf = util.sf_login()
+            self.sf_basic_config = SfBasicConfig()
+            self.settings = self.sf_basic_config.get_setting()
+            self.sublconsole = SublConsole(self.sf_basic_config)
+
+            self.sf = util.sf_login(self.sf_basic_config)
             dirs = []
             self.results = []
 
             for x in self.sf.describe()["sobjects"]:
-                # dirs.append([util.xstr(x["name"]), util.xstr(x["label"])])
-                dirs.append(util.xstr(x["name"])+' : '+util.xstr(x["label"]))
-                self.results.append(util.xstr(x["name"]))
+                # dirs.append([baseutil.xstr(x["name"]), baseutil.xstr(x["label"])])
+                dirs.append(baseutil.xstr(x["name"])+' : '+baseutil.xstr(x["label"]))
+                self.results.append(baseutil.xstr(x["name"]))
                 # print(x)
             self.window.show_quick_panel(dirs, self.panel_done,sublime.MONOSPACE_FONT)
 
         except RequestException as e:
-            util.show_in_panel("Network connection timeout when issuing REST GET request")
+            self.sublconsole.showlog("Network connection timeout when issuing REST GET request")
             return
         except SalesforceExpiredSession as e:
-            util.show_in_dialog('session expired')
+            self.sublconsole.show_in_dialog('session expired')
             util.re_auth()
             return
         except SalesforceRefusedRequest as e:
-            util.show_in_panel('The request has been refused.')
+            self.sublconsole.showlog('The request has been refused.')
             return
         except SalesforceError as e:
             err = 'Error code: %s \nError message:%s' % (e.status,e.content)
-            util.show_in_panel(err)
+            self.sublconsole.showlog(err)
             return
         except Exception as e:
-            util.show_in_panel(e)
-            # util.show_in_dialog('Exception Error!')
+            self.sublconsole.showlog(e)
+            # self.sublconsole.show_in_dialog('Exception Error!')
             return
 
     def panel_done(self, picked):
@@ -833,9 +589,7 @@ class SfdcObjectDescCommand(sublime_plugin.WindowCommand):
         self.picked_name = self.results[picked]
         # print(self.picked_name)
 
-        thread = threading.Thread(target=self.main_handle)
-        thread.start()
-        util.handle_thread(thread)
+        self.sublconsole.thread_run(target=self.main_handle)
 
 
     def main_handle(self):
@@ -850,46 +604,51 @@ class SfdcObjectDescCommand(sublime_plugin.WindowCommand):
            # print(field["type"])  
            # print(field["length"])  
            # print(field["scale"])  
-           message += util.xstr(field["name"]) + "," + util.xstr(field["label"]) \
-                    + "," + util.xstr(field["type"]) + "," + util.xstr(field["length"]) + "," + util.xstr(field["scale"]) + "\n"
+           message += baseutil.xstr(field["name"]) + "," + baseutil.xstr(field["label"]) \
+                    + "," + baseutil.xstr(field["type"]) + "," + baseutil.xstr(field["length"]) + "," + baseutil.xstr(field["scale"]) + "\n"
           
-        # util.show_in_new_tab(message)
+        # self.sublconsole.show_in_new_tab(message)
         file_name = self.picked_name + '_sobject_desc.csv'
         sub_folder = 'sobject-desc'
-        util.save_and_open_in_panel(message, file_name, True, sub_folder )
+        save_dir = os.path.join(self.sf_basic_config.get_work_dir(), sub_folder)
+        self.sublconsole.save_and_open_in_panel(message, save_dir, file_name, True)
 
 # soql create
 class SoqlCreateCommand(sublime_plugin.WindowCommand):
     def run(self):
         try:
-            self.sf = util.sf_login()
+            self.sf_basic_config = SfBasicConfig()
+            self.settings = self.sf_basic_config.get_setting()
+            self.sublconsole = SublConsole(self.sf_basic_config)
+
+            self.sf = util.sf_login(self.sf_basic_config)
             dirs = []
             self.results = []
 
             for x in self.sf.describe()["sobjects"]:
-                # dirs.append([util.xstr(x["name"]), util.xstr(x["label"])])
-                dirs.append(util.xstr(x["name"])+' : '+util.xstr(x["label"]))
-                self.results.append(util.xstr(x["name"]))
+                # dirs.append([baseutil.xstr(x["name"]), baseutil.xstr(x["label"])])
+                dirs.append(baseutil.xstr(x["name"])+' : '+baseutil.xstr(x["label"]))
+                self.results.append(baseutil.xstr(x["name"]))
                 # print(x)
             self.window.show_quick_panel(dirs, self.panel_done,sublime.MONOSPACE_FONT)
 
         except RequestException as e:
-            util.show_in_panel("Network connection timeout when issuing REST GET request")
+            self.sublconsole.showlog("Network connection timeout when issuing REST GET request")
             return
         except SalesforceExpiredSession as e:
-            util.show_in_dialog('session expired')
+            self.sublconsole.show_in_dialog('session expired')
             util.re_auth()
             return
         except SalesforceRefusedRequest as e:
-            util.show_in_panel('The request has been refused.')
+            self.sublconsole.showlog('The request has been refused.')
             return
         except SalesforceError as e:
             err = 'Error code: %s \nError message:%s' % (e.status,e.content)
-            util.show_in_panel(err)
+            self.sublconsole.showlog(err)
             return
         except Exception as e:
-            util.show_in_panel(e)
-            # util.show_in_dialog('Exception Error!')
+            self.sublconsole.showlog(e)
+            # self.sublconsole.show_in_dialog('Exception Error!')
             return
 
     def panel_done(self, picked):
@@ -915,9 +674,7 @@ class SoqlCreateCommand(sublime_plugin.WindowCommand):
         self.is_updateable = ( picked == 1 or picked == 4)
         self.include_relationship = ( picked >= 3 )
 
-        thread = threading.Thread(target=self.main_handle)
-        thread.start()
-        util.handle_thread(thread)
+        self.sublconsole.thread_run(target=self.main_handle)
 
 
     def main_handle(self):
@@ -926,7 +683,7 @@ class SoqlCreateCommand(sublime_plugin.WindowCommand):
             # fields = get_sobject_fields(self.sf, sobject)
             # fields_str = ",".join(fields)
             # soql = ("select %s from %s " % (fields_str, sobject))
-            # util.show_in_new_tab(soql)
+            # self.sublconsole.show_in_new_tab(soql)
             
             sobject = self.picked_name
             sftype = self.sf.get_sobject(sobject)
@@ -935,50 +692,52 @@ class SoqlCreateCommand(sublime_plugin.WindowCommand):
                                     is_custom_only=self.is_custom_only,
                                     updateable_only=self.is_updateable,
                                     include_relationship=self.include_relationship)
-            util.show_in_new_tab(soql)
+            self.sublconsole.show_in_new_tab(soql)
         except Exception as e:
-            util.show_in_panel(e)
+            self.sublconsole.showlog(e)
             return
 
 
 # sfdc_object_desc
 class CreateAllTestDataCommand(sublime_plugin.WindowCommand):
     def run(self):
-        thread = threading.Thread(target=self.main_handle)
-        thread.start()
-        util.handle_thread(thread)
+        self.sublconsole.thread_run(target=self.main_handle)
 
     def main_handle(self):
         try:
-            self.sf = util.sf_login()
+            self.sf_basic_config = SfBasicConfig()
+            self.settings = self.sf_basic_config.get_setting()
+            self.sublconsole = SublConsole(self.sf_basic_config)
+
+            self.sf = util.sf_login(self.sf_basic_config)
 
             message = ''
             for x in self.sf.describe()["sobjects"]:
                 if x["custom"]:
-                    objectApiName = util.xstr(x["name"])
+                    objectApiName = baseutil.xstr(x["name"])
                     message += createTestDataStr(objectApiName=objectApiName, 
                                         sftype=self.sf.get_sobject(objectApiName), 
                                         isAllField=False)
 
-            util.show_in_new_tab(message)
+            self.sublconsole.show_in_new_tab(message)
             
         except RequestException as e:
-            util.show_in_panel("Network connection timeout when issuing REST GET request")
+            self.sublconsole.showlog("Network connection timeout when issuing REST GET request")
             return
         except SalesforceExpiredSession as e:
-            util.show_in_dialog('session expired')
+            self.sublconsole.show_in_dialog('session expired')
             util.re_auth()
             return
         except SalesforceRefusedRequest as e:
-            util.show_in_panel('The request has been refused.')
+            self.sublconsole.showlog('The request has been refused.')
             return
         except SalesforceError as e:
             err = 'Error code: %s \nError message:%s' % (e.status,e.content)
-            util.show_in_panel(err)
+            self.sublconsole.showlog(err)
             return
         except Exception as e:
-            util.show_in_panel(e)
-            # util.show_in_dialog('Exception Error!')
+            self.sublconsole.showlog(e)
+            # self.sublconsole.show_in_dialog('Exception Error!')
             return
 
 
@@ -986,34 +745,38 @@ class CreateAllTestDataCommand(sublime_plugin.WindowCommand):
 class CreateTestDataNeedCommand(sublime_plugin.WindowCommand):
     def run(self):
         try:
-            self.sf = util.sf_login()
+            self.sf_basic_config = SfBasicConfig()
+            self.settings = self.sf_basic_config.get_setting()
+            self.sublconsole = SublConsole(self.sf_basic_config)
+
+            self.sf = util.sf_login(self.sf_basic_config)
             dirs = []
             self.results = []
 
             for x in self.sf.describe()["sobjects"]:
-                # dirs.append([util.xstr(x["name"]), util.xstr(x["label"])])
-                dirs.append(util.xstr(x["name"])+' : '+util.xstr(x["label"]))
-                self.results.append(util.xstr(x["name"]))
+                # dirs.append([baseutil.xstr(x["name"]), baseutil.xstr(x["label"])])
+                dirs.append(baseutil.xstr(x["name"])+' : '+baseutil.xstr(x["label"]))
+                self.results.append(baseutil.xstr(x["name"]))
                 # print(x)
             self.window.show_quick_panel(dirs, self.panel_done,sublime.MONOSPACE_FONT)
 
         except RequestException as e:
-            util.show_in_panel("Network connection timeout when issuing REST GET request")
+            self.sublconsole.showlog("Network connection timeout when issuing REST GET request")
             return
         except SalesforceExpiredSession as e:
-            util.show_in_dialog('session expired')
+            self.sublconsole.show_in_dialog('session expired')
             util.re_auth()
             return
         except SalesforceRefusedRequest as e:
-            util.show_in_panel('The request has been refused.')
+            self.sublconsole.showlog('The request has been refused.')
             return
         except SalesforceError as e:
             err = 'Error code: %s \nError message:%s' % (e.status,e.content)
-            util.show_in_panel(err)
+            self.sublconsole.showlog(err)
             return
         except Exception as e:
-            util.show_in_panel(e)
-            # util.show_in_dialog('Exception Error!')
+            self.sublconsole.showlog(e)
+            # self.sublconsole.show_in_dialog('Exception Error!')
             return
 
     def panel_done(self, picked):
@@ -1022,29 +785,31 @@ class CreateTestDataNeedCommand(sublime_plugin.WindowCommand):
         self.picked_name = self.results[picked]
         # print(self.picked_name)
 
-        thread = threading.Thread(target=self.main_handle)
-        thread.start()
-        util.handle_thread(thread)
+        self.sublconsole.thread_run(target=self.main_handle)
 
 
     def main_handle(self):
 
         self.sftype = self.sf.get_sobject(self.picked_name)
-        obj_name = util.get_obj_name(self.picked_name)
+        obj_name = baseutil.get_obj_name(self.picked_name)
         message = createTestDataStr(objectApiName=self.picked_name, 
                                     sftype=self.sftype, 
                                     isAllField=False)
-        util.insert_str(message)
+        self.sublconsole.insert_str(message)
          
 
 class CreateTestDataFromSoqlCommand(sublime_plugin.TextCommand):
     def main_handle(self, sel_string = ''):
         try:
-            sf = util.sf_login()
+            self.sf_basic_config = SfBasicConfig()
+            self.settings = self.sf_basic_config.get_setting()
+            self.sublconsole = SublConsole(self.sf_basic_config)
+
+            sf = util.sf_login(self.sf_basic_config)
 
             soql_result = sf.query(sel_string)
 
-            object_name = util.get_query_object_name(soql_result)
+            object_name = baseutil.get_query_object_name(soql_result)
 
             if object_name:
                 sftype = sf.get_sobject(object_name)
@@ -1054,77 +819,79 @@ class CreateTestDataFromSoqlCommand(sublime_plugin.TextCommand):
                     name = field['name'].lower()
                     fields[name] = field
 
-                message = util.get_soql_to_apex(fields, sel_string, soql_result)
+                message = baseutil.get_soql_to_apex(fields, sel_string, soql_result)
             else :
                 # print(header)
                 message = 'Query Error!\n'
 
-            util.insert_str(message)
+            self.sublconsole.insert_str(message)
 
         except RequestException as e:
-            util.show_in_panel("Network connection timeout when issuing REST GET request")
+            self.sublconsole.showlog("Network connection timeout when issuing REST GET request")
             return
         except SalesforceExpiredSession as e:
-            util.show_in_dialog('session expired')
+            self.sublconsole.show_in_dialog('session expired')
             util.re_auth()
             return
         except SalesforceRefusedRequest as e:
-            util.show_in_panel('The request has been refused.')
+            self.sublconsole.showlog('The request has been refused.')
             return
         except SalesforceError as e:
             err = 'Error code: %s \nError message:%s' % (e.status,e.content)
-            util.show_in_panel(err)
+            self.sublconsole.showlog(err)
             return
         except Exception as e:
-            util.show_in_panel(e)
-            # util.show_in_dialog('Exception Error!')
+            self.sublconsole.showlog(e)
+            # self.sublconsole.show_in_dialog('Exception Error!')
             return
 
     def run(self, edit):
         sel_area = self.view.sel()
         if sel_area[0].empty():
-          util.show_in_dialog("Please select the SOQL !!")
+          self.sublconsole.show_in_dialog("Please select the SOQL !!")
           return
         else:
             sel_string = self.view.substr(sel_area[0])
-            sel_string = util.del_comment(sel_string)
+            sel_string = baseutil.del_comment(sel_string)
 
-        thread = threading.Thread(target=self.main_handle, args=(sel_string, ))
-        thread.start()
-        util.handle_thread(thread)
+        self.sublconsole.thread_run(target=self.main_handle, args=(sel_string, ))
 
 # sfdc_object_desc
 class CreateTestDataAllCommand(sublime_plugin.WindowCommand):
     def run(self):
         try:
-            self.sf = util.sf_login()
+            self.sf_basic_config = SfBasicConfig()
+            self.settings = self.sf_basic_config.get_setting()
+            self.sublconsole = SublConsole(self.sf_basic_config)
+
+            self.sf = util.sf_login(self.sf_basic_config)
             dirs = []
             self.results = []
 
             for x in self.sf.describe()["sobjects"]:
-                # dirs.append([util.xstr(x["name"]), util.xstr(x["label"])])
-                dirs.append(util.xstr(x["name"])+' : '+util.xstr(x["label"]))
-                self.results.append(util.xstr(x["name"]))
+                # dirs.append([baseutil.xstr(x["name"]), baseutil.xstr(x["label"])])
+                dirs.append(baseutil.xstr(x["name"])+' : '+baseutil.xstr(x["label"]))
+                self.results.append(baseutil.xstr(x["name"]))
                 # print(x)
             self.window.show_quick_panel(dirs, self.panel_done,sublime.MONOSPACE_FONT)
 
         except RequestException as e:
-            util.show_in_panel("Network connection timeout when issuing REST GET request")
+            self.sublconsole.showlog("Network connection timeout when issuing REST GET request")
             return
         except SalesforceExpiredSession as e:
-            util.show_in_dialog('session expired')
+            self.sublconsole.show_in_dialog('session expired')
             util.re_auth()
             return
         except SalesforceRefusedRequest as e:
-            util.show_in_panel('The request has been refused.')
+            self.sublconsole.showlog('The request has been refused.')
             return
         except SalesforceError as e:
             err = 'Error code: %s \nError message:%s' % (e.status,e.content)
-            util.show_in_panel(err)
+            self.sublconsole.showlog(err)
             return
         except Exception as e:
-            util.show_in_panel(e)
-            # util.show_in_dialog('Exception Error!')
+            self.sublconsole.showlog(e)
+            # self.sublconsole.show_in_dialog('Exception Error!')
             return
 
     def panel_done(self, picked):
@@ -1132,25 +899,22 @@ class CreateTestDataAllCommand(sublime_plugin.WindowCommand):
             return
         self.picked_name = self.results[picked]
 
-        thread = threading.Thread(target=self.main_handle)
-        thread.start()
-        util.handle_thread(thread)
-
+        self.sublconsole.thread_run(target=self.main_handle)
 
     def main_handle(self):
         # print(self.picked_name)
         self.sftype = self.sf.get_sobject(self.picked_name)
 
-        obj_name = util.get_obj_name(self.picked_name)
+        obj_name = baseutil.get_obj_name(self.picked_name)
         message = createTestDataStr(objectApiName=self.picked_name, 
                                     sftype=self.sftype, 
                                     isAllField=True)
-        # util.show_in_new_tab(message)
-        util.insert_str(message)
+        # self.sublconsole.show_in_new_tab(message)
+        self.sublconsole.insert_str(message)
 
 
 def createTestDataStr(objectApiName, sftype, isAllField):
-    obj_name = util.get_obj_name(objectApiName)
+    obj_name = baseutil.get_obj_name(objectApiName)
     message = ("List<{T}> {objName}List = new List<{T}>();\n"
                 .format(T=objectApiName,
                         objName=obj_name))
@@ -1161,16 +925,16 @@ def createTestDataStr(objectApiName, sftype, isAllField):
 
     sftypedesc = sftype.describe()
     for field in sftypedesc["fields"]:
-        # util.show_in_panel("defaultValue------->" + util.xstr(field["defaultValue"]))  
-        # util.show_in_panel('\n')  
-        # util.show_in_panel(field)
-        # util.show_in_panel('\n')  
-        # util.show_in_panel(field["name"])
-        # util.show_in_panel('\n')  
-        # util.show_in_panel(field["defaultValue"])
-        # util.show_in_panel('\n')  
-        # util.show_in_panel(field["defaultValue"] is None)  
-        # util.show_in_panel('\n\n\n')  
+        # self.sublconsole.showlog("defaultValue------->" + baseutil.xstr(field["defaultValue"]))  
+        # self.sublconsole.showlog('\n')  
+        # self.sublconsole.showlog(field)
+        # self.sublconsole.showlog('\n')  
+        # self.sublconsole.showlog(field["name"])
+        # self.sublconsole.showlog('\n')  
+        # self.sublconsole.showlog(field["defaultValue"])
+        # self.sublconsole.showlog('\n')  
+        # self.sublconsole.showlog(field["defaultValue"] is None)  
+        # self.sublconsole.showlog('\n\n\n')  
         # print(field["name"])  
         # print(field["label"])  
         # print(field["type"])  
@@ -1204,14 +968,14 @@ def createTestDataStr(objectApiName, sftype, isAllField):
                 length = field["length"] if field["length"] < 3 else 3
             else:
                 length = field["length"] if field["length"] < 8 else 8
-            val = util.random_data(data_type=field["type"],
+            val = baseutil.random_data(data_type=field["type"],
                                   length=length,
                                   scale=field["scale"], 
                                   filed_name=field["name"], 
                                   picklistValues=picklistValues)
             message += ("\t{objName}.{field} = {value};    //{label}\n"
                  .format(objName=obj_name,
-                         field=util.xstr(field["name"]),
+                         field=baseutil.xstr(field["name"]),
                          value=val,
                          label=field["label"],))
     message += ("\t{objName}List.add({objName});\n"
@@ -1226,59 +990,66 @@ def createTestDataStr(objectApiName, sftype, isAllField):
 class CreateTestCodeCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         try:
+            self.sf_basic_config = SfBasicConfig()
+            self.settings = self.sf_basic_config.get_setting()
+            self.sublconsole = SublConsole(self.sf_basic_config)
+
             file_name = self.view.file_name()
             if file_name is None:
                 return
             check = os.path.isfile(file_name) and ( file_name.find(".cls") > -1 ) 
             if not check:
-                util.show_in_dialog('Error file type! Please select a cls file.')
+                self.sublconsole.show_in_dialog('Error file type! Please select a cls file.')
                 return
 
             sel_string = self.view.substr(sublime.Region(0, self.view.size()))
             test_code,sfdc_name_map = codecreator.get_testclass(sel_string)
-            # util.show_in_new_tab(test_code)
+            # self.sublconsole.show_in_new_tab(test_code)
             
             is_open = True
             file_name = sfdc_name_map['test_class_file']
-            sub_folder = AUTO_CODE_DIR
-            save_path = util.save_and_open_in_panel(test_code, file_name, is_open, sub_folder )
+            save_dir = os.path.join(self.sf_basic_config.get_sfdc_module_dir(), "code-creator-test", "src", "classes")
+            self.sublconsole.save_and_open_in_panel(test_code, save_dir, file_name, is_open)
             
         except Exception as e:
-            util.show_in_panel(e)
+            self.sublconsole.showlog(e)
             return
 
 #Create VisualForce/Controller/DTO/DAO Code
 class CreateSfdcCodeCommand(sublime_plugin.WindowCommand):
     def run(self):
         try:
-            self.sf = util.sf_login()
+            self.sf_basic_config = SfBasicConfig()
+            self.settings = self.sf_basic_config.get_setting()
+            self.sublconsole = SublConsole(self.sf_basic_config)
+            self.sf = util.sf_login(self.sf_basic_config)
             dirs = []
             self.results = []
 
             for x in self.sf.describe()["sobjects"]:
-                # dirs.append([util.xstr(x["name"]), util.xstr(x["label"])])
-                dirs.append(util.xstr(x["name"])+' : '+util.xstr(x["label"]))
-                self.results.append(util.xstr(x["name"]))
+                # dirs.append([baseutil.xstr(x["name"]), baseutil.xstr(x["label"])])
+                dirs.append(baseutil.xstr(x["name"])+' : '+baseutil.xstr(x["label"]))
+                self.results.append(baseutil.xstr(x["name"]))
                 # print(x)
             self.window.show_quick_panel(dirs, self.panel_done,sublime.MONOSPACE_FONT)
 
         except RequestException as e:
-            util.show_in_panel("Network connection timeout when issuing REST GET request")
+            self.sublconsole.showlog("Network connection timeout when issuing REST GET request")
             return
         except SalesforceExpiredSession as e:
-            util.show_in_dialog('session expired')
+            self.sublconsole.show_in_dialog('session expired')
             util.re_auth()
             return
         except SalesforceRefusedRequest as e:
-            util.show_in_panel('The request has been refused.')
+            self.sublconsole.showlog('The request has been refused.')
             return
         except SalesforceError as e:
             err = 'Error code: %s \nError message:%s' % (e.status,e.content)
-            util.show_in_panel(err)
+            self.sublconsole.showlog(err)
             return
         except Exception as e:
-            util.show_in_panel(e)
-            # util.show_in_dialog('Exception Error!')
+            self.sublconsole.showlog(e)
+            # self.sublconsole.show_in_dialog('Exception Error!')
             return
 
     def panel_done(self, picked):
@@ -1300,10 +1071,7 @@ class CreateSfdcCodeCommand(sublime_plugin.WindowCommand):
         self.is_custom_only = (picked==0 or picked==2)
         self.include_validate = (picked>1)
 
-        thread = threading.Thread(target=self.main_handle)
-        thread.start()
-        util.handle_thread(thread)
-
+        self.sublconsole.thread_run(target=self.main_handle)
 
     def main_handle(self):
 
@@ -1311,60 +1079,69 @@ class CreateSfdcCodeCommand(sublime_plugin.WindowCommand):
 
         sftypedesc = self.sftype.describe()
           
-        # util.show_in_new_tab(util.get_dto_class(self.picked_name, sftypedesc["fields"], self.is_custom_only))
+        # self.sublconsole.show_in_new_tab(util.get_dto_class(self.picked_name, sftypedesc["fields"], self.is_custom_only))
 
-
-        sub_folder = AUTO_CODE_DIR
+        save_dir = self.sf_basic_config.get_sfdc_module_dir()
+        classes_dir = os.path.join(self.sf_basic_config.get_sfdc_module_dir(), "code-creator", "src", "classes")
+        pages_dir = os.path.join(self.sf_basic_config.get_sfdc_module_dir(), "code-creator", "src", "pages")
         sfdc_name_map = codecreator.get_sfdc_namespace(self.picked_name)
 
         is_open = False
         save_path_list = []
 
         # dto Code
+        self.sublconsole.showlog('start to build dto')
         dto_code, class_name = codecreator.get_dto_class(self.picked_name, sftypedesc["fields"], self.is_custom_only, self.include_validate)
-        file_name = sfdc_name_map['dto_file']
-        save_path = util.save_and_open_in_panel(dto_code, file_name, is_open, sub_folder )
+        file_name = sfdc_name_map['dto_file']        
+        save_path = self.sublconsole.save_and_open_in_panel(dto_code, classes_dir, file_name, is_open)
         save_path_list.append(save_path)
 
         # dao Code
+        self.sublconsole.showlog('start to build dao')
         dao_code = codecreator.get_dao_class(self.picked_name, sftypedesc["fields"], self.sf, self.is_custom_only)
         file_name = sfdc_name_map['dao_file']
-        save_path = util.save_and_open_in_panel(dao_code, file_name, is_open, sub_folder )
+        save_path = self.sublconsole.save_and_open_in_panel(dao_code, classes_dir, file_name, is_open)
         save_path_list.append(save_path)
 
         # controller code
+        self.sublconsole.showlog('start to build controller')
         controller_code, class_name = codecreator.get_controller_class(self.picked_name)
         file_name = sfdc_name_map['controller_file']
-        save_path = util.save_and_open_in_panel(controller_code, file_name, is_open, sub_folder )
+        save_path = self.sublconsole.save_and_open_in_panel(controller_code, classes_dir, file_name, is_open)
         save_path_list.append(save_path)
 
         # visualforce code
+        self.sublconsole.showlog('start to build visualforce')
         vf_code, class_name = codecreator.get_vf_class(self.picked_name, sftypedesc["fields"], self.is_custom_only, self.include_validate)
         file_name = sfdc_name_map['vf_file']
-        save_path = util.save_and_open_in_panel(vf_code, file_name, is_open, sub_folder )
+        save_path = self.sublconsole.save_and_open_in_panel(vf_code, pages_dir, file_name, is_open)
         save_path_list.append(save_path)
 
         # list controller code
+        self.sublconsole.showlog('start to build list controller')
         list_controller_code, class_name = codecreator.get_list_controller_class(self.picked_name)
         file_name = sfdc_name_map['list_controller_file']
-        save_path = util.save_and_open_in_panel(list_controller_code, file_name, is_open, sub_folder )
+        save_path = self.sublconsole.save_and_open_in_panel(list_controller_code, classes_dir, file_name, is_open)
         save_path_list.append(save_path)
 
         # visualforce code
+        self.sublconsole.showlog('start to build list visualforce')
         list_vf_code, class_name = codecreator.get_list_vf_class(self.picked_name, sftypedesc["fields"], self.is_custom_only, self.include_validate)
         file_name = sfdc_name_map['list_vf_file']
-        save_path = util.save_and_open_in_panel(list_vf_code, file_name, is_open, sub_folder )
+        save_path = self.sublconsole.save_and_open_in_panel(list_vf_code, pages_dir, file_name, is_open)
         save_path_list.append(save_path)
 
         # SfdcXyController
+        self.sublconsole.showlog('start to build SfdcXyController')
         src_code = codecreator.get_sfdcxycontroller()
         file_name = 'SfdcXyController.cls'
-        save_path = util.save_and_open_in_panel(src_code, file_name, is_open, sub_folder )
+        save_path = self.sublconsole.save_and_open_in_panel(src_code, classes_dir, file_name, is_open)
         save_path_list.append(save_path)
 
         if sublime.ok_cancel_dialog('Create Source Over,Do you want to open the sources? '):
             for save_path in save_path_list:
-                util.open_file(save_path)
+                self.sublconsole.open_file(save_path)
+                
 
 
 class OpenControllerCommand(sublime_plugin.TextCommand):
@@ -1374,10 +1151,10 @@ class OpenControllerCommand(sublime_plugin.TextCommand):
         if file_name and ( file_name.find(".page") > -1 ):
             # XyzPage.page -> XyzController.cls
             # Xyz.page -> XyzController.cls
-            page_floder = util.get_slash() + "pages" + util.get_slash()
-            class_floder = util.get_slash() + "classes" + util.get_slash()
-            file_name1 = file_name.replace(page_floder, class_floder).replace('.page', 'Controller.cls')
-            file_name2 = file_name.replace(page_floder, class_floder).replace('Page.page', 'Controller.cls')
+            page_folder = baseutil.get_slash() + "pages" + baseutil.get_slash()
+            class_folder = baseutil.get_slash() + "classes" + baseutil.get_slash()
+            file_name1 = file_name.replace(page_folder, class_folder).replace('.page', 'Controller.cls')
+            file_name2 = file_name.replace(page_folder, class_folder).replace('Page.page', 'Controller.cls')
             if os.path.isfile(file_name1): 
                 self.view.window().open_file(file_name1)
                 isExist = True
@@ -1392,7 +1169,7 @@ class OpenControllerCommand(sublime_plugin.TextCommand):
                 isExist = True
 
         if not isExist:
-            util.show_in_panel('file not found!\n')
+            self.sublconsole.showlog('file not found!\n')
 
 
     def is_enabled(self):
@@ -1419,7 +1196,7 @@ class OpenTestclassCommand(sublime_plugin.TextCommand):
                 isExist = True
 
         if not isExist:
-            util.show_in_panel('file not found!\n')
+            self.sublconsole.showlog('file not found!\n')
 
     def is_enabled(self):
         file_name = self.view.file_name()
@@ -1441,10 +1218,10 @@ class OpenVisualpageCommand(sublime_plugin.TextCommand):
         if file_name:
             # XyzPage.page -> XyzController.cls
             # Xyz.page -> XyzController.cls
-            page_floder = util.get_slash() + "pages" + util.get_slash()
-            class_floder = util.get_slash() + "classes" + util.get_slash()
-            file_name1 = file_name.replace(class_floder, page_floder).replace('Controller.cls', '.page')
-            file_name2 = file_name.replace(class_floder, page_floder).replace('Controller.cls', 'Page.page')
+            page_folder = baseutil.get_slash() + "pages" + baseutil.get_slash()
+            class_folder = baseutil.get_slash() + "classes" + baseutil.get_slash()
+            file_name1 = file_name.replace(class_folder, page_folder).replace('Controller.cls', '.page')
+            file_name2 = file_name.replace(class_folder, page_folder).replace('Controller.cls', 'Page.page')
             if os.path.isfile(file_name1): 
                 self.view.window().open_file(file_name1)
                 isExist = True
@@ -1453,7 +1230,7 @@ class OpenVisualpageCommand(sublime_plugin.TextCommand):
                 isExist = True
 
         if not isExist:
-            util.show_in_panel('file not found!\n')
+            self.sublconsole.showlog('file not found!\n')
 
     def is_enabled(self):
         file_name = self.view.file_name()
@@ -1470,7 +1247,7 @@ class CopyFilenameCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         full_path = self.view.file_name()
         if full_path != None:
-            str_list = full_path.split(util.get_slash())
+            str_list = full_path.split(baseutil.get_slash())
             file_name = str(str_list[-1])
             sublime.set_clipboard(file_name)
             sublime.status_message("Copy File Name : %s " % file_name)
@@ -1479,9 +1256,12 @@ class CopyFilenameCommand(sublime_plugin.TextCommand):
 class ChangeAuthTypeCommand(sublime_plugin.WindowCommand):
     def run(self):
         try:
-            settings = setting.load()
+            self.sf_basic_config = SfBasicConfig()
+            self.settings = self.sf_basic_config.get_setting()
+            self.sublconsole = SublConsole(self.sf_basic_config)
+            settings = self.settings
             auth_type = settings["authentication"]
-            self.dirs = [setting.AUTHENTICATION_OAUTH2, setting.AUTHENTICATION_PASSWORD, setting.AUTHENTICATION_MAVENSMATE]
+            self.dirs = [setting.AUTHENTICATION_OAUTH2, setting.AUTHENTICATION_PASSWORD]
             show_dirs = []
             for dirstr in self.dirs:
                 if auth_type == dirstr:
@@ -1492,7 +1272,7 @@ class ChangeAuthTypeCommand(sublime_plugin.WindowCommand):
             self.window.show_quick_panel(show_dirs, self.panel_done,sublime.MONOSPACE_FONT)
 
         except Exception as e:
-            util.show_in_panel(e)
+            self.sublconsole.showlog(e)
             return
 
     def panel_done(self, picked):
@@ -1500,20 +1280,22 @@ class ChangeAuthTypeCommand(sublime_plugin.WindowCommand):
             return
         self.auth_type = self.dirs[picked]
 
-        thread = threading.Thread(target=self.main_handle)
-        thread.start()
-        util.handle_thread(thread)
+        self.sublconsole.thread_run(target=self.main_handle)
 
     def main_handle(self):
         # print('self.auth_type-->')
         # print(self.auth_type)
-        setting.update_authentication_setting(self.auth_type)
+        self.sf_basic_config.update_authentication_setting(self.auth_type)
 
 
 class SwitchBrowserCommand(sublime_plugin.WindowCommand):
     def run(self):
         try:
-            self.dirs = setting.get_browser_setting2()
+            self.sf_basic_config = SfBasicConfig()
+            self.settings = self.sf_basic_config.get_setting()
+            self.sublconsole = SublConsole(self.sf_basic_config)
+
+            self.dirs = self.sf_basic_config.get_browser_setting2()
             dirs = []
             for dir in self.dirs:
                 dirs.append(dir[0])
@@ -1521,7 +1303,7 @@ class SwitchBrowserCommand(sublime_plugin.WindowCommand):
             self.window.show_quick_panel(dirs, self.panel_done,sublime.MONOSPACE_FONT)
 
         except Exception as e:
-            util.show_in_panel(e)
+            self.sublconsole.showlog(e)
             return
 
     def panel_done(self, picked):
@@ -1530,77 +1312,21 @@ class SwitchBrowserCommand(sublime_plugin.WindowCommand):
         self.browser = self.dirs[picked][0]
         self.broswer_name = self.dirs[picked][1]
 
-        thread = threading.Thread(target=self.main_handle)
-        thread.start()
-        util.handle_thread(thread)
+        self.sublconsole.thread_run(target=self.main_handle)
 
     def main_handle(self):
-        setting.update_default_browser(self.broswer_name)
+        self.sf_basic_config.update_default_browser(self.broswer_name)
 
-class SwitchXyProjectCommand(sublime_plugin.TextCommand):
-    def run(self, edit):
-        settings = setting.load()
-        self.settings = settings
-        projects = settings["projects"]
-        default_project = settings["default_project"]
-        dirs = []
-        dirs_result = []
-        for project_key in projects.keys():
-            project_value = projects[project_key]
 
-            if default_project == project_key:
-                tmp = '[○]' + project_key
-            else:
-                tmp = '[X]' + project_key
-            dirs.append(tmp)
-            dirs_result.append(project_key)
-
-        self.results = dirs_result
-        window = sublime.active_window()
-        window.show_quick_panel(dirs, self.panel_done,
-            sublime.MONOSPACE_FONT)
-
-    def panel_done(self, picked):
-        if 0 > picked < len(self.results):
-            return
-        self.picked_project = self.results[picked]
-
-        thread = threading.Thread(target=self.main_handle)
-        thread.start()
-        util.handle_thread(thread)
-
-    def main_handle(self):
-        setting.update_default_project(self.picked_project)
-
-        # if self.settings["use_oauth2"]:
-        #     util.sf_oauth2()
-
-        # TODO
-        #　open project
-        # current_project_dir = setting.mm_project_directory()
-        # project = self.settings["projects"][self.picked_project]
-        # workspace = project["workspace"]
-        # project_file = self.picked_project + ".sublime-project"
-        # project_file_path = os.path.join(workspace, project_file)
-        # if os.path.normpath(current_project_dir) != os.path.normpath(workspace):
-        #     print('--->open project')
-        #     print(project_file_path)
-        #     if os.path.isfile(project_file_path):
-        #         util.subl(project_file_path)
-
-    # def is_enabled(self):
-    #     use_mavensmate_setting = self.settings["use_mavensmate_setting"]
-    #     return (not use_mavensmate_setting)
-
-    # def is_visible(self):
-    #     return self.is_enabled()
 
 
 class AboutHxyCommand(sublime_plugin.ApplicationCommand):
     def run(command):
+        sf_basic_config = SfBasicConfig()
+        sublconsole = SublConsole(sf_basic_config)
+        
         version_info = sublime.load_settings("sfdc.version.sublime-settings")
-
-        version_msg = "%s v%s\n\n%s\n\nCopyright © 2016-2017 By %s\n\nEmail: %s\nHomePage: %s\n" % (
+        version_msg = "%s v%s\n\n%s\n\nCopyright © 2016-2018 By %s\n\nEmail: %s\nHomePage: %s\n" % (
             version_info.get("name"),
             version_info.get("version"),
             version_info.get("description"),
@@ -1608,20 +1334,29 @@ class AboutHxyCommand(sublime_plugin.ApplicationCommand):
             version_info.get("email"),
             version_info.get("homepage")
         )
-        util.show_in_dialog(version_msg)
+        sublconsole.show_in_dialog(version_msg)
 
 
 class ReportIssueXyCommand(sublime_plugin.ApplicationCommand):
     def run(command):
+        sf_basic_config = SfBasicConfig()
         version_info = sublime.load_settings("sfdc.version.sublime-settings")
-        util.open_in_default_browser(version_info.get("issue"))
+        util.open_in_default_browser(sf_basic_config, version_info.get("issue"))
 
 
 class HomePageCommand(sublime_plugin.ApplicationCommand):
     def run(command):
+        sf_basic_config = SfBasicConfig()
+        sublconsole = SublConsole(sf_basic_config)
         version_info = sublime.load_settings("sfdc.version.sublime-settings")
-        util.open_in_default_browser(version_info.get("homepage"))
+        util.open_in_default_browser(sf_basic_config, version_info.get("homepage"))
 
+
+class ShowSalesforcexytoolsLogsCommand(sublime_plugin.ApplicationCommand):
+    def run(command):
+        sf_basic_config = SfBasicConfig()
+        sublconsole = SublConsole(sf_basic_config)
+        sublconsole.showlog('Open Salesforcexytools Logs Panel')
 
 
 
@@ -1629,8 +1364,9 @@ class HomePageCommand(sublime_plugin.ApplicationCommand):
 #Main Util
 ##########################################################################################
 # salesforce_instance is Salesforce instance from simple-salesforce
-def login_sf_home(self, salesforce_instance, browser='default', broswer_path=''):
+def login_sf_home(self, sf_basic_config, salesforce_instance, browser='default', broswer_path=''):
         try:
+            self.sublconsole.debug(">>login sf home")
             sf = salesforce_instance
             sfdesc = sf.describe()
              
@@ -1640,27 +1376,29 @@ def login_sf_home(self, salesforce_instance, browser='default', broswer_path='')
                                  sid=sf.session_id,
                                  returl=returl))
             if browser == 'default':
-                util.open_in_default_browser(login_url)
+                self.sublconsole.debug(">>default browser")
+                util.open_in_default_browser(sf_basic_config, login_url)
             else:
-                util.open_in_browser(login_url,browser,broswer_path)
+                self.sublconsole.debug(">>other browser")
+                util.open_in_browser(sf_basic_config, login_url,browser,broswer_path)
 
 
         except RequestException as e:
-            util.show_in_panel("Network connection timeout when issuing REST GET request")
+            self.sublconsole.showlog("Network connection timeout when issuing REST GET request")
             return
         except SalesforceExpiredSession as e:
-            util.show_in_dialog('session expired')
+            self.sublconsole.show_in_dialog('session expired')
             util.re_auth()
             return
         except SalesforceRefusedRequest as e:
-            util.show_in_panel('The request has been refused.')
+            self.sublconsole.showlog('The request has been refused.')
             return
         except SalesforceError as e:
             err = 'Error code: %s \nError message:%s' % (e.status,e.content)
-            util.show_in_panel(err)
+            self.sublconsole.showlog(err)
             return
         except Exception as e:
-            util.show_in_panel(e)
+            self.sublconsole.showlog(e)
             return
 
 # format soql ,
@@ -1668,7 +1406,7 @@ def login_sf_home(self, salesforce_instance, browser='default', broswer_path='')
 def soql_format(sf_instance,soql_str):
     import re
 
-    soql = util.del_comment(soql_str)
+    soql = baseutil.del_comment(soql_str)
     match = re.match("select\s+\*\s+from[\s\t]+(\w+)([\t\s\S]*)", soql, re.I|re.M)
     if match:
         sobject = match.group(1)
@@ -1686,350 +1424,6 @@ def get_sobject_fields(sf_instance, sobject):
     sftype = sf_instance.get_sobject(sobject)
     sftypedesc = sftype.describe()
     for field in sftypedesc["fields"]:
-        fields.append(util.xstr(field["name"]))
+        fields.append(baseutil.xstr(field["name"]))
     return fields
 
-
-
-
-##########################################################################################
-#Deprecated Or Delete
-##########################################################################################
-# # Save the SFDC Object As Excel
-# # use xlwt to write excel,deprecated 
-# class SaveSfdcObjectAsExcelCommand(sublime_plugin.WindowCommand):
-#     def main_handle(self, savePath = ''):
-#         try:
-#             dirPath = os.path.dirname(savePath)
-#             util.makedir(dirPath)
-
-#             sf = util.sf_login()
-#             # contact = sf.query("SELECT Id, Email FROM Contact limit 1")
-
-#             sfdesc = sf.describe()
-#             book = xlwt.Workbook()
-#             newSheet_1 = book.add_sheet('オブジェクトリスト')
-#             newSheet_1.write(0, 0, 'label')
-#             newSheet_1.write(0, 1, 'name')
-#             newSheet_1.write(0, 2, 'keyPrefix')
-#             index = 1;
-#             sheetIndex = 0;
-
-#             for x in sf.describe()["sobjects"]:
-#               #write to xls
-#               book.get_sheet(0)
-#               newSheet_1.write(index, 0, util.xstr(x["label"]))
-#               newSheet_1.write(index, 1, util.xstr(x["name"]))
-#               newSheet_1.write(index, 2, util.xstr(x["keyPrefix"]))
-#               index = index + 1
-#               #print(sf.Kind__c.describe())
-#               #print(x["name"])
-#               #print(x["custom"])
-#               if x["custom"]:
-#                   sheetIndex += 1
-                  
-#                   # sftype = SFType(util.xstr(x["name"]), sf.session_id, sf.sf_instance, sf_version=sf.sf_version,
-#                   #               proxies=sf.proxies, session=sf.session)
-#                   sftype = sf.get_sobject(util.xstr(x["name"]))
-
-#                   #print(x["name"])     
-#                   #write to xls
-#                   fieldSheet_1 = book.add_sheet(x["name"])
-#                   book.get_sheet(sheetIndex)
-#                   rowIndex = 0;
-#                   fieldSheet_1.write(rowIndex, 0, "name")
-#                   fieldSheet_1.write(rowIndex, 1, "label")
-#                   fieldSheet_1.write(rowIndex, 2, "type")
-#                   fieldSheet_1.write(rowIndex, 3, "length")
-#                   fieldSheet_1.write(rowIndex, 4, "scale")
-
-#                   sftypedesc = sftype.describe()
-#                   for field in sftypedesc["fields"]:
-#                      #print(field["name"])  
-#                      #print(field["label"])  
-#                      #print(field["type"])  
-#                      #print(field["length"])  
-#                      #print(field["scale"])  
-#                      rowIndex += 1
-#                      fieldSheet_1.write(rowIndex, 0, field["name"])
-#                      fieldSheet_1.write(rowIndex, 1, field["label"])
-#                      fieldSheet_1.write(rowIndex, 2, field["type"])
-#                      fieldSheet_1.write(rowIndex, 3, field["length"])
-#                      fieldSheet_1.write(rowIndex, 4, field["scale"])
-
-#               #message += x["label"] + "\n"
-
-#             # book.save( settings["default_project"] + '_sobject.xls')
-#             book.save(savePath)
-#             util.show_in_dialog("Done! Please see the dir below: \n" + dirPath)
-#             # isOpen = sublime.ok_cancel_dialog('Do you want to open the directory?')
-#             # if isOpen:
-
-
-
-#         except RequestException as e:
-#             util.show_in_panel("Network connection timeout when issuing REST GET request")
-#             return
-#         except SalesforceExpiredSession as e:
-#             util.show_in_dialog('session expired')
-#             return
-#         except SalesforceRefusedRequest as e:
-#             util.show_in_panel('The request has been refused.')
-#             return
-#         except SalesforceError as e:
-#             err = 'Error code: %s \nError message:%s' % (e.status,e.content)
-#             util.show_in_panel(err)
-#             return
-#         except Exception as e:
-#             util.show_in_panel(e)
-#             # util.show_in_dialog('Exception Error!')
-#             return
-
-#     def on_input(self, args):
-#         thread = threading.Thread(target=self.main_handle, args=(args, ))
-#         thread.start()
-#         util.handle_thread(thread)
-
-
-#     def run(self):
-#         settings = setting.load()
-#         self.fullPath =  os.path.join(util.get_default_floder(), settings["default_project"] + '_sobject.xls')
-#         # show_input_panel(caption, initial_text, on_done, on_change, on_cancel)
-#         self.window.show_input_panel("Please Input FullPath of fileName: " , 
-#             self.fullPath, self.on_input, None, None)
-
-# class CreateDtoCodeCommand(sublime_plugin.WindowCommand):
-#     def run(self):
-#         try:
-#             self.sf = util.sf_login()
-#             dirs = []
-#             self.results = []
-
-#             for x in self.sf.describe()["sobjects"]:
-#                 # dirs.append([util.xstr(x["name"]), util.xstr(x["label"])])
-#                 dirs.append(util.xstr(x["name"])+' : '+util.xstr(x["label"]))
-#                 self.results.append(util.xstr(x["name"]))
-#                 # print(x)
-#             self.window.show_quick_panel(dirs, self.panel_done,sublime.MONOSPACE_FONT)
-
-#         except RequestException as e:
-#             util.show_in_panel("Network connection timeout when issuing REST GET request")
-#             return
-#         except SalesforceExpiredSession as e:
-#             util.show_in_dialog('session expired')
-#             return
-#         except SalesforceRefusedRequest as e:
-#             util.show_in_panel('The request has been refused.')
-#             return
-#         except SalesforceError as e:
-#             err = 'Error code: %s \nError message:%s' % (e.status,e.content)
-#             util.show_in_panel(err)
-#             return
-#         except Exception as e:
-#             util.show_in_panel(e)
-#             # util.show_in_dialog('Exception Error!')
-#             return
-
-#     def panel_done(self, picked):
-#         if 0 > picked < len(self.results):
-#             return
-#         self.picked_name = self.results[picked]
-#         # print(self.picked_name)
-#         dirs = ["Custom Fields Only-Exclude Validate", "All Fields-Exclude Validate",
-#                 "Custom Fields Only-Include Validate",  "All Fields-Include Validate"]
-#         self.custom_result = [1, 2, 3, 4]
-        
-#         sublime.set_timeout(lambda:self.window.show_quick_panel(dirs, self.select_panel), 10)
-
-#     def select_panel(self, picked):
-#         if 0 > picked < len(self.custom_result):
-#             return
-#         self.is_custom_only = (self.custom_result[picked]==1 or self.custom_result[picked]==3)
-#         self.include_validate = (self.custom_result[picked]>2)
-
-#         thread = threading.Thread(target=self.main_handle)
-#         thread.start()
-#         util.handle_thread(thread)
-
-
-#     def main_handle(self):
-
-#         self.sftype = self.sf.get_sobject(self.picked_name)
-
-#         sftypedesc = self.sftype.describe()
-          
-#         # util.show_in_new_tab(util.get_dto_class(self.picked_name, sftypedesc["fields"], self.is_custom_only))
-
-#         dto_class, class_name = util.get_dto_class(self.picked_name, sftypedesc["fields"], self.is_custom_only, self.include_validate)
-#         file_name = class_name + 'Dto.cls'
-#         sub_folder = AUTO_CODE_DIR
-#         util.save_and_open_in_panel(dto_class, file_name, sub_folder )
-
-# class CreateVfCodeCommand(sublime_plugin.WindowCommand):
-#     def run(self):
-#         try:
-#             self.sf = util.sf_login()
-#             dirs = []
-#             self.results = []
-
-#             for x in self.sf.describe()["sobjects"]:
-#                 # dirs.append([util.xstr(x["name"]), util.xstr(x["label"])])
-#                 dirs.append(util.xstr(x["name"])+' : '+util.xstr(x["label"]))
-#                 self.results.append(util.xstr(x["name"]))
-#                 # print(x)
-#             self.window.show_quick_panel(dirs, self.panel_done,sublime.MONOSPACE_FONT)
-
-#         except RequestException as e:
-#             util.show_in_panel("Network connection timeout when issuing REST GET request")
-#             return
-#         except SalesforceExpiredSession as e:
-#             util.show_in_dialog('session expired')
-#             return
-#         except SalesforceRefusedRequest as e:
-#             util.show_in_panel('The request has been refused.')
-#             return
-#         except SalesforceError as e:
-#             err = 'Error code: %s \nError message:%s' % (e.status,e.content)
-#             util.show_in_panel(err)
-#             return
-#         except Exception as e:
-#             util.show_in_panel(e)
-#             # util.show_in_dialog('Exception Error!')
-#             return
-
-#     def panel_done(self, picked):
-#         if 0 > picked < len(self.results):
-#             return
-#         self.picked_name = self.results[picked]
-#         # print(self.picked_name)
-#         dirs = ["Custom Fields Only", "All Fields"]
-#         self.custom_result = [1, 2]
-        
-#         sublime.set_timeout(lambda:self.window.show_quick_panel(dirs, self.select_panel), 10)
-
-#     def select_panel(self, picked):
-#         if 0 > picked < len(self.custom_result):
-#             return
-#         self.is_custom_only = (self.custom_result[picked]==1 )
-
-#         thread = threading.Thread(target=self.main_handle)
-#         thread.start()
-#         util.handle_thread(thread)
-
-
-#     def main_handle(self):
-
-#         self.sftype = self.sf.get_sobject(self.picked_name)
-
-#         sftypedesc = self.sftype.describe()
-          
-#         # util.show_in_new_tab(util.get_dto_class(self.picked_name, sftypedesc["fields"], self.is_custom_only))
-
-#         source_code, class_name = util.get_vf_class(self.picked_name, sftypedesc["fields"], self.is_custom_only)
-#         file_name = class_name + '.page'
-#         sub_folder = AUTO_CODE_DIR
-#         util.save_and_open_in_panel(source_code, file_name, sub_folder )
-
-
-# class CreateDaoCodeCommand(sublime_plugin.WindowCommand):
-#     def run(self):
-#         try:
-#             self.sf = util.sf_login()
-#             dirs = []
-#             self.results = []
-
-#             for x in self.sf.describe()["sobjects"]:
-#                 # dirs.append([util.xstr(x["name"]), util.xstr(x["label"])])
-#                 dirs.append(util.xstr(x["name"])+' : '+util.xstr(x["label"]))
-#                 self.results.append(util.xstr(x["name"]))
-#                 # print(x)
-#             self.window.show_quick_panel(dirs, self.panel_done,sublime.MONOSPACE_FONT)
-
-#         except RequestException as e:
-#             util.show_in_panel("Network connection timeout when issuing REST GET request")
-#             return
-#         except SalesforceExpiredSession as e:
-#             util.show_in_dialog('session expired')
-#             return
-#         except SalesforceRefusedRequest as e:
-#             util.show_in_panel('The request has been refused.')
-#             return
-#         except SalesforceError as e:
-#             err = 'Error code: %s \nError message:%s' % (e.status,e.content)
-#             util.show_in_panel(err)
-#             return
-#         except Exception as e:
-#             util.show_in_panel(e)
-#             # util.show_in_dialog('Exception Error!')
-#             return
-
-#     def panel_done(self, picked):
-#         if 0 > picked < len(self.results):
-#             return
-#         self.picked_name = self.results[picked]
-#         # print(self.picked_name)
-#         dirs = ["Custom Fields Only", "All Fields"]
-#         self.custom_result = [True, False]
-        
-#         sublime.set_timeout(lambda:self.window.show_quick_panel(dirs, self.select_panel), 10)
-
-#     def select_panel(self, picked):
-#         if 0 > picked < len(self.custom_result):
-#             return
-#         self.is_custom_only = self.custom_result[picked]    
-
-#         thread = threading.Thread(target=self.main_handle)
-#         thread.start()
-#         util.handle_thread(thread)
-
-
-#     def main_handle(self):
-
-#         self.sftype = self.sf.get_sobject(self.picked_name)
-
-#         sftypedesc = self.sftype.describe()
-          
-#         util.show_in_new_tab(util.get_dao_class(self.picked_name, sftypedesc["fields"], self.is_custom_only))
-
-
-# class CreateControllerCodeCommand(sublime_plugin.WindowCommand):
-#     def run(self):
-#         try:
-#             self.sf = util.sf_login()
-#             dirs = []
-#             self.results = []
-
-#             for x in self.sf.describe()["sobjects"]:
-#                 # dirs.append([util.xstr(x["name"]), util.xstr(x["label"])])
-#                 dirs.append(util.xstr(x["name"])+' : '+util.xstr(x["label"]))
-#                 self.results.append(util.xstr(x["name"]))
-#                 # print(x)
-#             self.window.show_quick_panel(dirs, self.panel_done,sublime.MONOSPACE_FONT)
-
-#         except RequestException as e:
-#             util.show_in_panel("Network connection timeout when issuing REST GET request")
-#             return
-#         except SalesforceExpiredSession as e:
-#             util.show_in_dialog('session expired')
-#             return
-#         except SalesforceRefusedRequest as e:
-#             util.show_in_panel('The request has been refused.')
-#             return
-#         except SalesforceError as e:
-#             err = 'Error code: %s \nError message:%s' % (e.status,e.content)
-#             util.show_in_panel(err)
-#             return
-#         except Exception as e:
-#             util.show_in_panel(e)
-#             # util.show_in_dialog('Exception Error!')
-#             return
-
-#     def panel_done(self, picked):
-#         if 0 > picked < len(self.results):
-#             return
-#         self.picked_name = self.results[picked]
-
-#         source_code, class_name = util.get_controller_class(self.picked_name)
-#         file_name = class_name + 'Controller.cls'
-#         sub_folder = AUTO_CODE_DIR
-#         util.save_and_open_in_panel(source_code, file_name, sub_folder )

@@ -1,6 +1,6 @@
 import re
 
-from . import util
+from . import baseutil
 from . import template
 
 ##########################################################################################
@@ -56,7 +56,7 @@ def get_functionList(src_str):
         # it will need to decode 
         f['args'] = decode_map_str(m[1].strip().split(','))
 
-        f['is_static'] = ( util.xstr(m[0]).find("static") > -1 )
+        f['is_static'] = ( baseutil.xstr(m[0]).find("static") > -1 )
         # show_in_panel(f)
         functionList.append(f)
         # functionName = m[0].split()[-1]
@@ -118,8 +118,8 @@ def get_sfdc_namespace(sobject_name):
     sfdc_name_map['author'] = AUTHOR
     sfdc_name_map['sobject__c'] = sobject_name
     sfdc_name_map['sobject'] = get_api_name(sobject_name)
-    sfdc_name_map['sobj_api'] = util.cap_upper(get_api_name(sobject_name))
-    sfdc_name_map['sobj_api_low_cap'] = util.cap_low(sfdc_name_map['sobj_api'])
+    sfdc_name_map['sobj_api'] = baseutil.cap_upper(get_api_name(sobject_name))
+    sfdc_name_map['sobj_api_low_cap'] = baseutil.cap_low(sfdc_name_map['sobj_api'])
 
     sfdc_name_map['controller'] = sfdc_name_map['sobj_api'] + 'Controller'
     sfdc_name_map['dto'] = sfdc_name_map['sobj_api'] + 'Dto'
@@ -130,14 +130,14 @@ def get_sfdc_namespace(sobject_name):
     sfdc_name_map['list_dto'] = 'List<' + sfdc_name_map['dto'] + '>'
     sfdc_name_map['list_vf'] = sfdc_name_map['sobj_api'] + 'List'
 
-    sfdc_name_map['dto_instance'] = util.cap_low(sfdc_name_map['dto'])
-    sfdc_name_map['dao_instance'] = util.cap_low(sfdc_name_map['dao'])
-    sfdc_name_map['controller_instance'] = util.cap_low(sfdc_name_map['controller'])
+    sfdc_name_map['dto_instance'] = baseutil.cap_low(sfdc_name_map['dto'])
+    sfdc_name_map['dao_instance'] = baseutil.cap_low(sfdc_name_map['dao'])
+    sfdc_name_map['controller_instance'] = baseutil.cap_low(sfdc_name_map['controller'])
 
 
     sfdc_name_map['list_dto_instance'] = sfdc_name_map['dto_instance'] + 'List'
-    # sfdc_name_map['list_dao_instance'] = util.cap_low(sfdc_name_map['dao'])
-    # sfdc_name_map['list_controller_instance'] = util.cap_low(sfdc_name_map['controller'])
+    # sfdc_name_map['list_dao_instance'] = baseutil.cap_low(sfdc_name_map['dao'])
+    # sfdc_name_map['list_controller_instance'] = baseutil.cap_low(sfdc_name_map['controller'])
     
     sfdc_name_map['dto_file'] = sfdc_name_map['dto'] + '.cls'
     sfdc_name_map['dao_file'] = sfdc_name_map['dao'] + '.cls'
@@ -154,7 +154,7 @@ def get_sfdc_namespace(sobject_name):
 
 
 def get_testclass(src_str):
-    src_str = util.del_comment(src_str)
+    src_str = baseutil.del_comment(src_str)
 
     className = get_class_name(src_str)
     sfdc_name_map = get_sfdc_namespace(className)
@@ -170,7 +170,7 @@ def get_testclass(src_str):
         args = item['args']
 
         function_body = ''
-        instance_name = util.cap_low(className)
+        instance_name = baseutil.cap_low(className)
         
         argList = []
         paramsStr = ''
@@ -183,7 +183,7 @@ def get_testclass(src_str):
 
             paramsStr += ("\t\t{paramStr} = {testValue};\n"
                           .format(paramStr=arg.strip(),
-                                 testValue=util.random_data(data_type=decode_map_str(argName[0]), isLoop = False)))
+                                 testValue=baseutil.random_data(data_type=decode_map_str(argName[0]), isLoop = False)))
         argsStr = ','.join(argList)
 
         # define Test Paramters
@@ -205,7 +205,7 @@ def get_testclass(src_str):
             else:
                 tmpValue = {}
                 tmpValue['return_type'] = item['return_type']
-                tmpValue['return_name'] = 'result' + util.cap_upper(function_name)
+                tmpValue['return_name'] = 'result' + baseutil.cap_upper(function_name)
                 tmpValue['instance_name'] = className
                 tmpValue['function_name'] = function_name
                 tmpValue['args'] = argsStr
@@ -271,7 +271,7 @@ def get_testclass(src_str):
             else:
                 tmpValue = {}
                 tmpValue['return_type'] = item['return_type']
-                tmpValue['return_name'] = 'result' + util.cap_upper(function_name)
+                tmpValue['return_name'] = 'result' + baseutil.cap_upper(function_name)
                 tmpValue['instance_name'] = instance_name
                 tmpValue['function_name'] = function_name
                 tmpValue['args'] = argsStr
@@ -316,8 +316,8 @@ def get_dto_class(class_name, fields, is_custom_only=False, include_validate=Fal
 
     # name, label, type, length, scale
     for field in fields:
-        field_name = util.cap_low( get_api_name(util.xstr(field['name'])) )
-        field_type = sobj_to_apextype(util.xstr(field['type']))
+        field_name = baseutil.cap_low( get_api_name(baseutil.xstr(field['name'])) )
+        field_type = sobj_to_apextype(baseutil.xstr(field['type']))
 
         if is_custom_only and field_name.lower() in NO_NEED_FIELDS:
             # print('---->no need field : '+ field_name.lower())
@@ -332,13 +332,13 @@ def get_dto_class(class_name, fields, is_custom_only=False, include_validate=Fal
         tmpVal['declare_name'] = field_name
 
         # comment
-        comment = util.xstr(field['label']) + ' , ' + util.xstr(field['type'])
+        comment = baseutil.xstr(field['label']) + ' , ' + baseutil.xstr(field['type'])
         class_body += get_code_snippet(CS_COMMENT, comment)
         # define
         class_body += get_code_snippet(CS_DECLARE, tmpVal)
         
         # constructor function
-        constructor_body += ('\t\t\tthis.%s = sobj.%s;\n' % (field_name, util.xstr(field['name'])))
+        constructor_body += ('\t\t\tthis.%s = sobj.%s;\n' % (field_name, baseutil.xstr(field['name'])))
         
         # include validate string
         if include_validate:
@@ -346,13 +346,13 @@ def get_dto_class(class_name, fields, is_custom_only=False, include_validate=Fal
             tmpVal['declare_type'] = 'transient String'
             tmpVal['declare_name'] = field_name + 'Msg'
             # comment
-            comment = 'Validate string For ' + util.xstr(field['label']) 
+            comment = 'Validate string For ' + baseutil.xstr(field['label']) 
             class_body += get_code_snippet(CS_COMMENT, comment)
             # define
             class_body += get_code_snippet(CS_DECLARE, tmpVal)
 
         # 'reference'
-        if util.xstr(field['type']) == 'reference':
+        if baseutil.xstr(field['type']) == 'reference':
             tmpVal = {}
             ref_sbj = field['referenceTo'][0]
             ref_sbj_namespace = get_sfdc_namespace(ref_sbj)
@@ -376,19 +376,19 @@ def get_dto_class(class_name, fields, is_custom_only=False, include_validate=Fal
         # if picklist or multipicklist
         # add List<SelectOption>
         # add define init
-        if util.xstr(field['type']) == 'picklist' or util.xstr(field['type']) == 'multipicklist':
+        if baseutil.xstr(field['type']) == 'picklist' or baseutil.xstr(field['type']) == 'multipicklist':
             # print(field)
             tmpVal = {}
             tmpVal['declare_type'] = 'List<SelectOption>'
             tmpVal['declare_name'] = field_name + 'List'
             # comment
-            comment = 'picklist SelectOption For ' + util.xstr(field['label']) 
+            comment = 'picklist SelectOption For ' + baseutil.xstr(field['label']) 
             class_body += get_code_snippet(CS_COMMENT, comment)
             # define
             class_body += get_code_snippet(CS_DECLARE, tmpVal)
 
             # TODO
-            # init_body += ('\t\t\tthis.%s = CommonUtil.getSelectOptionList(%s.%s.getDescribe(),true);\n' % (tmpVal['declare_name'],sobj_name,util.xstr(field['name'])) )
+            # init_body += ('\t\t\tthis.%s = CommonUtil.getSelectOptionList(%s.%s.getDescribe(),true);\n' % (tmpVal['declare_name'],sobj_name,baseutil.xstr(field['name'])) )
 
             # init List<SelectOption>class_body at init()
             picklistValues = field['picklistValues']
@@ -402,7 +402,7 @@ def get_dto_class(class_name, fields, is_custom_only=False, include_validate=Fal
 
         # Dto To Sobject
         if field["updateable"] or field_name.lower() == 'id':
-            dto_to_sobj_body += ('\t\tsobj.%s = %s;\n' % (util.xstr(field['name']),field_name))
+            dto_to_sobj_body += ('\t\tsobj.%s = %s;\n' % (baseutil.xstr(field['name']),field_name))
 
 
 
@@ -448,8 +448,8 @@ def get_vf_class(class_name, fields, is_custom_only=False, include_validate=Fals
 
     # name, label, type, length, scale
     for field in fields:
-        field_name = util.cap_low( get_api_name(util.xstr(field['name'])) )
-        field_type = sobj_to_apextype(util.xstr(field['type']))
+        field_name = baseutil.cap_low( get_api_name(baseutil.xstr(field['name'])) )
+        field_type = sobj_to_apextype(baseutil.xstr(field['type']))
 
 
         if field_name.lower() == 'id' or field['autoNumber']:
@@ -468,35 +468,35 @@ def get_vf_class(class_name, fields, is_custom_only=False, include_validate=Fals
         tmpVal['declare_name'] = field_name
 
         #start of view table boday
-        data_type = util.xstr(field['type'])
+        data_type = baseutil.xstr(field['type'])
         vf_edit_snippet = template.get_vf_show_snippet(data_type)
         field_name_with_dto = sfdc_name_map['dto_instance']  + "." + field_name
         view_td_body = vf_edit_snippet.format(field_name=field_name_with_dto)
 
         if include_validate:
-            view_table_body += get_template(TMP_HTML_TABLE_CONTENT2).format(th_body=util.xstr(field['label']),
+            view_table_body += get_template(TMP_HTML_TABLE_CONTENT2).format(th_body=baseutil.xstr(field['label']),
                                                                         td_body=view_td_body,
                                                                         td_body2= field_name_with_dto + 'Msg'
                                                                         )
         else:
-            view_table_body += get_template(TMP_HTML_TABLE_CONTENT).format(th_body=util.xstr(field['label']),
+            view_table_body += get_template(TMP_HTML_TABLE_CONTENT).format(th_body=baseutil.xstr(field['label']),
                                                                         td_body=view_td_body)
         #end of view table boday
        
         #start of edit table boday
-        data_type = util.xstr(field['type'])
+        data_type = baseutil.xstr(field['type'])
         vf_edit_snippet = template.get_vf_edit_snippet(data_type)
         field_name_with_dto = sfdc_name_map['dto_instance']  + "." + field_name
         edit_td_body = vf_edit_snippet.format(field_name=field_name_with_dto)
 
         if include_validate:
-            edit_table_body += get_template(TMP_HTML_TABLE_CONTENT2).format(th_body=util.xstr(field['label']),
+            edit_table_body += get_template(TMP_HTML_TABLE_CONTENT2).format(th_body=baseutil.xstr(field['label']),
                                                                         td_body=edit_td_body,
                                                                         td_body2= field_name_with_dto + 'Msg'
                                                                         )
 
         else:
-            edit_table_body += get_template(TMP_HTML_TABLE_CONTENT).format(th_body=util.xstr(field['label']),
+            edit_table_body += get_template(TMP_HTML_TABLE_CONTENT).format(th_body=baseutil.xstr(field['label']),
                                                                         td_body=edit_td_body)
         #end of edit table boday
 
@@ -529,8 +529,8 @@ def get_list_vf_class(class_name, fields, is_custom_only=False, include_validate
 
     # name, label, type, length, scale
     for field in fields:
-        field_name = util.cap_low( get_api_name(util.xstr(field['name'])) )
-        field_type = sobj_to_apextype(util.xstr(field['type']))
+        field_name = baseutil.cap_low( get_api_name(baseutil.xstr(field['name'])) )
+        field_type = sobj_to_apextype(baseutil.xstr(field['type']))
         
         tmpVal = {}
         tmpVal['declare_type'] = field_type
@@ -547,25 +547,25 @@ def get_list_vf_class(class_name, fields, is_custom_only=False, include_validate
         #         continue
 
 
-        data_type = util.xstr(field['type'])
+        data_type = baseutil.xstr(field['type'])
         vf_show_snippet = template.get_vf_show_snippet(data_type)
         field_name_with_dto = sfdc_name_map['dto_instance']  + "." + field_name
         view_td_body = vf_show_snippet.format(field_name=field_name_with_dto)
-        view_th_header += ('''\t\t\t\t\t<th>%s</th>\n''' % (util.xstr(field['label'])))
+        view_th_header += ('''\t\t\t\t\t<th>%s</th>\n''' % (baseutil.xstr(field['label'])))
         view_td += ('''\t\t\t\t\t<td>%s</td>\n''' % (view_td_body))
         
 
         vf_edit_snippet = template.get_vf_edit_snippet(data_type)
         field_name_with_dto = sfdc_name_map['dto_instance']  + "." + field_name
         edit_td_body = vf_edit_snippet.format(field_name=field_name_with_dto)
-        edit_th_header += ('''\t\t\t\t\t<th>%s</th>\n''' % (util.xstr(field['label'])))
+        edit_th_header += ('''\t\t\t\t\t<th>%s</th>\n''' % (baseutil.xstr(field['label'])))
         edit_td += ('''\t\t\t\t\t<td>%s</td>\n''' % (edit_td_body))
 
         # search input 
         if data_type == 'picklist' or data_type == 'multipicklist':
             vf_edit_snippet = template.template_search_snippet(data_type)
             field_name_with_dto = "searchDto." + field_name
-            search_vf_item += vf_edit_snippet.format(field_name=field_name_with_dto,field_label=util.xstr(field['label']))
+            search_vf_item += vf_edit_snippet.format(field_name=field_name_with_dto,field_label=baseutil.xstr(field['label']))
             print('search_vf_item--->')
             print(search_vf_item)
             
@@ -595,7 +595,7 @@ def get_dao_class(class_name, fields, sf_login_instance, is_custom_only=False):
     select_condition = ''
     tmp_index = 0
     for field in fields:
-        field_name = util.cap_low( get_api_name(util.xstr(field['name'])) )
+        field_name = baseutil.cap_low( get_api_name(baseutil.xstr(field['name'])) )
 
         # because textare can not be searched by like query
         if (field['type'] == 'textarea'):
@@ -728,7 +728,7 @@ def get_soql_src(sobject, fields, sf_login_instance, condition='', has_comment=F
     nocomment_fields_str = ""
 
     for field in fields:
-        field_name = util.xstr(field["name"])
+        field_name = baseutil.xstr(field["name"])
 
         if is_custom_only and field_name.lower() in NO_NEED_FIELDS:
             continue
@@ -737,28 +737,28 @@ def get_soql_src(sobject, fields, sf_login_instance, condition='', has_comment=F
             continue
 
         if is_apex_code:
-            tmp_fields_str = ("\t\t\tquery_str += ' %s, ';\t\t\t\t// %s" % (util.xstr(field["name"]), util.xstr(field["label"] )))
+            tmp_fields_str = ("\t\t\tquery_str += ' %s, ';\t\t\t\t// %s" % (baseutil.xstr(field["name"]), baseutil.xstr(field["label"] )))
         else:
-            tmp_fields_str = "\t\t\t" + util.xstr(field["name"]) + ",\t\t\t\t//" + util.xstr(field["label"])
+            tmp_fields_str = "\t\t\t" + baseutil.xstr(field["name"]) + ",\t\t\t\t//" + baseutil.xstr(field["label"])
         tmp_fields.append(tmp_fields_str)
 
-        nocomment_tmp_fields.append(util.xstr(field["name"]))
+        nocomment_tmp_fields.append(baseutil.xstr(field["name"]))
 
-        if include_relationship and util.xstr(field['type']) == 'reference':
+        if include_relationship and baseutil.xstr(field['type']) == 'reference':
             ref_sbj = field['referenceTo'][0]
             ref_sbj_namespace = get_sfdc_namespace(ref_sbj)
             ref_sbj_namespace['dto_relationship_name'] = field['relationshipName']
             ref_sftype = sf_login_instance.get_sobject(ref_sbj)
             ref_sftypedesc = ref_sftype.describe()
             for ref_field in ref_sftypedesc["fields"]:
-                if is_custom_only and util.xstr(ref_field["name"]).lower() in NO_NEED_FIELDS:
+                if is_custom_only and baseutil.xstr(ref_field["name"]).lower() in NO_NEED_FIELDS:
                     continue
                 if updateable_only and not field["updateable"]:
                     continue
                 loop_tmp_field = {}
                 loop_tmp_field['dto_relationship_name']  = field['relationshipName']
-                loop_tmp_field['field_name']  = util.xstr(ref_field["name"])
-                loop_tmp_field['label']  = util.xstr(ref_field["label"])
+                loop_tmp_field['field_name']  = baseutil.xstr(ref_field["name"])
+                loop_tmp_field['label']  = baseutil.xstr(ref_field["label"])
                 loop_tmp_field['sobj']  = ref_sbj
 
                 # if updateable_only and not field["updateable"]:

@@ -14,7 +14,7 @@ try:
     from html import escape
 except ImportError:
     from cgi import escape
-from .. import requests
+from SalesforceXyTools import requests
 
 
 # pylint: disable=invalid-name,too-many-arguments,too-many-locals

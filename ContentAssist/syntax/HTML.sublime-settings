@@ -1,0 +1,13 @@
+{
+    "extensions": [
+        "page",
+        "component",
+        "email",
+        "auradoc",
+        "cmp",
+        "design",
+        "app",
+        "intf",
+        "evt"
+    ]
+}

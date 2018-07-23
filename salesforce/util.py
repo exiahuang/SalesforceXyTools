@@ -1,7 +1,7 @@
 """Utility functions for simple-salesforce"""
 
 import xml.dom.minidom
-
+from xml.sax.saxutils import quoteattr
 
 # pylint: disable=invalid-name
 def getUniqueElementValueFromXmlString(xmlString, elementName):
@@ -60,15 +60,17 @@ class SalesforceError(Exception):
 ###SOAP String
 ########################################################### 
 def get_soap_anonymous_body(apex_string):
+    apex_string = quoteattr(apex_string).replace('"', '')
     return '<apex:executeAnonymous><apex:String>{0}</apex:String></apex:executeAnonymous>'.format(apex_string)
 
-def create_apex_envelope(session_id,settings,request_body):
+def create_apex_envelope(session_id, debug_levels, request_body):
     # print('------->')
     # print(settings)
+    # debug_levels -> settings["debug_levels"] 
 
     log_levels = ""
-    for log_cat in settings["debug_levels"]:
-        log_level = settings["debug_levels"][log_cat]
+    for log_cat in debug_levels:
+        log_level = debug_levels[log_cat]
         log_levels += """
             <apex:categories>
                 <apex:category>%s</apex:category>
@@ -96,3 +98,13 @@ def create_apex_envelope(session_id,settings,request_body):
     return_body = apex_request_envelope.encode("utf-8")
 
     return return_body
+
+# How do you split a list into evenly sized chunks?
+def chunks(li, n):
+    """Yield successive n-sized chunks from l."""
+    for i in range(0, len(li), n):
+        yield li[i:i + n]
+
+def debug(msg):
+    print(msg)
+

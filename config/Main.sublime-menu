@@ -12,15 +12,119 @@
                 "command": "login_sfdc"
             },
             {
-                "caption": "Login Project",
-                "command": "login_project"
+                "caption": "Search Metadata",
+                "command": "search_metadata"
             },
             {
-                "caption": "SFDC Quick Viewer",
-                "command": "sfdc_quick_viewer"
+                "caption": "Project",
+                "children":
+                [
+                    {
+                        "caption": "New Project",
+                        "command": "new_xy_project"
+                    },
+                    {
+                        "caption": "Switch Project",
+                        "command": "prompt_select_workspace"
+                    },
+                    { "caption": "-" },
+                    {  
+                        "caption":"Retrieve Source" ,  
+                        "command": "retrieve_src"
+                    },
+                    {  
+                        "caption":"Retrieve Source.zip" ,  
+                        "command": "retrieve_zip"
+                    },
+                    { "caption": "-" },
+                    {  
+                        "caption":"Reload Metadata Cache" ,  
+                        "command": "reload_metadata_cache"
+                    },
+                    { "caption": "-" }
+                ]
+            },
+            {  
+                "caption":"Metadata","children":  
+                [     
+                    {  
+                        "caption":"New ApexClass" ,  
+                        "command": "new_apexclass"
+                    },
+                    {  
+                        "caption":"New ApexTrigger" ,  
+                        "command": "new_apextrigger"
+                    },
+                    {  
+                        "caption":"New ApexPage" ,  
+                        "command": "new_apexpage"
+                    },
+                    {  
+                        "caption":"New ApexComponent" ,  
+                        "command": "new_apexcomponent"
+                    },
+                    { "caption": "-" },
+                    {  
+                        "caption":"Refresh From Server" ,  
+                        "command": "refresh_metadata"
+                    },
+                    {
+                        "caption": "Diff with Server",
+                        "command": "refresh_metadata",
+                        "args": {
+                            "is_diff": true
+                        }
+                    },
+                    {  
+                        "caption":"Save To Server" ,  
+                        "command": "update_metadata"
+                    }
+                    //,
+                    //{  
+                    //    "caption":"Delete Metadata" ,  
+                    //    "command": "delete_metadata"
+                    //}
+                ]  
             },
             {
-                "caption": "SFDC SOQL",
+                "caption": "SObject",
+                "children":
+                [
+                    {
+                        "caption": "Search Sobject(Browser)",
+                        "command": "search_metadata",
+                        "args": {
+                            "sel_category": "CustomObject"
+                        }
+                    },
+                    {
+                        "caption": "Open Sobject Data View(Browser)",
+                        "command": "open_sobject_in_browser",
+                        "args": {
+                            "view_type": "data_list"
+                        }
+                    },
+                    { "caption": "-" },
+                    {
+                        "caption": "Export SObject Schema To Excel",
+                        "command": "save_sfdc_object_as_excel"
+                    },
+                    {
+                        "caption": "Show SObject List",
+                        "command": "show_sfdc_object_list"
+                    },
+                    {
+                        "caption": "SFDC SObject Describe",
+                        "command": "sfdc_object_desc"
+                    },
+                    {
+                        "caption": "Export Sobject Data",
+                        "command": "sfdc_dataviewer"
+                    }
+                ]
+            },
+            {
+                "caption": "Run",
                 "children":
                 [
                     {
@@ -35,53 +139,33 @@
                         "caption": "Run Apex Script",
                         "command": "run_apex_script"
                     },
-                    { "caption": "-" },
-                    {
-                        "caption": "Creat SQOL",
-                        "command": "soql_create"
-                    }
+                    { "caption": "-" }
                 ]
             },
             {
-                "caption": "SFDC Object",
+                "caption": "DataLoader",
                 "children":
                 [
                     {
-                        "caption": "Show SFDC Object List",
-                        "command": "show_sfdc_object_list"
+                        "caption": "Build Ant Dataloader Configuration",
+                        "command": "dataloader_config"
                     },
                     {
-                        "caption": "Save SFDC Object List AS Excel",
-                        "command": "save_sfdc_object_as_excel"
+                        "caption": "Open Ant Dataloader build.xml",
+                        "command": "open_ant_dataloader_xml"
                     },
                     {
-                        "caption": "SFDC Object Describe",
-                        "command": "sfdc_object_desc"
+                        "caption": "Run Ant Dataloader",
+                        "command": "run_ant_dataloader"
                     }
-                ]
-            },
-            {
-                "caption": "SFDC Data",
-                "children":
-                [
-                    {
-                        "caption": "SFDC DataViewer",
-                        "command": "sfdc_dataviewer"
-                    }
-                ]
-            },
-            {
-                "caption": "Data Loader",
-                "children":
-                [
-                    {
-                        "caption": "Export Sobject",
-                        "command": "export_sobject"
-                    },
-                    {
-                        "caption": "Export FROM SOQL",
-                        "command": "export_soql"
-                    }
+                    //{
+                    //    "caption": "Export Sobject",
+                    //    "command": "export_sobject"
+                    //},
+                    //{
+                    //    "caption": "Export FROM SOQL",
+                    //    "command": "export_soql"
+                    //}
                     // ,
                     // {
                     //     "caption": "Bulk Insert From CSV",
@@ -98,13 +182,61 @@
                 ]
             },
             {
+                "caption": "Package Builder",
+                "children":
+                [
+                    {  
+                        "caption":"Build Package.xml From Server" ,  
+                        "command": "build_package"
+                    },
+                    {  
+                        "caption":"Build Package.xml From Open Files" ,  
+                        "command": "build_package",
+                        "args" : {
+                            "build_type" : "FromLocal"
+                        }
+                    },
+                    {  
+                        "caption":"Build Deploy Package From Open Files" ,  
+                        "command": "build_package",
+                        "args" : {
+                            "build_type" : "CopyFiles"
+                        }
+                    }
+                ]
+            },
+            {
+                "caption": "Migration Tool",
+                "children":
+                [
+                    {
+                        "caption": "Ant Migration Tool",
+                        "command": "run_ant_migration_tool"
+                    },
+                    {
+                        "caption": "Open Shell",
+                        "command": "open_shell"
+                    },
+                    { "caption": "-" }
+                ]
+            },
+            {
                 "caption": "SFDC Code Creator",
                 "children":
                 [
                     {
-                        "caption": "Create All Test Data(Needed Field)",
-                        "command": "create_all_test_data"
+                        "caption": "Creat SQOL",
+                        "command": "soql_create"
                     },
+                    {
+                        "caption": "Create Test Code",
+                        "command": "create_test_code"
+                    },
+                    {
+                        "caption": "Create VisualForce/Controller/DTO/DAO Code",
+                        "command": "create_sfdc_code"
+                    },
+                    { "caption": "-" },
                     {
                         "caption": "Insert Test Data(All Field)",
                         "command": "create_test_data_all"
@@ -118,13 +250,8 @@
                         "command": "create_test_data_from_soql"
                     },
                     {
-                        "caption": "Create Test Code",
-                        "command": "create_test_code"
-                    },
-                    { "caption": "-" },
-                    {
-                        "caption": "Create VisualForce/Controller/DTO/DAO Code",
-                        "command": "create_sfdc_code"
+                        "caption": "Create All Test Data(Needed Field)",
+                        "command": "create_all_test_data"
                     }
                 ]
             },
@@ -134,7 +261,28 @@
             // },
             { "caption": "-" },
             {  
-                "caption":"Settings","children":  
+                "caption":"Project Settings","children":  
+                [
+                    {
+                        "caption": "Project Config Wizard",
+                        "command": "project_config_wizard"
+                    },
+                    {
+                        "caption": "Change Authentication Type",
+                        "command": "change_auth_type"
+                    },
+                    {
+                        "caption": "Switch Browser",
+                        "command": "switch_browser"
+                    },
+                    {
+                        "caption": "Open Project Config File",
+                        "command": "project_config"
+                    }
+                ]
+            },
+            {  
+                "caption":"Sublime Settings","children":  
                 [     
                     {  
                         "caption":"Settings - Default" ,  
@@ -143,13 +291,13 @@
                             "file": "${packages}/SalesforceXyTools/config/sfdc.huangxy.sublime-settings"  
                         }     
                     },  
-                    {  
-                        "caption":"Settings - User" ,  
-                        "command": "open_file", "args":  
-                        {  
-                            "file": "${packages}/User/sfdc.huangxy.sublime-settings"  
-                        }     
-                    },  
+                    //{  
+                    //    "caption":"Settings - User" ,  
+                    //    "command": "open_file", "args":  
+                    //    {  
+                    //        "file": "${packages}/User/sfdc.huangxy.sublime-settings"  
+                    //    }     
+                    //},  
                     { "caption": "-" },  
                     {  
                         "caption":"Key Bindings - Default" ,  
@@ -163,21 +311,14 @@
                         "command": "open_file", "args":  
                         {  
                             "file": "${packages}/User/Default ($platform).sublime-keymap"  
-                        }     
+                        }
                     }
                 ]  
-            },            
-            {
-                "caption": "Change Authentication Type",
-                "command": "change_auth_type"
             },
+            { "caption": "-" },
             {
-                "caption": "Switch Browser",
-                "command": "switch_browser"
-            },
-            {
-                "caption": "Switch Project",
-                "command": "switch_xy_project"
+                "caption": "Show SalesforceXyTools Logs",
+                "command": "show_salesforcexytools_logs"
             },
             { "caption": "-" },
             {

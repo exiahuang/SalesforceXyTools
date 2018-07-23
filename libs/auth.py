@@ -2,7 +2,7 @@
 Inspired by requests_oauth2
 '''
 
-from .. import requests
+from SalesforceXyTools import requests
 from urllib.parse import quote,urlencode
 
 import hmac

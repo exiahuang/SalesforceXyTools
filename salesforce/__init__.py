@@ -1,6 +1,8 @@
 """Simple-Salesforce Package"""
 # flake8: noqa
 
+from .myconsole import MyConsole
+
 from .api import (
     Salesforce,
     SalesforceAPI,
@@ -19,10 +21,14 @@ from .login import (
 )
 
 
-from .soap import (
+from .core import (
     Soap,
+    MetadataApi,
+    ToolingApi,
     SoapException
 )
+
+
 
 
 from .bulk import Bulk

@@ -2,36 +2,60 @@
 	{ "caption": "-" },
 	{
 		"id":"SFDC-XY",
-		"caption": "SFDC-XY",
+		"caption": "SFDC-XY Metadata",
 		"children":
 		[
             {
-                "caption": "Show SFDC Object List",
-                "command": "show_sfdc_object_list"
+                "caption": "Open in browser",
+                "command": "open_metadata_in_browser"
             },
             {
-                "caption": "Save SFDC Object AS Excel",
-                "command": "save_sfdc_object_as_excel"
+                "caption": "Save to Server",
+                "command": "update_metadata"
             },
             {
-                "caption": "SOQL Query",
-                "command": "soql_query"
+                "caption": "Refresh From Server",
+                "command": "refresh_metadata"
             },
             {
-                "caption": "Tooling Query",
-                "command": "tooling_query"
+                "caption": "Diff with Server",
+                "command": "refresh_metadata",
+                "args": {
+                    "is_diff": true
+                }
             },
             {
-                "caption": "Run Apex Script",
-                "command": "run_apex_script"
+                "caption": "Deploy To Server(Ant Migration Tool)",
+                "command": "run_ant_migration_tool"
             },
             {
-                "caption": "Login SFDC",
-                "command": "login_sfdc"
+                "caption": "Delete This Metadata(Danger)",
+                "command": "delete_this_metadata"
             },
 			{ "caption": "-" },
             {
-                "caption": "creat test code",
+                "caption": "Open Controller",
+                "command": "open_controller"
+            },
+            {
+                "caption": "Open VisualPage",
+                "command": "open_visualpage"
+            },
+            {
+                "caption": "Open TestClass",
+                "command": "open_testclass"
+            }
+		]
+	},
+	{
+		"caption": "SFDC-XY Code Creator",
+		"children":[
+            {
+                "caption": "Creat SQOL",
+                "command": "soql_create"
+            },
+            {
+                "caption": "Creat test code",
                 "command": "create_test_code"
             },
             {
@@ -46,23 +70,57 @@
                 "caption": "Insert Test Data(From Soql)",
                 "command": "create_test_data_from_soql"
             }
-		]
+        ]
 	},
-    {
-        "caption": "Open Controller",
-        "command": "open_controller"
-    },
-    {
-        "caption": "Copy FileName",
-        "command": "copy_filename"
-    },
-    {
-        "caption": "Open VisualPage",
-        "command": "open_visualpage"
-    },
-    {
-        "caption": "Open TestClass",
-        "command": "open_testclass"
-    },
+	{
+		"caption": "SFDC-XY Run",
+		"children":[
+            {
+                "caption": "Run Apex Script",
+                "command": "run_apex_script"
+            },
+            {
+                "caption": "Run Test Class",
+                "command": "run_test_class"
+            },
+            {
+                "caption": "SOQL Query",
+                "command": "soql_query"
+            },
+            {
+                "caption": "Tooling Query",
+                "command": "tooling_query"
+            },
+            {
+                "caption": "Login SFDC",
+                "command": "login_sfdc"
+            }
+        ]
+	},
+	{
+		"caption": "SFDC-XY Toolbox",
+		"children":[
+            {
+                "caption": "Open With",
+                "command": "open_with"
+            },
+            {
+                "caption": "Copy FileName",
+                "command": "copy_filename"
+            },
+            {  
+                "caption":"Build Deploy Package From Open Files" ,  
+                "command": "build_package",
+                "args" : {
+                    "build_type" : "CopyFiles"
+                }
+            },
+            { "caption": "-" },
+            {
+                "caption": "Open Src From copyfile.txt",
+                "command": "open_copy_files"
+            }
+        ]
+	},
 	{ "caption": "-" }
 ]

@@ -4,74 +4,22 @@
 	// please contact with me.
 	// Email: exia.huang@outlook.com
 	
-	// you can access by using oauth2 or password or use mavensmate
-	// the default value is oauth2
+	// you can access by using oauth2 or password
+	// the default value is password
 	// you can set it as below : 
-	// "oauth2","password","mavensmate"
-	////////////////////////////////////////////////////// 
-	// `use_mavensmate_setting` is No Longer Forever.
-	// please use "authentication" to set your authentication method.
-	// If you use mavensmate setting , please set use_mavensmate_setting true.
-	// If use_mavensmate_setting is true, you need not to set anything below. 
-	// If you set the use_mavensmate_setting false, you need to set "projects" value below.
-	// mavensmate-destop v0.0.10 or below, please set mm_use_keyring true.
-	// mavensmate-destop v0.0.11-beta.2 to v0.0.11-beta.7, please set mm_use_keyring false.
-	// "use_mavensmate_setting":true,
-	//////////////////////////////////////////////////////
-	"authentication":"oauth2",
+	// "oauth2","password"
+	"authentication":"password",
 
 	// SFDC Dataviewer Select Limit
 	"soql_select_limit":50,
 
 	// Salesforce-xy-tools base workspace
-    "xy_output_floder": "sfdc-xy",
-
-	// the default project which you work with
-	"default_project":"huangxy1",
+    "xy_output_folder": "sfdc-xy",
 
 	// default_api_version will be overwrited by api_version of each project
-	"default_api_version": 37.0,
+	"default_api_version": 40.0,
 
 	"dataloader_encoding": "utf-8",
-
-	// default home_workspace
-	"home_workspace": "",
-
-	// "projects" is the base setting,
-	// if you set "use_mavensmate_setting" false, you must set "projects"
-	// if you set "projects", you can login your project quickly
-	"projects":
-	{
-		// the Example of the projects 
-		// If you set the use_mavensmate_setting false, 
-		// you need to set "projects" value below.
-
-		// if you use oauth2 to authenticate salesforce,
-		// you can use the setting as below
-		"huangxy1":
-		{
-			"loginUrl": "https://login.salesforce.com",
-			"password": "XXXXXXX",
-			// if you have not security_token,please set ""
-			"security_token": "",
-			"username": "XXXXXXX@ibmer.info",
-			"is_sandbox": false,
-			// "api_version" is not Required, if not set, it will use default_api_version
-			"api_version": 36.0,
-			"workspace": "C:/workspace/huangxy1/"
-		},
-		// if you use password to authenticate salesforce,
-		// you can use the setting as below
-		"huangxy2":
-		{
-			"loginUrl": "https://test.salesforce.com",
-			"password": "XXXXXXX",
-			"security_token": "",
-			"username": "XXXXXXX@ibmer.info",
-			"is_sandbox": true,
-			"workspace": "C:\\workspace\\huangxy2\\"
-		}
-	},
 
 	// Add your browser which you like!
 	// examle:
@@ -83,6 +31,9 @@
 		"chrome": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
 		"IE": "C:\\Program Files\\Internet Explorer\\iexplore.exe"
 	},
+
+	// debug mode
+    "is_debug": true,
 
 	///////// Debug Log Categories
 	// https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/sforce_api_header_debuggingheader.htm

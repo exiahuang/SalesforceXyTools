@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Export" default="start_export">
+    <tstamp>
+        <format property="today" pattern="yyyyMMdd_HHmm"/>
+    </tstamp>
+    <macrodef name="export">
+        <attribute name="file"/>
+        <attribute name="object"/>
+        <attribute name="soql"/>
+        <sequential>
+            <mkdir dir="Export_${today}"/>
+            <record name="Export_${today}/export_${today}.log" append="true" action="start"/>
+            <echo message=">>>>>>>>>>>>>>>>>>>>>>Start to Export @{object}"/>
+            <echo message="Exporting @{object}"/>
+            <copy 
+                file="template-process-conf.xml" 
+                tofile="process-conf.xml" 
+                overwrite="true" 
+                failonerror="true"/>
+            <replace file="process-conf.xml">
+                <replacefilter token="_object_" value="@{object}"/>
+                <replacefilter token="_soql_" value="@{soql}"/>
+                <replacefilter token="_folder_" value="Export_${today}"/>
+                <replacefilter token="_file_" value="@{file}_${today}.csv"/>
+            </replace>
+            <java 
+                classname="com.salesforce.dataloader.process.ProcessRunner" 
+                classpath="{dataloader_jar_path}" 
+                failonerror="true">
+                <sysproperty key="salesforce.config.dir" value="."/>
+                <arg line="process.name=@{object}"/>
+            </java>
+            <echo message=">>>>>>>>>>>>>>>>>>>>>>End of Export @{object}"/>
+            <echo message="Export dir : Export_${today}"/>
+            <record name="Export_${today}/export_${today}.log" action="stop"/>
+        </sequential>
+    </macrodef>
+
+    <target name="start_export">
+        <!-- <export file="{FILE_NAME}" object="{SOBJECT_NAME}" soql="{SOQL}"/> -->
+        {ant_export_xml}
+    </target>
+
+ </project>

@@ -259,6 +259,7 @@ def template_vf_search():
 
 # VisualForce Template
 def template_search_snippet(data_type):
+        vf_code = ""
         if data_type == 'picklist':
             vf_code = '''
                             <li class="li-search">
@@ -742,6 +743,7 @@ public class {dto} {{
 
 
 def get_vf_edit_snippet(data_type):
+    vf_code = ""
     if data_type == 'id' or data_type == 'ID' or data_type == 'reference':
         vf_code = '''<apex:outputText value="{{!{field_name}}}" />'''
     elif data_type == 'string':
@@ -805,5 +807,6 @@ def get_vf_show_snippet(data_type):
     elif data_type == 'date' :
         vf_code = '''<apex:outputText value="{{!{field_name}}}" />'''
         # vf_code = '''<apex:input type="date" value="{{!{field_name}}}" />'''
-
+    else :
+        vf_code = '''<apex:outputText value="{{!{field_name}}}" />'''
     return vf_code

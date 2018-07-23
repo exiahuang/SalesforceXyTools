@@ -1,5 +1,16 @@
 # SalesforceXyTools Update History
 
+## 2.0.0 (2018.07.22)
+* Create Salesforce Project, Retrieve Metadata, Search Metadata
+* Create ApexClass, ApexTrigger, ApexComponent, Refresh, Diff with Server(Support winmerge diff), Save to Server, Deploy to Server
+* Package.xml Builder.
+* Integrate Sfdc Dataloader, Config DataLoader and Run(Need Ant and Java Environment)
+* Integrate Sfdc Migration Tool (Need Ant and Java Environment)
+* Atuo Login SFDC (two login type: oauth2 , password config).
+*  change password config file 
+   use [./`current workspace`/.xyconfig/xyconfig.json] to config password
+   
+
 ## 1.0.8 (2017.03.03)
 1. Add SFDC Quick Viewer
 You can search SObject Data/SObject Setting/ApexClass/Trigger/VisualForce Page/VisualForce Components/Email Template/Static Resource and open on browser Quickly.
@@ -36,3 +47,5 @@ usage:
   Add Auto Create Edit/View/Message Mode.
 2. Save SFDC Object List AS Excel
   Save all fields to Excel.
+
+

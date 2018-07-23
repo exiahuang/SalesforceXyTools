@@ -1,0 +1,39 @@
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+   <bean id="_object_" class="com.salesforce.dataloader.process.ProcessRunner" singleton="false">
+     <description>Created by SalesforceXyTools.</description>
+     <property name="name" value="_object_"/>
+     <property name="configOverrideMap">
+         <map>
+             <entry key="dataAccess.name" value="./_folder_/_file_"/>
+             <entry key="dataAccess.readUTF8" value="true"/>
+             <entry key="dataAccess.type" value="csvWrite"/>
+             <entry key="dataAccess.writeUTF8" value="true"/>
+             <entry key="process.enableExtractStatusOutput" value="true"/>
+             <entry key="process.enableLastRunOutput" value="true"/>
+             <entry key="process.operation" value="extract"/>
+             <entry key="process.lastRunOutputDirectory" value="./_folder_/log/_object_" />
+             <entry key="process.statusOutputDirectory" value="./_folder_/log/_object_" />
+             <entry key="sfdc.bulkApiCheckStatusInterval" value="5000"/>
+             <entry key="sfdc.bulkApiSerialMode" value="5000"/>
+             <entry key="sfdc.debugMessages" value="false"/>
+             <entry key="sfdc.enableRetries" value="true"/>
+             <entry key="sfdc.entity" value="_object_"/>
+             <entry key="sfdc.extractionRequestSize" value="500"/>
+             <entry key="sfdc.extractionSOQL" value="_soql_"/>
+             <entry key="sfdc.insertNulls" value="false"/>
+             <entry key="sfdc.loadBatchSize" value="100"/>
+             <entry key="sfdc.maxRetries" value="3"/>
+             <entry key="sfdc.minRetrySleepSecs" value="2"/>
+             <entry key="sfdc.noCompression" value="false"/>
+             <entry key="sfdc.proxyHost" value=""/>
+             <entry key="sfdc.proxyNtlmDomain" value=""/>
+             <entry key="sfdc.proxyPassword" value=""/>
+             <entry key="sfdc.proxyPort" value=""/>
+             <entry key="sfdc.proxyUsername" value=""/>
+             <entry key="sfdc.timeoutSecs" value="60"/>
+             <entry key="sfdc.useBulkApi" value="true"/>
+         </map>
+     </property>
+ </bean>
+</beans>

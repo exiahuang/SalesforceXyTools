@@ -1,55 +1,58 @@
 import sublime
 import sublime_plugin
-import datetime
-import os,sys,xdrlib
-import json
+from datetime import datetime
+import xdrlib
+import os,sys,re,json
+import shutil
+import subprocess,threading
 import webbrowser
 import random
 import platform
-import re
+from time import sleep
 
 from .salesforce import *
-from . import setting
-
-NO_NEED_FIELDS = {'ownerid','isdeleted','createddate','createdbyid','lastmodifieddate','lastmodifiedbyid','systemmodstamp','lastactivitydate','lastvieweddate','lastreferenceddate'}
-
+from . import baseutil
+from .baseutil import SysIo,SfdcXml
+from .uiutil import SublConsole
+from .setting import SfBasicConfig
 
 ##########################################################################################
 #Salesforce Util
 ##########################################################################################
-def sf_login(project_name='', Soap_Type=Soap):
-    settings = setting.load()
+def sf_login(sf_basic_config, project_name='', Soap_Type=Soap):
+    project = settings = sf_basic_config.get_setting()
+    sublconsole = SublConsole(sf_basic_config)
 
     try:
-        project = {}
-        if project_name:
-            projects = settings["projects"]
-            project = projects[project_name]
-        else:
-            project = settings["default_project_value"]
+        # project = {}
+        # if project_name:
+        #     projects = settings["projects"]
+        #     project = projects[project_name]
+        # else:
+        #     project = settings["default_project_value"]
 
-        # print('settings--->')
-        # print(json.dumps(settings, indent=4))
-        print('project--->')
-        print(json.dumps(project, indent=4))
-
+        # sublconsole.debug('settings--->')
+        # sublconsole.debug(json.dumps(settings, indent=4))
+        # sublconsole.debug(json.dumps(project, indent=4))
 
         if project_name:
             # TODO
+            sublconsole.debug('>>>>sf_login [project_name]: ' +  project_name)
             sf = Soap_Type(username=project["username"], 
                         password=project["password"], 
                         security_token=project["security_token"], 
                         sandbox=project["is_sandbox"],
                         version=project["api_version"],
-                        settings=settings
+                        myconsole=sublconsole
                         )
 
-        elif settings["use_mavensmate_setting"] or settings["use_oauth2"]:
+        elif settings["use_oauth2"]:
+            sublconsole.debug('>>>>sf_login : use oauth2')
             sf = Soap_Type( session_id=project["access_token"] ,
                             instance_url=project["instance_url"],
                             sandbox=project["is_sandbox"],
                             version=project["api_version"],
-                            settings=settings
+                            myconsole=sublconsole
                             )
             # sf = Soap_Type(username=project["username"],
             #                 session_id=project["sessionId"] ,
@@ -68,44 +71,48 @@ def sf_login(project_name='', Soap_Type=Soap):
             #                 )
 
         elif settings["use_password"]:
+            sublconsole.debug('>>>>sf_login : use password')
             sf = Soap_Type(username=project["username"], 
                         password=project["password"], 
                         security_token=project["security_token"], 
                         sandbox=project["is_sandbox"],
                         version=project["api_version"],
-                        settings=settings
+                        myconsole=sublconsole
                         )
 
         sf.settings = settings
-        print(sf)
-        print(sf.session_id)
-        print('------->')
+        # sublconsole.debug(sf.session_id)
         return sf
     except Exception as e:
         if settings["use_oauth2"]:
-            print('----->sf_login error')
-            print(e)
-            sf_oauth2()
+            sublconsole.showlog('please login salesforce on your browser!')
+            sf_oauth2(sf_basic_config)
         else:
-            show_in_dialog('Login Error! ' + xstr(e))
+            sublconsole.showlog(e)
+            sublconsole.show_in_dialog('Login Error! ' + baseutil.xstr(e))
         return
 
 
-from .libs import server
+##########################################################################################
+#Salesforce Auth
+##########################################################################################
+from SalesforceXyTools.libs import server
 sfdc_oauth_server = None
 
-def re_auth():
-    settings = setting.load()
+def re_auth(sf_basic_config):
+    settings =  sf_basic_config.get_setting()
     if settings["use_oauth2"]:
-        sf_oauth2()
+        sf_oauth2(settings)
 
-def sf_oauth2():
-    from .libs import auth
-    settings = setting.load()
-    default_project_value = settings["default_project_value"]
-    is_sandbox = default_project_value["is_sandbox"]
+def sf_oauth2(sf_basic_config):
+    sublconsole = SublConsole(sf_basic_config)
+    settings =  sf_basic_config.get_setting()
+    from SalesforceXyTools.libs import auth
+    project_setting = settings
+    # project_setting = settings["default_project_value"]
+    is_sandbox = project_setting["is_sandbox"]
 
-    if refresh_token():
+    if refresh_token(sf_basic_config):
         return
 
     server_info = sublime.load_settings("sfdc.server.sublime-settings")
@@ -114,10 +121,10 @@ def sf_oauth2():
     redirect_uri = server_info.get("redirect_uri")
     oauth = auth.SalesforceOAuth2(client_id, client_secret, redirect_uri, is_sandbox)
     authorize_url = oauth.authorize_url()
-    print('authorize_url-->')
-    print(authorize_url)
+    sublconsole.debug('authorize_url-->')
+    sublconsole.debug(authorize_url)
     start_server()
-    open_in_default_browser(authorize_url)
+    open_in_default_browser(sf_basic_config, authorize_url)
 
 def start_server():
     global sfdc_oauth_server
@@ -130,615 +137,668 @@ def stop_server():
         sfdc_oauth_server.stop()
         sfdc_oauth_server = None
         
-def refresh_token():
-    from .libs import auth
-    settings = setting.load()
+def refresh_token(sf_basic_config):
+    settings =  sf_basic_config.get_setting()
+    sublconsole = SublConsole(sf_basic_config)
+    sublconsole.debug('>>>>start to refresh token')
+    from SalesforceXyTools.libs import auth
 
     if not settings["use_oauth2"]:
         return False
 
-    default_project_value = settings["default_project_value"]
-    is_sandbox = default_project_value["is_sandbox"]
+    project_setting = settings
+    is_sandbox = project_setting["is_sandbox"]
 
-    if "refresh_token" not in default_project_value:
-        print("refresh token missing")
+    if "refresh_token" not in project_setting:
+        sublconsole.debug("refresh token missing")
         return False
 
+    sublconsole.debug('>>>>load server info')
     server_info = sublime.load_settings("sfdc.server.sublime-settings")
     client_id = server_info.get("client_id")
     client_secret = server_info.get("client_secret")
     redirect_uri = server_info.get("redirect_uri")
     oauth = auth.SalesforceOAuth2(client_id, client_secret, redirect_uri, is_sandbox)
-    refresh_token = default_project_value["refresh_token"]
-    # print(refresh_token)
-    response_json = oauth.refresh_token(refresh_token)
-    # print(response_json)
+    _refresh_token = project_setting["refresh_token"]
+    # sublconsole.debug(refresh_token)
+    response_json = oauth.refresh_token(_refresh_token)
+    # sublconsole.debug(response_json)
 
     if "error" in response_json:
+        sublconsole.debug('>>>>response josn error')
+        sublconsole.debug(response_json)
         return False
 
     if "refresh_token" not in response_json:
-        response_json["refresh_token"] = refresh_token
+        response_json["refresh_token"] = _refresh_token
 
-    save_session(response_json)
-    print("------->refresh_token ok!")
+    sublconsole.debug('>>>>refresh_token:')
+    sublconsole.debug(refresh_token)
+    sublconsole.debug('>>>>save session')
+    sf_basic_config.save_session(response_json)
+    sublconsole.debug("------->refresh_token ok!")
     return True
 
-
-##########################################################################################
-#Sublime Util
-##########################################################################################
-
-
-def insert_str(message_str):
-    view = sublime.active_window()
-    view.run_command("insert_snippet", 
-        {
-            "contents": xstr(message_str)
-        }
-    )
-
-# def append_str(message_str):
-#     view = sublime.active_window()
-#     view.run_command("append", 
-#         {
-#             "contents": xstr(message_str)
-#         }
-#     )
-
-def show_in_new_tab(message_str):
-    view = sublime.active_window().new_file()
-    view.run_command("insert_snippet", 
-        {
-            "contents": xstr(message_str)
-        }
-    )
-
-def show_in_dialog(message_str):
-    sublime.message_dialog(xstr(message_str))
-
-
-def show_in_status(message_str):
-    sublime.status_message(xstr(message_str))
-
-
-def show_in_panel(message_str):
-    # sublime.message_dialog(message_str)
-    XyPanel.show_in_panel("xypanel", xstr(message_str))
-
-
-def open_file(file_path):
-    if os.path.isfile(file_path): 
-        sublime.active_window().open_file(file_path)
-
-def save_and_open_in_panel(message_str, save_file_name , is_open=True, sub_folder='' ,default_path='' ):
-    print('----->save_file_name ' + save_file_name)
-    print('----->is_open ' + xstr(is_open))
-    if not default_path:
-        default_path=get_default_floder()
-    save_path =  os.path.join(default_path, sub_folder, save_file_name)
-
-    # delete old file
-    if os.path.isfile(save_path): 
-        os.remove(save_path)
-
-    # save file
-    save_file(save_path, message_str)
-    if is_open: 
-        open_file(save_path)
-    return save_path
-
-
-class XyPanel(object):
-    panels = {}
-
-    def __init__(self, name):
-        self.name = name
-
-    @classmethod
-    def show_in_panel(cls, panel_name, message_str):
-        panel = cls.panels.get(panel_name)
-
-        window = sublime.active_window()
-        if not panel:
-            panel = window.get_output_panel(panel_name)
-            panel.settings().set('syntax', 'Packages/Java/Java.tmLanguage')
-            panel.settings().set('color_scheme', 'Packages/Color Scheme - Default/Monokai.tmTheme')
-            panel.settings().set('word_wrap', True)
-            panel.settings().set('gutter', True)
-            panel.settings().set('line_numbers', True)
-            cls.panels[panel_name] = panel
-
-        window.run_command('show_panel', {
-                'panel': 'output.' + panel_name
-        })
-        if message_str:
-            message_str += '\n'
-
-        panel.run_command("append", {
-                "characters": message_str
-        })
-
-def status(msg, thread=False):
-    if not thread:
-        sublime.status_message(msg)
-    else:
-        sublime.set_timeout(lambda: status(msg), 0)
-        
-def handle_thread(thread, msg=None, counter=0, direction=1, width=8):
-    if thread.is_alive():
-        next = counter + direction
-        if next > width:
-            direction = -1
-        elif next < 0:
-            direction = 1
-        bar = [' '] * (width + 1)
-        bar[counter] = '='
-        counter += direction
-        status('%s [%s]' % (msg, ''.join(bar)))
-        sublime.set_timeout(lambda: handle_thread(thread, msg,  counter,
-                            direction, width), 100)
-    else:
-        status(' ok ')
-
-# # Code lifted from https://github.com/randy3k/ProjectManager/blob/master/pm.py
-# def subl(args=[]):
-#     # learnt from SideBarEnhancements
-#     executable_path = sublime.executable_path()
-#     print('executable_path: '+ executable_path)
-
-#     if sublime.platform() == 'linux':
-#         subprocess.Popen([executable_path] + [args])
-#     if sublime.platform() == 'osx':
-#         app_path = executable_path[:executable_path.rfind(".app/") + 5]
-#         executable_path = app_path + "Contents/SharedSupport/bin/subl"
-#         subprocess.Popen([executable_path] + args)
-#     if sublime.platform() == "windows":
-#         def fix_focus():
-#             window = sublime.active_window()
-#             view = window.active_view()
-#             window.run_command('focus_neighboring_group')
-#             window.focus_view(view)
-#         sublime.set_timeout(fix_focus, 300)
-
-
-##########################################################################################
-#Python Util
-##########################################################################################
-def get_slash():
-    sysstr = platform.system()
-    if(sysstr =="Windows"):
-        slash = "\\"
-    else:
-        slash = "/"
-    return slash
-
-def random_str(randomlength=8):
-    str = ''
-    chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789'
-    length = len(chars) - 1
-    for i in range(randomlength):
-        str+=chars[random.randint(0, length)]
-    return str
-
-def random_phone(randomlength=11):
-    str = ''
-    chars = '0123456789'
-    length = len(chars) - 1
-    for i in range(randomlength):
-        str+=chars[random.randint(0, length)]
-    return str
-
-def random_float(length=2, scale=0):
-    val = round(random.random() * 10 ** (length-scale), scale)
-    return val
-
-
-def random_int(length=2):
-    val = random_float(length, 0)
-    return val
-
-def random_data(data_type='string',length=8,scale=0, filed_name='', picklistValues=[], isLoop = True):
-    data_type = data_type.lower()
-    strLoop = " + string.valueof(i) "
-    intLoop = ' + i '
-    if not isLoop:
-        strLoop = intLoop = ''
-
-    if data_type == 'string' or data_type == 'textarea' or data_type == 'url':
-        val = "'" + random_str(length-1) + "'" + strLoop
-    elif data_type == 'phone':
-        val = "'" + random_phone(10) + "'" + strLoop
-    elif data_type == 'email':
-        val = "'" + random_str(length) + "@" + random_str(length) + ".com' " + strLoop
-    elif data_type == 'int':
-        val = xstr(random_int(length - 1)) + intLoop
-    elif data_type == 'currency':
-        val = xstr(random_int(length - 1)) + intLoop
-    elif data_type == 'double':
-        val = xstr(random_float(length, scale)) + intLoop
-    elif data_type == 'percent':
-        val = xstr(random.randint(0, 90)) + intLoop
-    elif data_type == 'boolean' or data_type == 'combobox':
-        val = random.choice(['True', 'False'])
-    elif data_type == 'datetime':
-        val = 'DateTime.now()'
-    elif data_type == 'date':
-        val = 'Date.today()'
-    elif data_type == 'ID':
-        val = ''
-    elif data_type == 'picklist':
-        val = "'" + random.choice(picklistValues) + "'"
-    elif data_type == 'multipicklist':
-        val = "'" + random.choice(picklistValues) + "'"
-    elif data_type == 'reference':
-        val = get_obj_name(filed_name) + 'List[i].id'
-    else:
-        val = 'null'
-    return val
-
-
-def get_obj_name(sobj_name):
-    str = sobj_name.replace('__c','').lower()
-    return str
-    # str = sobj_name.replace('__c','')
-    # return cap_low(str)
-
-
-def cap_low(str):
-    strlen = len(str)
-    if strlen == 0:
-        return str.lower()
-    return str[0].lower() + str[1:strlen]
-
-def cap_upper(str):
-    strlen = len(str)
-    if strlen == 0:
-        return str.upper()
-    return str[0].upper() + str[1:strlen]
-
-def xstr(s):
-    if s is None:
-        return ''
-    else:
-        return str(s)
-
-
-def xformat(str, data_type='string'):
-
-    if data_type == 'id' or data_type == 'string' or data_type == 'textarea' or data_type == 'url' or data_type == 'phone' or data_type == 'email' or data_type == 'ID' or data_type == 'picklist' or data_type == 'multipicklist' or data_type == 'reference':
-        if str is None:
-            val = ''
-        else:
-            val = "'" + str.replace('\r\n','\\n').replace('\n','\\n').replace('\r','\\n') + "'"
-
-    elif data_type == 'int' or data_type == 'currency' or data_type == 'double' or data_type == 'percent' or data_type == 'boolean' or data_type == 'combobox':
-        val = str
-    elif data_type == 'datetime':
-        # '2016-12-16T00:00:00.000+0000' formate
-        try:
-            tmpstr = str[0:19].split("T")
-            a = tmpstr[0].split("-")
-            b = tmpstr[1].split(":")
-            val = "Datetime.newInstance(%s, %s, %s, %s, %s, %s)" % (a[0],a[1],a[2],b[0],b[1],b[2])
-        except Exception:
-            val = "DateTime.now()"
-
-    elif data_type == 'date':
-        try:
-            a = str.split("-")
-            val = "Date.newInstance(%s, %s, %s)" % (a[0],a[1],a[2])
-        except Exception:
-            val = "DateTime.now()"
-        
-    else:
-        # val = 'null'
-        val = str
-
-    return val
-
-def save_session(session_str):
-    print('session_str--->')
-    print(session_str)
-    settings = setting.load()
-    full_path = os.path.join(get_default_floder(), 'config', '.session')
-    print('save .session path------->')
-    print(full_path)
-    content = json.dumps(session_str, indent=4)
-    save_file(full_path, content)
-
-def jsonstr(json_str):
-    try:
-        ret = json_str.json()
-    except Exception:
-        ret = json_str.text
-
-    return ret
-
-def get_default_floder(iscreate=False):
-    settings = setting.load()
-    # fullpath = os.path.join(settings["workspace"], settings["default_project"], settings["xyfloder"])
-    fullpath = os.path.join(settings["default_project_value"]["workspace"], settings["xyfloder"])
-    # fix windows slash 
-    fullpath = os.path.normpath(fullpath)
+class OauthUtil():
+    def __init__(self, sf_basic_config):
+        self.sf_basic_config = sf_basic_config
+        self.settings =  sf_basic_config.get_setting()
     
-    if iscreate:
-        makedir(fullpath)
-    return fullpath
-
-def makedir(dirPath):
-    if not os.path.exists(dirPath):
-        os.makedirs(dirPath)
-
-def get_plugin_path():
-    from os.path import dirname, realpath
-    return dirname(realpath(__file__))
-
-def del_comment(soql):
-    result = soql
-    if soql:
-        # TODO
-        # soql = soql.strip().replace('\t', ' ').replace('\r\n', ' ').replace('\n', ' ')
-        soql = soql.strip().replace('\t', ' ')
-        
-        # delete // comment
-        result1, number = re.subn("//.*", "", soql)
-        # delete /**/ comment
-        result, number = re.subn("/\*([\s|\S]*?)\*/", "", result1, flags=re.M)
-        result = result.strip()
-    # show_in_panel(result)
-
-    return result
+    def is_use_oauth(self):
+        return self.settings["use_oauth2"]
 
 
-# get sobject name from soql
-def get_soql_sobject(soql_str):
-    soql = del_comment(soql_str)
-    # match = re.match("select\s+\*\s+from[\s\t]+(\w+)([\t\s\S]*)", soql, re.I|re.M)
-    match = re.match("select\\s+([\\w\\n,.:_\\s]*|\*)\\s+from[\s\t]+(\w+)([\t\s\S]*)", soql, re.I|re.M)
-    sobject = ""
-    if match:
-        sobject = match.group(2)
-        # print('------>' + match.group(0))
-        # print('------>' + match.group(1))
-        # print('------>' + match.group(2))
-        # print('------>' + match.group(3))
-    return sobject
 
-
-# get soql fields from soql,return list
-def get_soql_fields(soql):
-    match = re.match("SELECT\\s+[\\w\\n,.:_\\s]*\\s+FROM", soql.strip(), re.IGNORECASE)
-    show_in_panel(match)
-    if match:
-        fieldstr = match.group(0)[6:-4].replace(" ", "").replace("\n", "")
-        return fieldstr.split(",")
-    else:
-        return ''
-
-def get_simple_soql_str(sobject, fields, no_address=False,condition=''):
-    soql = 'SELECT '
-    fields_lst = []
-    for field in fields:
-        if no_address and (field["type"] == "address"):
-            continue
-        fields_lst.append(xstr(field["name"]))
-    soql += ' , '.join(fields_lst)
-    soql += ' FROM ' + sobject
-    soql += condition
-    return soql
-
-
-def get_soql_result(soql_str, soql_result):
-    message = 'totalSize: ' + xstr(soql_result['totalSize']) + "\n\n"
-    if soql_result['totalSize'] == 0:
-        message += 'no record!!'
-        return message
-
-    headers = get_soql_fields(soql_str)
-
-    if not headers :
-        return xstr(soql_result)
-
-
-    rows = ",".join(['"%s"' % h for h in headers]) + "\n"
-
-    for record in soql_result['records']:
-        row = []
-        for header in headers:
-            row_value = record
-
-            # relation soql query
-            for _header in header.split("."):
-                field_case_mapping = {}
-                for k in row_value:
-                    field_case_mapping[k.lower()] = k
-
-                row_value = row_value[field_case_mapping[_header.lower()]]
-                if not isinstance(row_value, dict):
-                    break
-
-            value = xstr(row_value)
-            value = value.replace('"', '""')
-            row.append('"%s"' % value)
-        rows += ",".join(row) + "\n"
-
-    message += xstr(rows)
-    return message
-
-# def search_soql_to_list(soql_str, soql_result):
-#     table = []
-#     headers = get_soql_fields(soql_str)
-
-#     for record in soql_result['records']:
-#         row = []
-#         for header in headers:
-#             row_value = record
-
-#             # relation soql query
-#             for _header in header.split("."):
-#                 field_case_mapping = {}
-#                 for k in row_value:
-#                     field_case_mapping[k.lower()] = k
-
-#                 row_value = row_value[field_case_mapping[_header.lower()]]
-#                 if not isinstance(row_value, dict):
-#                     break
-
-#             value = xstr(row_value)
-#             row.append(value)
-#         table.append(row)
-#     return table
-
-
-def get_query_object_name(soql_result):
-    try:
-        sobj_name = soql_result['records'][0]['attributes']['type']
-        return sobj_name
-    except Exception as e:
-        return ''
-
-def get_soql_to_apex(sobj_fields, soql, soql_result):
-    headers = get_soql_fields(soql)
-
-           # print(field["name"])  
-           # print(field["label"])  
-           # print(field["type"])  
-           # print(field["length"])  
-           # print(field["scale"])  
-           # 
-    if soql_result['totalSize'] == 0:
-        apex_code = '// no record'
-        return apex_code
-
-    # show_in_panel(soql_result)
-    sobj_name = soql_result['records'][0]['attributes']['type']
-
-    # show_in_panel( sobj_fields )
-
-    table = []
-    for record in soql_result['records']:
-        row = []
-        for header in headers:
-            row_value = record
+##########################################################################################
+#Metadata Cache
+##########################################################################################
+class CacheLoader(object):
+    def __init__(self, file_name, always_reload=False, sf_basic_config = None):
+        if sf_basic_config:
+            self.sf_basic_config = sf_basic_config
+        else:
+            self.sf_basic_config = SfBasicConfig()
             
+        self.sublconsole = SublConsole(self.sf_basic_config)
+        self.settings = self.sf_basic_config.get_setting()
+        self.MAX_DEEP = 2
+        self.file_name = file_name
+        self.save_dir =  self.sf_basic_config.get_config_dir()
+        self.full_path = os.path.join(self.save_dir, self.file_name)
+        self.all_cache = None
+        self.always_reload = always_reload
 
-            # relation soql query
-            for _header in header.split("."):
-                field_case_mapping = {}
-                for k in row_value:
-                    field_case_mapping[k.lower()] = k
+    def is_exist(self):
+        return os.path.exists(self.full_path)
 
-                row_value = row_value[field_case_mapping[_header.lower()]]
-                if not isinstance(row_value, dict):
-                    break
+    def get_cache(self):
+        if self.all_cache:
+            return self.all_cache
+        self.all_cache = self._load()
+        return self.all_cache
 
-            value = xstr(row_value)
-            field = {}
-            field_name = header.lower()
-            field["name"] = field_name
-            if field_name in sobj_fields:
-                fieldtype = sobj_fields[field_name]["type"]
+    def reload(self):
+        return
+    
+    def _load(self, deep=1, not_null_id=True):
+        if self.always_reload:
+            self.reload()
+        if self.is_exist():
+            data = {}
+            with open(self.full_path, "r", encoding='utf-8') as fp:
+                data = json.loads(fp.read(),'utf-8')
+            return data
+        elif deep <= self.MAX_DEEP:
+            self.reload()
+            deep = deep + 1
+            return self._load(deep, not_null_id)
+        return
+
+
+class SobjectUtil(CacheLoader):
+    def __init__(self, sf_basic_config = None):
+        super(SobjectUtil, self).__init__("sobject.cache", always_reload=True, sf_basic_config=sf_basic_config)
+        self.meta_api = sf_login(self.sf_basic_config, Soap_Type=MetadataApi)
+
+    def reload(self):
+        self.sublconsole.showlog("start to reload metadata cache, please wait...")
+        allMetadataResult = self.meta_api.describe()
+        
+        allMetadataMap = {}
+        allMetadataMap["sobjects"] = {}
+        for meta in allMetadataResult["sobjects"]:
+            name = meta["name"]
+            allMetadataMap["sobjects"][name] = meta
+        allMetadataMap["lastUpdated"] = str(datetime.now())
+
+        self.sublconsole.save_and_open_in_panel(json.dumps(allMetadataMap, ensure_ascii=False, indent=4), self.save_dir, self.file_name , is_open=False)
+
+    # get all fields from sobject
+    def get_sobject_fields(self, sobject_name):
+        sftype = self.meta_api.get_sobject(sobject_name)
+        sftypedesc = sftype.describe()
+        return [baseutil.xstr(field["name"]) for field in sftypedesc["fields"]]
+
+    def soql_format(self, soql_str):
+        soql = baseutil.del_comment(soql_str)
+        match = re.match("select\s+\*\s+from[\s\t]+(\w+)([\t\s\S]*)", soql, re.I|re.M)
+        if match:
+            sobject_name = match.group(1)
+            condition = match.group(2)
+            fields = self.get_sobject_fields(sobject_name)
+            fields_str = ','.join(fields)
+            soql = ("select %s from %s %s" % (fields_str, sobject_name, condition))
+        return soql
+    
+    def get_sobject_info(self, sobject_name):
+        all_cache = self.get_cache()
+        sobject_info = None
+        if sobject_name in all_cache["sobjects"]:
+            sobject_info = all_cache["sobjects"][sobject_name]
+            sobject_info["fields"] = self.get_sobject_fields(sobject_name)
+            sobject_info["soql"] = self.get_soql(sobject_name, sobject_info["fields"])
+        return sobject_info
+
+    def get_soql(self, sobject_name, fields):
+        return "SELECT %s FROM %s" % (" , ".join(fields), sobject_name)
+    
+    def get_sobject_info_list(self, sobject_name_list):
+        return [ self.get_sobject_info(sobject_name) for sobject_name in sobject_name_list]
+        # all_cache = self.get_cache()
+        # return all_cache["sobjects"].values()
+
+    def get_sobject_name_list_for_sel(self):
+        all_cache = self.get_cache()
+        sobject_name_list = []
+        sobject_show_list = []
+        for sobject_info in all_cache["sobjects"].values():
+            sobject_show_list.append( "%s , %s , %s" % (str(sobject_info["name"]), str(sobject_info["label"]), str(sobject_info["keyPrefix"])))
+            sobject_name_list.append(str(sobject_info["name"]))
+        return sobject_show_list, sobject_name_list
+
+    def open_in_web(self, sobject_name, view_type="data_list"):
+        sobject_info = self.get_sobject_info(sobject_name)
+        returl = sobject_info["keyPrefix"]
+        if returl:
+            # open in browser
+            sf = sf_login(self.sf_basic_config)
+            login_url = ('https://{instance}/secur/frontdoor.jsp?sid={sid}&retURL={returl}'
+                        .format(instance=sf.sf_instance,
+                                sid=sf.session_id,
+                                returl=returl))
+            self.sublconsole.debug(login_url)
+            open_in_default_browser(self.sf_basic_config, login_url)
+        else:
+            self.sublconsole.showlog("metadata is null!")
+
+
+class MetadataUtil(CacheLoader):
+    def __init__(self, sf_basic_config = None):
+        super(MetadataUtil, self).__init__("metadata.cache", always_reload=False, sf_basic_config=sf_basic_config)
+
+        self.desc_meta_file = "describe_metadata.cache"
+        self.all_cache = None
+
+    def reload(self):
+        self.sublconsole.showlog("start to reload metadata cache, please wait...")
+        meta_api = sf_login(self.sf_basic_config, Soap_Type=MetadataApi)
+        allMetadataResult = meta_api.getAllMetadataMap()
+        self.sublconsole.save_and_open_in_panel(json.dumps(allMetadataResult, ensure_ascii=False, indent=4), self.save_dir, self.file_name , is_open=False)
+
+    def get_meta_attr(self, full_path):
+        sysio = SysIo()
+        attr = sysio.get_file_attr(full_path)
+        if attr and "file_key" in attr:
+            meta = self.get_meta(attr["metadata_type"], attr["file_key"])
+            if meta:
+                attr.update(meta)
+        return attr
+
+    def get_describe_metadata_cache(self, deep=1):
+        self.sublconsole.debug("build describeMetadata Cache")
+        desc_meta_path = os.path.join(self.sf_basic_config.get_config_dir(), self.desc_meta_file)
+        if os.path.exists(desc_meta_path):
+            data = {}
+            with open(desc_meta_path, "r", encoding='utf-8') as fp:
+                data = json.loads(fp.read(),'utf-8')
+            return data
+        elif deep <= self.MAX_DEEP:
+            meta_api = sf_login(self.sf_basic_config, Soap_Type=MetadataApi)
+            describeMetadataResult = meta_api.describeMetadata()
+            self.sublconsole.save_and_open_in_panel(json.dumps(describeMetadataResult, ensure_ascii=False, indent=4), self.save_dir, self.desc_meta_file, is_open=False)
+            deep = deep + 1
+            return self.get_describe_metadata_cache(deep)
+        return
+
+    def update_metadata_cache(self, full_path, id):
+        server_meta = self._get_server_meta(full_path, id)
+        if server_meta:
+            self._save_meta(server_meta)
+
+    def delete_metadata_cache(self, full_path):
+        attr = self.get_meta_attr(full_path)
+        if attr and "file_key" in attr:
+            meta = self.get_meta(attr["metadata_type"], attr["file_key"])
+            self._del_meta(meta)
+
+    def get_meta_category(self):
+        all_cache = self.get_cache()
+        return list(all_cache.keys())
+        
+    def get_meta_namelist(self, category):
+        all_cache = self.get_cache()
+        category_meta = all_cache[category]
+        return list(category_meta.keys())
+
+    def get_meta_by_category(self, category):
+        all_cache = self.get_cache()
+        return all_cache[category] if category in all_cache else None
+    
+    def get_meta(self, category, fileName):
+        category_meta = self.get_meta_by_category(category)
+        if fileName in category_meta:
+            meta = category_meta[fileName]
+            meta["webUrl"] = self.get_web_url(meta)
+            return meta
+        return
+    
+    def is_modified(self, full_path, id):
+        attr = self.get_meta_attr(full_path)
+        server_meta = self._get_server_meta(full_path, id)
+        if not server_meta:
+            return "Not Found metadata, id=%s" % id
+        if not attr:
+            self._save_meta(server_meta)
+            return "Maybe the server metadata is lasted!"
+        self.sublconsole.debug('>>>check is modified')
+        self.sublconsole.debug('File=%s, Id=%s, local : %s , server : %s' % (attr["file_key"], attr["id"], attr["lastModifiedDate"], server_meta["lastModifiedDate"]))
+        if attr["lastModifiedDate"].replace('+0000', 'Z') != server_meta["lastModifiedDate"].replace('+0000', 'Z'):
+            return "%s is modified by %s, %s, are you sure to update it?" % (server_meta["fileName"], server_meta["lastModifiedByName"], server_meta["lastModifiedDate"])
+        return ""
+
+    def get_web_url(self, sel_meta):
+        self.sublconsole.debug(sel_meta)
+        returl = ""
+        sel_category = sel_meta["type"]
+        if sel_category == "Workflow":
+            returl = '/01Q?setupid=WorkflowRules'
+        elif sel_category == "CustomLabels":
+            returl = '/101'
+        elif sel_meta and "id" in sel_meta and sel_meta["id"]:
+            returl = '/' + sel_meta["id"]
+        elif sel_category == "CustomObject":
+            returl = '/p/setup/layout/LayoutFieldList?type=' + sel_meta["fullName"]
+        return returl
+
+    def open_in_web(self, sel_meta):
+        returl = self.get_web_url(sel_meta)
+        if returl:
+            # open in browser
+            sf = sf_login(self.sf_basic_config)
+            login_url = ('https://{instance}/secur/frontdoor.jsp?sid={sid}&retURL={returl}'
+                        .format(instance=sf.sf_instance,
+                                sid=sf.session_id,
+                                returl=returl))
+            self.sublconsole.debug(login_url)
+            open_in_default_browser(self.sf_basic_config, login_url)
+        else:
+            self.sublconsole.showlog("metadata is null!")
+
+    def run_test(self, id_list):
+        tooling_api = sf_login(self.sf_basic_config, Soap_Type=ToolingApi)
+        status_code, result = tooling_api.runTestSynchronous(id_list)
+        if "codeCoverageWarnings" in result: del result["codeCoverageWarnings"]
+        if "codeCoverage" in result: del result["codeCoverage"]
+        if "apexLogId" in result:
+            log_status_code, log = tooling_api.getLog(result["apexLogId"])
+        file_name = datetime.now().strftime('Test_%Y%m%d_%H%M%S.log')
+        self.sublconsole.save_and_open_in_panel(json.dumps(result, ensure_ascii=False, indent=4) + '\n\n' + ("~" * 120) + "\n" + log, self.sf_basic_config.get_test_dir(), file_name , is_open=True)
+
+    def _del_meta(self, meta):
+        all_cache = self.get_cache()
+        del all_cache[meta["type"]][meta["fileName"]]
+        self.sublconsole.debug("_del_meta")
+        self.sublconsole.debug(meta)
+        self.sublconsole.save_and_open_in_panel(json.dumps(all_cache, ensure_ascii=False, indent=4), self.save_dir, self.file_name , is_open=False)
+
+    def _save_meta(self, server_meta):
+        all_cache = self.get_cache()
+        all_cache[server_meta["type"]][server_meta["fileName"]] = server_meta
+        self.sublconsole.debug("_save_meta")
+        self.sublconsole.debug(server_meta)
+        self.sublconsole.save_and_open_in_panel(json.dumps(all_cache, ensure_ascii=False, indent=4), self.save_dir, self.file_name , is_open=False)
+
+    def _get_server_meta(self, full_path, id):
+        attr = self.get_meta_attr(full_path)
+        attr["id"] = id
+        soql = "SELECT  Id, Name, CreatedDate, CreatedById, CreatedBy.Name, LastModifiedDate, LastModifiedById, LastModifiedBy.Name FROM %s Where Id = '%s'" % (attr["metadata_type"], id)
+        tooling_api = sf_login(self.sf_basic_config, Soap_Type=ToolingApi)
+        result = tooling_api.query(soql)
+        if 'records' in result and len(result['records']) > 0:
+            record = result['records'][0]
+            meta_cache_bean = {
+                "createdById": record["CreatedById"], 
+                "createdByName": record["CreatedBy"]["Name"], 
+                "createdDate": record["CreatedDate"], 
+                "fileName": attr["metadata_folder"] + "/" + attr["file_name"], 
+                "fullName": attr["name"], 
+                "id": record["Id"], 
+                "lastModifiedById": record["LastModifiedById"], 
+                "lastModifiedByName": record["LastModifiedBy"]["Name"], 
+                "lastModifiedDate": record["LastModifiedDate"], 
+                "manageableState": "", 
+                "type": attr["metadata_type"]
+            }
+            return meta_cache_bean
+        return
+    
+    def update_metadata_cache_by_filename(self, full_path):
+        attr = self.get_meta_attr(full_path)
+        if "metadata_type" not in attr or "name" not in attr: return
+        soql = "SELECT  Id, Name, CreatedDate, CreatedById, CreatedBy.Name, LastModifiedDate, LastModifiedById, LastModifiedBy.Name FROM %s Where Name = '%s' limit 1" % (attr["metadata_type"], attr["name"])
+        tooling_api = sf_login(self.sf_basic_config, Soap_Type=ToolingApi)
+        result = tooling_api.query(soql)
+        if 'records' in result and len(result['records']) > 0:
+            record = result['records'][0]
+            print('>>>>1')
+            print(record)
+            meta_cache_bean = {
+                "createdById": record["CreatedById"], 
+                "createdByName": record["CreatedBy"]["Name"], 
+                "createdDate": record["CreatedDate"], 
+                "fileName": attr["metadata_folder"] + "/" + attr["file_name"], 
+                "fullName": attr["name"], 
+                "id": record["Id"], 
+                "lastModifiedById": record["LastModifiedById"], 
+                "lastModifiedByName": record["LastModifiedBy"]["Name"], 
+                "lastModifiedDate": record["LastModifiedDate"], 
+                "manageableState": "", 
+                "type": attr["metadata_type"]
+            }
+            self._save_meta(meta_cache_bean)
+        
+        print(soql)
+        print('>>>>2')
+        return
+
+
+class DownloadUtil(object):
+    def __init__(self, sf_basic_config = None):
+        if sf_basic_config:
+            self.sf_basic_config = sf_basic_config
+        else:
+            self.sf_basic_config = SfBasicConfig()
+            
+        self.sublconsole = SublConsole(self.sf_basic_config)
+        self.settings = self.sf_basic_config.get_setting()
+        self.download_jar()
+    
+    def download_jar(self):
+        jar_home = self.sf_basic_config.get_default_jar_home()
+        jar_full_path = self.get_jar_path()
+        if not os.path.exists(jar_home):
+            self.sublconsole.showlog("mkdir : " + jar_home)
+            os.makedirs(jar_home)
+        if not os.path.exists( jar_full_path ):
+            self.sublconsole.showlog("download jar : " + jar_full_path)
+            self._start_to_download_jar()
+    
+    def _start_to_download_jar(self):
+        jar_full_path = self.get_jar_path()
+        jar_name = self.get_jar_name()
+        url = "http://salesforcexytools.com/mystatic/jar/" + jar_name
+        import urllib.request
+        try:
+            with urllib.request.urlopen(url) as response, open(jar_full_path, 'wb') as out_file:
+                shutil.copyfileobj(response, out_file)
+        except Exception as e:
+            help_msg = "please copy %s to %s" % (jar_name, self.sf_basic_config.get_default_jar_home())
+            self.sublconsole.showlog( "download %s error, %s, \n%s" % (url, str(e), help_msg))
+            pass
+
+    def get_jar_path(self):
+        jar_home = self.sf_basic_config.get_default_jar_home()
+        jar_name = self.get_jar_name()
+        return os.path.join(jar_home, jar_name)
+    
+    def get_jar_name(self):
+        jar_name = ""
+        return jar_name
+
+class DataloaderUtil(DownloadUtil):
+    def __init__(self, sf_basic_config = None):
+        super(DataloaderUtil, self).__init__(sf_basic_config=sf_basic_config)
+
+    def getEncryptionPassword(self):
+        password = ""
+        try:
+            dl_jar_path = self.get_jar_path()
+            cmd = "java -cp %s com.salesforce.dataloader.security.EncryptionUtil -e %s" % (dl_jar_path, self.settings["password"])
+            p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdout_data, stderr_data = p.communicate()
+            ret_data = stdout_data.split(self._get_split_code())[0].decode('utf-8')
+            password = ret_data[-32:]
+        except Exception as e:
+            self.sublconsole.showlog("getEncryptionPassword exception: " + str(e))
+        return password
+    
+    def _get_split_code(self):
+        if sublime.platform() == "windows":
+            return b"\r\n"
+        else:
+            return b"\n"
+    
+    def get_jar_name(self):
+        jar_name = "dataloader-40.0.0-uber.jar"
+        return jar_name
+
+class MigrationToolUtil(DownloadUtil):
+    def __init__(self, sf_basic_config = None):
+        super(MigrationToolUtil, self).__init__(sf_basic_config=sf_basic_config)
+        self.sysio = SysIo()
+        self.sdfcxml = SfdcXml()
+    
+    def get_jar_name(self):
+        jar_name = "ant-salesforce.jar"
+        return jar_name
+    
+    def _del_old_dir(self, deploy_root_dir):
+        if os.path.exists(deploy_root_dir):
+            shutil.rmtree(deploy_root_dir, ignore_errors=True)
+            sleep(1)
+    
+    def _copy_folder_xml(self, org_file_path, save_full_path):
+        file_path, file_name = os.path.split(org_file_path)
+        xml_file_path = file_path + "-meta.xml"
+        if os.path.isfile(xml_file_path):
+            shutil.copyfile(xml_file_path, save_full_path)
+            self.copy_file_list.append((xml_file_path, save_full_path))
+    
+    def _copy_file_xml(self, org_file_path, deploy_dir):
+        meta_xml = org_file_path + "-meta.xml"
+        if os.path.isfile(meta_xml):
+            shutil.copyfile(meta_xml, deploy_dir)
+            self.copy_file_list.append((meta_xml, deploy_dir))
+
+    def _build_ant_xml_copy_task(self, deploy_root_dir):
+        template = """<project name="SalesforceXyTools Migration tools" default="copyfile" basedir=".">
+    <target name="copyfile">
+        <delete dir="src" />
+{copy_task}
+    </target>
+</project>"""
+        template_copy_task = """        <copy preservelastmodified="true"
+              file="{from_file}"
+              tofile="{to_file}" />"""
+        copy_task = []
+        for from_file, to_file in self.copy_file_list:
+            copy_task.append(template_copy_task.format(from_file=from_file, to_file=to_file))
+        copy_task_str = template.replace("{copy_task}", "\n".join(copy_task))
+        
+        save_path = os.path.join(deploy_root_dir, "build.copyfile.xml")
+        self.sysio.save_file(save_path, copy_task_str)
+        
+    def _build_copy_files_md(self, deploy_root_dir):
+        copy_task = []
+        for from_file, to_file in self.copy_file_list:
+            copy_task.append(from_file)
+        save_path = os.path.join(deploy_root_dir, "copyfile.txt")
+        self.sysio.save_file(save_path, "\n".join(copy_task))
+
+    def copy_deploy_files(self, file_list, deploy_root_dir, api_version="40.0"):
+        self._del_old_dir(deploy_root_dir)
+        
+        self.copy_file_list = []
+        for file in file_list:
+            attr = self.sysio.get_file_attr(file)
+            if not attr or not attr["is_sfdc_file"] or not attr["metadata_folder"]: continue
+            metadata_folder = os.path.join(deploy_root_dir, "src", attr["metadata_folder"], attr["metadata_sub_folder"])
+            if not os.path.exists(metadata_folder):
+                os.makedirs(metadata_folder, exist_ok=True)
+            to_file = os.path.join(metadata_folder, attr["file_name"])
+            shutil.copyfile(file, to_file)
+            self.copy_file_list.append((file, to_file))
+
+            self._copy_folder_xml(file, metadata_folder + "-meta.xml")
+            self._copy_file_xml(file, os.path.join(metadata_folder, attr["file_name"] + "-meta.xml"))
+        
+        self._build_ant_xml_copy_task(deploy_root_dir)
+        self._build_copy_files_md(deploy_root_dir)
+        self.build_package_xml(os.path.join(deploy_root_dir, "src", "package.xml"), file_list, api_version)
+
+    def build_package_xml(self, save_path, file_list, api_version="40.0"):
+        print('build package.xml to deploy')
+        file_attr_map = {}
+        for file in file_list:
+            attr = self.sysio.get_file_attr(file)
+            if not attr or not attr["is_sfdc_file"]: continue
+            if attr["metadata_type"] in file_attr_map:
+                file_attr_map[attr["metadata_type"]].append(attr)
             else:
-                fieldtype = "string"
+                file_attr_map[attr["metadata_type"]] = [attr]
+        packagexml = self._get_package_xml(file_attr_map, api_version)
+        self.sysio.save_file(save_path, packagexml)
+        return packagexml
+        # file_name_list = []
+        # for file in file_list:
+        #     attr = self.sysio.get_file_attr(file)
+        #     file_name_list.append(attr["file_name"])
+        # packagexml = self.sdfcxml.build_package_xml(file_name_list, api_version)
+        # save_path = os.path.join(deploy_root_dir, "package.xml")
+        # self.sysio.save_file(save_path, packagexml)
 
-            # show_in_panel(field_name + ',' + fieldtype + '\n')
-            field["value"] = xformat(value, fieldtype)
-            field["label"] = sobj_fields[field_name]["label"]
-            row.append(field)
-        table.append(row)
+    def _get_package_xml(self, file_attr_map, api_version="40.0"):
+        packagexml_types = ""
+        for metadata_type, file_attr_list in file_attr_map.items():
+            members = []
+            members_check = []
+            for attr in file_attr_list:
+                if metadata_type == "AuraDefinitionBundle":
+                    member = attr["metadata_sub_folder"]
+                else:
+                    member = attr["name"] if not attr["metadata_sub_folder"] else "%s/%s" % (attr["metadata_sub_folder"],attr["name"])
+                if member in members_check: continue
+                members_check.append(member)
+                members.append("""        <members>{member}</members>""".format(member=member))
+            # members = ["""        <members>{member}</members>""".format(member=attr["name"]) for attr in file_attr_list]
+            packagexml_types = packagexml_types + PACKAGEXML_TYPE.format(members='\n'.join(members),name=metadata_type)
+        packagexml = PACKAGE_XML.format(types=packagexml_types, version=api_version)
+        return packagexml
 
 
-    apex_code = get_sentence(sobj_name, table)
-    return apex_code
+PACKAGEXML_TYPE = """
+    <types>
+{members}
+        <name>{name}</name>
+    </types>"""
 
+PACKAGE_XML = """<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+{types}
+    <version>{version}</version>
+</Package>
+"""
 
-def get_sentence(objectApiName, table):
-    obj_name = get_obj_name(objectApiName)
-    apex_sentence = ("\n\nList<{T}> {obj_name}List = new List<{T}>();\n"
-                .format(T=objectApiName,
-                        obj_name=obj_name))
-    counter = 0
-    for row in table:
-        instance_name = obj_name + xstr(counter)
-        counter += 1
-        apex_sentence += ("{T} {instance_name} = new {T}();\n"
-                    .format(T=objectApiName,
-                            instance_name=instance_name))
-        for field in row:
-            if field['name'] == 'id' or field['value'] == '' or field['value'] == 'null' or field['value'] == '\'\'' :
-                apex_sentence += ("// {instance_name}.{field} = {value};    // {label}\n"
-                                     .format(instance_name=instance_name,
-                                             field=field['name'],
-                                             value=field['value'],
-                                             label=field['label']))
+class OsUtil():
+    def __init__(self, sf_basic_config = None):
+        if sf_basic_config:
+            self.sf_basic_config = sf_basic_config
+        else:
+            self.sf_basic_config = SfBasicConfig()
+            
+        self.sublconsole = SublConsole(self.sf_basic_config)
+        self.settings = self.sf_basic_config.get_setting()
+
+    def run_in_sublime_cmd(self, cmd_list):
+        self.sublconsole.thread_run(target=self._run_cmd, args=(cmd_list,))
+    
+    def _run_cmd(self, cmd_list):
+        self.sublconsole.showlog("*" * 80)
+        cmd_str = self._get_cmd_str(cmd_list)
+        process = subprocess.Popen(cmd_str, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        encoding = sys.getfilesystemencoding()
+        # encoding = 'shift-jis'
+        while True:
+            line = process.stdout.readline()
+            if line != '' and line != b'' :
+                #the real code does filtering here
+                try:
+                    msg = line.rstrip().decode(encoding)
+                except Exception as ex:
+                    msg = line.rstrip()
+                self.sublconsole.showlog(msg, show_time=False)
             else:
-                apex_sentence += ("{instance_name}.{field} = {value};   // {label}\n"
-                                 .format(instance_name=instance_name,
-                                         field=field['name'],
-                                         value=field['value'],
-                                         label=field['label']))
+                break
+        self.sublconsole.showlog("*" * 80)
 
-        apex_sentence += ("{obj_name}List.add({instance_name});\n\n"
-                    .format(obj_name=obj_name,
-                            instance_name=instance_name))
+    def os_run(self, cmd_list):
+        if self.sf_basic_config.is_use_os_terminal():
+            self.run_in_os_termial(cmd_list)
+        else:
+            self.run_in_sublime_cmd(cmd_list)
 
-    apex_sentence += ("upsert {objName}List;\n\n"
-                .format(objName=obj_name))
+    def run_in_os_termial(self, cmd_list):
+        if sublime.platform() == "windows":
+            cmd_list.append("pause")
+        cmd_str = self._get_cmd_str(cmd_list)
+        thread = threading.Thread(target=os.system, args=(cmd_str,))
+        thread.start()
+    
+    def _get_cmd_str(self, cmd_list):
+        cmd_str = " & ".join(cmd_list)
+        return cmd_str
 
-    return apex_sentence
-
-##get_file_name_no_extension is from mavensmate util
-def get_file_name_no_extension(path):
-    base=os.path.basename(path)
-    return os.path.splitext(base)[0]
-
-##get_friendly_platform_key is from mavensmate util
-def get_friendly_platform_key():
-    friendly_platform_map = {
-        'darwin': 'osx',
-        'win32': 'windows',
-        'linux2': 'linux',
-        'linux': 'linux'
-    }
-    return friendly_platform_map[sys.platform]    
-
-##parse_json_from_file is from mavensmate util
-def parse_json_from_file(location):
-    try:
-        json_data = open(location)
-        data = json.load(json_data)
-        json_data.close()
-        return data
-    except:
-        return {}
-
-def save_file(full_path, content, encoding='utf-8'):
-    if not os.path.exists(os.path.dirname(full_path)):
-        print("mkdir: " + os.path.dirname(full_path))
-        os.makedirs(os.path.dirname(full_path))
-
-    # fp = open(full_path, "w")
-    # print(content)
-    # fp.write(content)
-    # fp.close()
-
-    try:
-        fp = open(full_path, "w", encoding=encoding)
-        fp.write(content)
-    except Exception as e:
-        show_in_dialog('save file error!\n' + full_path)
-        print(e)
-    finally:
-        fp.close()
+    def get_cd_cmd(self, path):
+        if sublime.platform() == "windows":
+            return "cd /d " + path
+        else:
+            return "cd " + path
 
 
+class DiffUtil():
+    def __init__(self, sf_basic_config = None):
+        if sf_basic_config:
+            self.sf_basic_config = sf_basic_config
+        else:
+            self.sf_basic_config = SfBasicConfig()
+            
+        self.sublconsole = SublConsole(self.sf_basic_config)
+        self.settings = self.sf_basic_config.get_setting()
+    
+    def diff(self, local_file, server_file):
+        self.sf_basic_config = SfBasicConfig()
+        winmerge = self.sf_basic_config.get_winmerge()
+        if winmerge and os.path.exists(winmerge):
+            cmd = "%s %s %s" % (winmerge, local_file, server_file)
+            subprocess.Popen(cmd)
+        else:
+            self._default_diff_util(local_file, server_file)
+    
+    def _default_diff_util(self, local_file, server_file):
+        import difflib
 
+        local_txt = self._read_file(local_file)
+        server_txt = self._read_file(server_file)
+        local_sign = "localfile"
+        server_sign = "serverfile"
+        diff = difflib.unified_diff(local_txt, server_txt, local_sign, server_sign, local_file, server_file, lineterm='')
+        difftxt = u"\n".join(line for line in diff)
+        if difftxt == "":
+            self.sublconsole.showlog("There is no difference !")
+        else:
+            self.sublconsole.show_in_new_tab(difftxt, "local <-> server")
+    
+    def _read_file(self, file):
+        f = open(file, "r", encoding='utf-8')
+        file_txt = f.readlines()
+        f.close()
+        return file_txt
 
 ##########################################################################################
 #browser Util
 ##########################################################################################
-def open_in_browser(url, browser_name = '', browser_path = ''):
+def open_in_browser(sf_basic_config, url, browser_name = '', browser_path = ''):
+    settings =  sf_basic_config.get_setting()
     if not browser_path or not os.path.exists(browser_path) or browser_name == "default":
         webbrowser.open_new_tab(url)
 
@@ -756,8 +816,8 @@ def open_in_browser(url, browser_name = '', browser_path = ''):
         except Exception as e:
             webbrowser.open_new_tab(url)
 
-def open_in_default_browser(url):
-    browser_map = setting.get_default_browser()
+def open_in_default_browser(sf_basic_config, url):
+    browser_map = sf_basic_config.get_default_browser()
     browser_name = browser_map['name']
     browser_path = browser_map['path']
 
@@ -778,6 +838,7 @@ def open_in_default_browser(url):
             webbrowser.get('chromex').open_new_tab(url)
         except Exception as e:
             webbrowser.open_new_tab(url)
+
 
 ##########################################################################################
 #END

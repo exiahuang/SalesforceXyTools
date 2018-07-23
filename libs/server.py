@@ -1,7 +1,7 @@
 '''
 author: huangxy
 homepage: http://salesforcexytools.com
-linence: 
+linence: MIT
 '''
 import base64
 import os
@@ -69,8 +69,8 @@ def do_finish():
         for item in request.params:
            pyDict[item]=request.params.get(item)
 
-        from .. import util
-        util.save_session(pyDict)
+        from .. import setting
+        setting.SfBasicConfig().save_session(pyDict)
         html = '''
     <html>
       <head>

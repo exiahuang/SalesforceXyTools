@@ -8,7 +8,9 @@ import os
 import threading
 import time
 
+from . import baseutil
 from . import util
+from . import uiutil
 from . import setting
 from . import xlsxwriter
 from .requests.exceptions import RequestException
@@ -22,38 +24,43 @@ from .salesforce import (
     SalesforceError,
     Bulk
     )
+from .setting import SfBasicConfig
+from .uiutil import SublConsole
 
 DIR_DATALOADER = 'dataloader'
 
 class ExportSobjectCommand(sublime_plugin.WindowCommand):
     def run(self):
         try:
-            self.sf = util.sf_login(Soap_Type=Bulk)
-            self.settings = self.sf.settings
+            self.sf_basic_config = SfBasicConfig()
+            self.settings = self.sf_basic_config.get_setting()
+            self.sublconsole = SublConsole(self.sf_basic_config)
+
+            self.sf = util.sf_login(sf_basic_config=self.sf_basic_config, Soap_Type=Bulk)
             
             dirs = []
             self.results = []
             for x in self.sf.describe()["sobjects"]:
-                dirs.append(util.xstr(x["name"])+' : '+util.xstr(x["label"]))
-                self.results.append(util.xstr(x["name"]))
+                dirs.append(baseutil.xstr(x["name"])+' : '+baseutil.xstr(x["label"]))
+                self.results.append(baseutil.xstr(x["name"]))
             self.window.show_quick_panel(dirs, self.panel_done,sublime.MONOSPACE_FONT)
 
         except RequestException as e:
-            util.show_in_panel("Network connection timeout when issuing REST GET request")
+            self.sublconsole.debug("Network connection timeout when issuing REST GET request")
             return
         except SalesforceExpiredSession as e:
-            util.show_in_dialog('session expired')
+            self.sublconsole.show_in_dialog('session expired')
             return
         except SalesforceRefusedRequest as e:
-            util.show_in_panel('The request has been refused.')
+            self.sublconsole.debug('The request has been refused.')
             return
         except SalesforceError as e:
             err = 'Error code: %s \nError message:%s' % (e.status,e.content)
-            util.show_in_panel(err)
+            self.sublconsole.debug(err)
             return
         except Exception as e:
-            util.show_in_panel(e)
-            # util.show_in_dialog('Exception Error!')
+            self.sublconsole.debug(e)
+            # self.sublconsole.show_in_dialog('Exception Error!')
             return
 
     def panel_done(self, picked):
@@ -62,20 +69,18 @@ class ExportSobjectCommand(sublime_plugin.WindowCommand):
         self.picked_name = self.results[picked]
 
         time_stamp = time.strftime("%Y%m%d%H%M", time.localtime())
-        self.fullPath =  os.path.join(util.get_default_floder(), DIR_DATALOADER, "%s_%s.csv" % (self.picked_name, time_stamp))
+        self.fullPath =  os.path.join(setting.get_work_dir(), DIR_DATALOADER, "%s_%s.csv" % (self.picked_name, time_stamp))
 
         self.window.show_input_panel("Export CSV Path: " , self.fullPath, self.on_input, None, None)
         
     def on_input(self, args):
-        thread = threading.Thread(target=self.main_handle)
-        thread.start()
-        util.handle_thread(thread)
+        self.sublconsole.thread_run(target=self.main_handle)
 
     def main_handle(self):
         try:
             self.sftype = self.sf.get_sobject(self.picked_name)
             sftypedesc = self.sftype.describe()
-            soql = util.get_simple_soql_str(self.picked_name, sftypedesc["fields"], no_address=True)
+            soql = baseutil.get_simple_soql_str(self.picked_name, sftypedesc["fields"], no_address=True)
 
             bulk = self.sf
             job = bulk.create_query_job(self.picked_name, contentType='CSV')
@@ -98,20 +103,48 @@ class ExportSobjectCommand(sublime_plugin.WindowCommand):
                 result += row.decode(encoding) + '\n'
    
             if result:
-                util.save_file(self.fullPath,result)
+                baseutil.save_file(self.fullPath,result)
    
         except Exception as e:
-            util.show_in_panel(e)
+            self.sublconsole.debug(e)
             print(e)
         finally:
             bulk.close_job(job)
 
 class ExportSoqlCommand(sublime_plugin.TextCommand):
+    def run(self, edit):
+        self.sf_basic_config = SfBasicConfig()
+        self.settings = self.sf_basic_config.get_setting()
+        self.sublconsole = SublConsole(self.sf_basic_config)
+        
+        sel_area = self.view.sel()
+        if sel_area[0].empty():
+          self.sublconsole.show_in_dialog("Please select the SOQL !!")
+          return
+        else:
+            soql_string = self.view.substr(sel_area[0])
+            soql_string = baseutil.del_comment(soql_string)
+
+        sobject_name = baseutil.get_soql_sobject(soql_string)
+        if not sobject_name:
+            self.sublconsole.show_in_dialog("Please select SOQL !")
+            return
+
+        self.soql_string = soql_string
+        self.sobject_name = sobject_name
+
+        time_stamp = time.strftime("%Y%m%d%H%M", time.localtime())
+        self.fullPath =  os.path.join(setting.get_work_dir(), DIR_DATALOADER, "%s_%s.csv" % (sobject_name, time_stamp))
+        # show_input_panel(caption, initial_text, on_done, on_change, on_cancel)
+        window = sublime.active_window()
+        window.show_input_panel("Export CSV Path: " , 
+            self.fullPath, self.on_input, None, None)
+
     def main_handle(self, soql_string, sobject_name):
         try:
             soql = soql_string
 
-            bulk = util.sf_login(Soap_Type=Bulk)
+            bulk = util.sf_login(sf_basic_config=self.sf_basic_config, Soap_Type=Bulk)
             job = bulk.create_query_job(sobject_name, contentType='CSV')
             batch = bulk.query(job, soql)
 
@@ -132,42 +165,16 @@ class ExportSoqlCommand(sublime_plugin.TextCommand):
                 result += row.decode(encoding) + '\n'
    
             if result:
-                util.save_file(self.fullPath,result)
+                baseutil.save_file(self.fullPath,result)
    
         except Exception as e:
-            util.show_in_panel(e)
+            self.sublconsole.debug(e)
             print(e)
         finally:
             bulk.close_job(job)
 
     def on_input(self, args):
-        thread = threading.Thread(target=self.main_handle, args=(self.soql_string, self.sobject_name, ))
-        thread.start()
-        util.handle_thread(thread)
-
-    def run(self, edit):
-        sel_area = self.view.sel()
-        if sel_area[0].empty():
-          util.show_in_dialog("Please select the SOQL !!")
-          return
-        else:
-            soql_string = self.view.substr(sel_area[0])
-            soql_string = util.del_comment(soql_string)
-
-        sobject_name = util.get_soql_sobject(soql_string)
-        if not sobject_name:
-            util.show_in_dialog("Please select SOQL !")
-            return
-
-        self.soql_string = soql_string
-        self.sobject_name = sobject_name
-
-        time_stamp = time.strftime("%Y%m%d%H%M", time.localtime())
-        self.fullPath =  os.path.join(util.get_default_floder(), DIR_DATALOADER, "%s_%s.csv" % (sobject_name, time_stamp))
-        # show_input_panel(caption, initial_text, on_done, on_change, on_cancel)
-        window = sublime.active_window()
-        window.show_input_panel("Export CSV Path: " , 
-            self.fullPath, self.on_input, None, None)
+        self.sublconsole.thread_run(target=self.main_handle, args=(self.soql_string, self.sobject_name, ))
 
 
 
@@ -180,26 +187,26 @@ class ExportSoqlCommand(sublime_plugin.TextCommand):
 #             dirs = []
 #             self.results = []
 #             for x in self.sf.describe()["sobjects"]:
-#                 dirs.append(util.xstr(x["name"])+' : '+util.xstr(x["label"]))
-#                 self.results.append(util.xstr(x["name"]))
+#                 dirs.append(baseutil.xstr(x["name"])+' : '+baseutil.xstr(x["label"]))
+#                 self.results.append(baseutil.xstr(x["name"]))
 #             self.window.show_quick_panel(dirs, self.panel_done,sublime.MONOSPACE_FONT)
 
 #         except RequestException as e:
-#             util.show_in_panel("Network connection timeout when issuing REST GET request")
+#             self.sublconsole.debug("Network connection timeout when issuing REST GET request")
 #             return
 #         except SalesforceExpiredSession as e:
-#             util.show_in_dialog('session expired')
+#             self.sublconsole.show_in_dialog('session expired')
 #             return
 #         except SalesforceRefusedRequest as e:
-#             util.show_in_panel('The request has been refused.')
+#             self.sublconsole.debug('The request has been refused.')
 #             return
 #         except SalesforceError as e:
 #             err = 'Error code: %s \nError message:%s' % (e.status,e.content)
-#             util.show_in_panel(err)
+#             self.sublconsole.debug(err)
 #             return
 #         except Exception as e:
-#             util.show_in_panel(e)
-#             # util.show_in_dialog('Exception Error!')
+#             self.sublconsole.debug(e)
+#             # self.sublconsole.show_in_dialog('Exception Error!')
 #             return
 
 #     def panel_done(self, picked):
@@ -208,17 +215,17 @@ class ExportSoqlCommand(sublime_plugin.TextCommand):
 #         self.picked_name = self.results[picked]
 
 #         time_stamp = time.strftime("%Y%m%d%H%M", time.localtime())
-#         self.fullPath =  os.path.join(util.get_default_floder(), DIR_DATALOADER, "%s_%s.csv" % (self.picked_name, time_stamp))
+#         self.fullPath =  os.path.join(setting.get_work_dir(), DIR_DATALOADER, "%s_%s.csv" % (self.picked_name, time_stamp))
 
 #         self.window.show_input_panel("Upload CSV Path: " , self.fullPath, self.on_input, None, None)
         
 #     def on_input(self, args):
-#         thread = threading.Thread(target=self.main_handle)
+#         self.sublconsole.thread_run(target=self.main_handle)
 #         thread.start()
-#         util.handle_thread(thread)
+#         self.sublconsole.handle_thread(thread)
 
 #     def main_handle(self):
-#         from .libs import csv_adapter
+#         from SalesforceXyTools.libs import csv_adapter
 
 #         try:
 #             bulk = util.sf_login(Soap_Type=Bulk)
@@ -237,7 +244,7 @@ class ExportSoqlCommand(sublime_plugin.TextCommand):
 
 #             print("Done. Accounts uploaded.")
 #         except Exception as e:
-#             util.show_in_panel(e)
+#             self.sublconsole.debug(e)
 #             print(e)
 #         finally:
 #             bulk.close_job(job)

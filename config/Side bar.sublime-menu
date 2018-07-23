@@ -1,0 +1,20 @@
+[
+    { "caption": "-" },
+    {
+        "caption": "Sfdx-Xy",
+        "children":[
+            {
+                "caption": "Copy Lightning Component", 
+                "command": "copy_aura",
+                "args": {"dirs": []}
+            },
+            {
+                "caption": "Deploy Directory To SFDC", 
+                "command": "deploy_dir",
+                "args": {"dirs": []}
+            },
+            { "caption": "-" }
+        ]
+    },
+    { "caption": "-" }
+]

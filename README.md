@@ -2,15 +2,18 @@
 
 SalesforceXyTools for Sublime Text is Rapid development tools for Salesforce Development.
 
-* Auto Create Apex Test Class Code, Auto Create Test Data For Apex Test Class.
-* SFDC Dataviewer, SFDC Online Dataviewer.
+* Create Salesforce Project, Retrieve Metadata, Search Metadata
+* Create ApexClass, ApexTrigger, ApexComponent, Refresh, Diff with Server(Support winmerge diff), Save to Server, Deploy to Server
 * SObject Viewer, SObject Description, Export SOjbect Fields to Excel
-* Atuo Login SFDC (three login type: oauth2 , password config and use mavensmate session).
-* SOQL Query, Tooling Query, Run Apex Script.
+* Run SOQL Query, Tooling Query, Apex Script.
+* Package.xml Builder.
+* Integrate Sfdc Dataloader, Config DataLoader and Run(Need Ant and Java Environment)
+* Integrate Sfdc Migration Tool (Need Ant and Java Environment)
+* Code Creator : Auto Create Apex Test Class Code, Auto Create Test Data For Apex Test Class.
+* SFDC Dataviewer, SFDC Online Dataviewer.
+* Atuo Login SFDC (two login type: oauth2 , password config).
+* Quick local sfdc file from sublime.
 * Quick Search SObject Data/SObject Setting/ApexClass/Trigger/VisualForce Page/VisualForce Components/Email Template/Static Resource and open on browser Quickly
-
-# [SalesforceXyTools For Chrome](http://salesforcexytools.com/Salesforce/SalesforceXyTools-For-Chrome.html)
- [Install SalesforceXyTools For Chrome From Web Store](https://chrome.google.com/webstore/detail/salesforcexytools/ehklfkbacogbanjgekccnbfdgjechlmf)
 
 
 # SalesforceXyTools Help
@@ -60,3 +63,7 @@ Right Click, and find the click!
 
 ![Controller_VF_Jump](https://github.com/exiahuang/XyHelp/blob/master/SalesforceXyTools/Controller_VF_Jump.gif?raw=true)
 
+
+# [SalesforceXyTools For Chrome](http://salesforcexytools.com/Salesforce/SalesforceXyTools-For-Chrome.html)
+ [Install SalesforceXyTools For Chrome From Web Store](https://chrome.google.com/webstore/detail/salesforcexytools/ehklfkbacogbanjgekccnbfdgjechlmf)
+SalesforceXyTools for Chrome is a developer tools for Salesforce,SFDC,Force.com. Login SFDC By 1 click. Quickly Search Metadata Sobject,Apex,Trigger,Page,Component,EmailTemplate,SataticResource, etc. Auto Create Soql, Run Soql, Soql History. Run Apex Script. Quick Search SFDC Document.

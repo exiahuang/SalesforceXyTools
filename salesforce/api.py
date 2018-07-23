@@ -8,7 +8,7 @@ DEFAULT_API_VERSION = '29.0'
 import logging
 import warnings
 import json
-from .. import requests
+from SalesforceXyTools import requests
 
 try:
     from urlparse import urlparse, urljoin
@@ -433,6 +433,17 @@ class Salesforce(object):
             _exception_handler(result)
 
         return result
+    
+    def _call_api(self, method, url, data=None, return_type='json', **kwargs):
+        result = self.session.request(
+            method, url, verify=False, headers=self.headers, data=json.dumps(data), **kwargs)
+        result.encoding = 'utf-8'
+        if method == "DELETE" or return_type == "text":
+            return result.status_code, result.text
+        elif return_type == "content":
+            return result.status_code, result.content
+        else:
+            return result.status_code, result.json()
 
     @property
     def request(self):
