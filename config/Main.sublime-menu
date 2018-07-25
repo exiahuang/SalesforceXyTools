@@ -124,6 +124,16 @@
                 ]
             },
             {
+                "caption": "ApexTest",
+                "children":
+                [
+                    {
+                        "caption": "Show Apex Code Coverage",
+                        "command": "show_code_coverage"
+                    }
+                ]
+            },
+            {
                 "caption": "Run",
                 "children":
                 [
@@ -255,10 +265,6 @@
                     }
                 ]
             },
-            // {
-            //     "caption": "Show SFDC Coverage",
-            //     "command": "sfdc_coverage"
-            // },
             { "caption": "-" },
             {  
                 "caption":"Project Settings","children":  

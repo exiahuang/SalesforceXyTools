@@ -1,5 +1,10 @@
 # SalesforceXyTools Update History
 
+## 2.0.1
+* Fix Ant Deploy Bug.
+* Fix `open in browser`
+* Add `Apex Code Coverage`
+
 ## 2.0.0 (2018.07.22)
 * Create Salesforce Project, Retrieve Metadata, Search Metadata
 * Create ApexClass, ApexTrigger, ApexComponent, Refresh, Diff with Server(Support winmerge diff), Save to Server, Deploy to Server

@@ -641,6 +641,11 @@ class RefreshMetadataCommand(sublime_plugin.TextCommand):
         except Exception as ex:
             self.sublconsole.showlog(ex, 'error')
 
+
+
+##########################################################################################
+# Apex Test
+##########################################################################################
 class RunTestClassCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         self.file_name = file_name = self.view.file_name()
@@ -656,8 +661,19 @@ class RunTestClassCommand(sublime_plugin.TextCommand):
             self.sublconsole.thread_run(target=self.metadata_util.run_test, args=([self.meta_attr["id"]], ))
         else:
             self.sublconsole.showlog('can not found id!')
-    
 
+class ShowCodeCoverageCommand(sublime_plugin.WindowCommand):
+    def run(self):
+        self.sf_basic_config = SfBasicConfig()
+        self.settings = self.sf_basic_config.get_setting()
+        self.sublconsole = SublConsole(self.sf_basic_config)
+        self.metadata_util = util.MetadataUtil(self.sf_basic_config)
+        self.sublconsole.thread_run(target=self._main)
+
+    def _main(self):
+        apex_coverage = "\n".join(self.metadata_util.get_apex_coverage())
+        file_name = datetime.now().strftime('ApexCoverage_%Y%m%d_%H%M%S.log')
+        self.sublconsole.save_and_open_in_panel(apex_coverage, self.sf_basic_config.get_test_dir(), file_name , is_open=True)
 
 
 ##########################################################################################

@@ -10,7 +10,10 @@ import xml.etree.ElementTree as ET
 from tempfile import TemporaryFile, NamedTemporaryFile
 from collections import namedtuple
 
-from SalesforceXyTools import requests
+try:
+    from SalesforceXyTools import requests
+except ImportError:
+    import requests
 from . import Soap
 from . import SoapException
 

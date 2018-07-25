@@ -339,47 +339,6 @@ class ToolingQueryCommand(sublime_plugin.TextCommand):
 
         self.sublconsole.thread_run(target=self.main_handle, args=(sel_string, ))
 
-# SFDC Coverage
-class SfdcCoverageCommand(sublime_plugin.TextCommand):
-    def run(self, edit):
-        self.sf_basic_config = SfBasicConfig()
-        self.settings = self.sf_basic_config.get_setting()
-        self.sublconsole = SublConsole(self.sf_basic_config)
-        self.sublconsole.thread_run(target=self.main_handle)
-
-    def main_handle(self):
-        try:
-            sf = util.sf_login(self.sf_basic_config)
-            apexClassSoql = "select Id, Name, ApiVersion, LengthWithoutComments from ApexClass where Status = 'Active'"
-            apexClass = sf.query(apexClassSoql)
-            
-
-            apexCodeCoverageSoql = "select Id , ApexClassOrTriggerId , NumLinesCovered , NumLinesUncovered FROM ApexCodeCoverageAggregate"
-            params = {'q': apexCodeCoverageSoql}
-            apexCodeCoverage = sf.restful('tooling/query', params)
-
-            self.sublconsole.show_in_new_tab(baseutil.xstr(apexClass))
-            self.sublconsole.show_in_new_tab(baseutil.xstr(apexCodeCoverage))
-
-        except RequestException as e:
-            self.sublconsole.showlog("Network connection timeout when issuing REST GET request")
-            return
-        except SalesforceExpiredSession as e:
-            self.sublconsole.show_in_dialog('session expired')
-            util.re_auth()
-            return
-        except SalesforceRefusedRequest as e:
-            self.sublconsole.showlog('The request has been refused.')
-            return
-        except SalesforceError as e:
-            err = 'Error code: %s \nError message:%s' % (e.status,e.content)
-            self.sublconsole.showlog(err)
-            return
-        except Exception as e:
-            self.sublconsole.showlog(e)
-            # self.sublconsole.show_in_dialog('Exception Error!')
-            return
-
 # RunApexScript
 class RunApexScriptCommand(sublime_plugin.TextCommand):
     def run(self, edit):
@@ -799,11 +758,23 @@ class CreateTestDataNeedCommand(sublime_plugin.WindowCommand):
          
 
 class CreateTestDataFromSoqlCommand(sublime_plugin.TextCommand):
+    def run(self, edit):
+        self.sf_basic_config = SfBasicConfig()
+        self.settings = self.sf_basic_config.get_setting()
+        self.sublconsole = SublConsole(self.sf_basic_config)
+        
+        sel_area = self.view.sel()
+        if sel_area[0].empty():
+          self.sublconsole.show_in_dialog("Please select the SOQL !!")
+          return
+        else:
+            sel_string = self.view.substr(sel_area[0])
+            sel_string = baseutil.del_comment(sel_string)
+
+        self.sublconsole.thread_run(target=self.main_handle, args=(sel_string, ))
+
     def main_handle(self, sel_string = ''):
         try:
-            self.sf_basic_config = SfBasicConfig()
-            self.settings = self.sf_basic_config.get_setting()
-            self.sublconsole = SublConsole(self.sf_basic_config)
 
             sf = util.sf_login(self.sf_basic_config)
 
@@ -845,16 +816,6 @@ class CreateTestDataFromSoqlCommand(sublime_plugin.TextCommand):
             # self.sublconsole.show_in_dialog('Exception Error!')
             return
 
-    def run(self, edit):
-        sel_area = self.view.sel()
-        if sel_area[0].empty():
-          self.sublconsole.show_in_dialog("Please select the SOQL !!")
-          return
-        else:
-            sel_string = self.view.substr(sel_area[0])
-            sel_string = baseutil.del_comment(sel_string)
-
-        self.sublconsole.thread_run(target=self.main_handle, args=(sel_string, ))
 
 # sfdc_object_desc
 class CreateTestDataAllCommand(sublime_plugin.WindowCommand):

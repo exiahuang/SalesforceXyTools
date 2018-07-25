@@ -26,7 +26,11 @@ class RunAntMigrationToolCommand(sublime_plugin.TextCommand):
             self.sel_type_list = ["Deploy Directory", "Deploy Directory To Server(check only)"]
             self.sel_type_key_list = ["DeployOpenFiles", "CheckDeployOpenFiles"]
         else:
-            self.open_files = [ _view.file_name() for _view in self.window.views()]
+            self.open_files = []
+            for _view in self.window.views():
+                file_name = _view.file_name()
+                if file_name:
+                    self.open_files.append(file_name)
             self.current_file = self.view.file_name()
             self.sel_type_list = ["Build Ant Metadata Tool", "Backup Metadata", "Deploy Open Files To Server", "Deploy Open Files To Server(check only)"]
             self.sel_type_key_list = ["Build", "Backup", "DeployOpenFiles", "CheckDeployOpenFiles"]

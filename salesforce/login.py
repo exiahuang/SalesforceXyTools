@@ -1,6 +1,9 @@
-"""Login classes and functions for Simple-Salesforce
-
+"""
+Login classes and functions for Simple-Salesforce
 Heavily Modified from RestForce 1.0.0
+
+This is from simple-salesforce
+https://github.com/simple-salesforce/simple-salesforce
 """
 
 DEFAULT_CLIENT_ID_PREFIX = 'RestForce'
@@ -14,7 +17,11 @@ try:
     from html import escape
 except ImportError:
     from cgi import escape
-from SalesforceXyTools import requests
+
+try:
+    from SalesforceXyTools import requests
+except ImportError:
+    import requests
 
 
 # pylint: disable=invalid-name,too-many-arguments,too-many-locals

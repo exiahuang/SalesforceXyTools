@@ -511,10 +511,6 @@ class SysIo():
             attr["metadata_sub_folder"] = ''
             attr["is_sfdc_file"] = True
 
-            # if attr["p_dir"] == "aura":
-            #     attr["metadata_type"] = "AuraDefinitionBundle"
-            #     attr["metadata_folder"] = "aura"
-            #     attr["metadata_sub_folder"] = attr["dir"]
             if attr["p_dir"] in ["aura", "reports", "dashboards", "documents", "email"]:
                 attr["metadata_sub_folder"] = attr["dir"]
                 attr["metadata_folder"] = attr["p_dir"]
@@ -532,11 +528,11 @@ class SysIo():
                     attr["metadata_folder"] = attr["dir"]
             else:
                 attr["is_sfdc_file"] = False
-            # else:
-            #     attr["metadata_folder"] = attr["dir"]
-            #     attr["metadata_sub_folder"] = ""
 
-            attr["file_key"] = "%s/%s" % (attr["metadata_folder"], attr["file_name"])
+            if attr["metadata_sub_folder"]:
+                attr["file_key"] = "%s/%s/%s" % (attr["metadata_folder"], attr["metadata_sub_folder"], attr["file_name"])
+            else:
+                attr["file_key"] = "%s/%s" % (attr["metadata_folder"], attr["file_name"])
             return attr
         except Exception as e:
             return None

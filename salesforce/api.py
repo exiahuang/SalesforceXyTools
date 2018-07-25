@@ -1,4 +1,8 @@
-"""Core classes and exceptions for Simple-Salesforce"""
+"""
+Core classes and exceptions for Simple-Salesforce
+This is from simple-salesforce
+https://github.com/simple-salesforce/simple-salesforce
+"""
 
 
 # has to be defined prior to login import
@@ -8,7 +12,10 @@ DEFAULT_API_VERSION = '29.0'
 import logging
 import warnings
 import json
-from SalesforceXyTools import requests
+try:
+    from SalesforceXyTools import requests
+except ImportError:
+    import requests
 
 try:
     from urlparse import urlparse, urljoin

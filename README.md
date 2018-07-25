@@ -15,6 +15,12 @@ SalesforceXyTools for Sublime Text is Rapid development tools for Salesforce Dev
 * Quick local sfdc file from sublime.
 * Quick Search SObject Data/SObject Setting/ApexClass/Trigger/VisualForce Page/VisualForce Components/Email Template/Static Resource and open on browser Quickly
 
+# The Source
+[View The Source](https://github.com/exiahuang/SalesforceXyTools)
+
+# SalesforceXyToolsCore
+[SalesforceXyToolsCore](https://github.com/exiahuang/SalesforceXyToolsCore) is base on Python. 
+The core of SalesforceXyTools For Sublime. Soap, Metadata, Rest API For Salesforce.
 
 # SalesforceXyTools Help
 
@@ -25,7 +31,6 @@ SalesforceXyTools for Sublime Text is Rapid development tools for Salesforce Dev
   * [SalesforceXyTools Auto Create TestCode](http://salesforcexytools.com/Salesforce/SalesforceXyTools-For-Sublime.html#Auto-Create-TestCode)
   * [SalesforceXyTools: Export Sobject To Excel](http://salesforcexytools.com/Salesforce/SalesforceXyTools-For-Sublime.html#SalesforceXyTools-Export-Soject-To-Excel)
   * [SalesforceXyTools Sublime Package](https://packagecontrol.io/packages/SalesforceXyTools)
-
 
 # Install [more install help](http://salesforcexytools.com/Salesforce/SalesforceXyTools-For-Sublime.html#How-to-Install)
 

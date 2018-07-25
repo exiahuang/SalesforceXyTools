@@ -1,4 +1,7 @@
-"""Utility functions for simple-salesforce"""
+"""Utility functions for simple-salesforce
+This is from simple-salesforce
+https://github.com/simple-salesforce/simple-salesforce
+"""
 
 import xml.dom.minidom
 from xml.sax.saxutils import quoteattr

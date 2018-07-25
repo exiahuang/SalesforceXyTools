@@ -1,8 +1,13 @@
-####################################
-#create by exia.huangxy
-#Extend Simple-Salesforce
-####################################
-from SalesforceXyTools import requests
+"""
+Create by exia.huangxy
+Extend Simple-Salesforce
+https://github.com/exiahuang
+"""
+
+try:
+    from SalesforceXyTools import requests
+except ImportError:
+    import requests
 from . import Salesforce
 from . import SFType
 from . import util
@@ -553,6 +558,12 @@ class ToolingApi(Salesforce):
     def getLog(self, id):
         url = self.base_url + "sobjects/ApexLog/" + id + "/Body"
         status_code, result = self._call_api(method="GET", url=url, data=None, return_type='text')
+        return status_code, result
+
+    def toolingQuery(self, queryStr):
+        url = self.base_url + "tooling/query"
+        params = {'q': queryStr}
+        status_code, result = self._call_api(method="GET", url=url, data=None, params=params)
         return status_code, result
 
     def _getComponentFailures(self, ContainerAsyncRequest_status):

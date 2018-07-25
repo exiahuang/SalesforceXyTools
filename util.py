@@ -431,8 +431,37 @@ class MetadataUtil(CacheLoader):
         if "codeCoverage" in result: del result["codeCoverage"]
         if "apexLogId" in result:
             log_status_code, log = tooling_api.getLog(result["apexLogId"])
+        
+        coverage_info = "\n".join(self.get_apex_coverage())
+
         file_name = datetime.now().strftime('Test_%Y%m%d_%H%M%S.log')
-        self.sublconsole.save_and_open_in_panel(json.dumps(result, ensure_ascii=False, indent=4) + '\n\n' + ("~" * 120) + "\n" + log, self.sf_basic_config.get_test_dir(), file_name , is_open=True)
+        split_str = "\n" + ("~" * 120) + "\n"
+        test_result = split_str.join([ json.dumps(result, ensure_ascii=False, indent=4), coverage_info, log])
+        self.sublconsole.save_and_open_in_panel(test_result, self.sf_basic_config.get_test_dir(), file_name , is_open=True)
+    
+    def get_apex_coverage(self):
+        tooling_api = sf_login(self.sf_basic_config, Soap_Type=ToolingApi)
+        ApexCodeCoverageAggregate = "SELECT ApexClassOrTrigger.Name, NumLinesCovered, NumLinesUncovered FROM ApexCodeCoverageAggregate ORDER BY ApexClassOrTrigger.Name"
+        coverage_status_code, coverage_result = tooling_api.toolingQuery(ApexCodeCoverageAggregate)
+        if not "records" in coverage_result: return []
+        total_NumLinesCovered = 0
+        total_NumLinesUncovered = 0
+        LINE_SPLIT = "~" * 106
+        coverage_info = [LINE_SPLIT, "Name".ljust(50) + "NumLinesCovered".ljust(22) + "NumLinesUncovered".ljust(22) + "Coverage%".ljust(22), LINE_SPLIT]
+        for record in coverage_result["records"]:
+            total_NumLinesCovered = total_NumLinesCovered + record["NumLinesCovered"]
+            total_NumLinesUncovered = total_NumLinesUncovered + record["NumLinesUncovered"]
+            lines = int(record["NumLinesCovered"]) + int(record["NumLinesUncovered"])
+            coverage_percent = record["NumLinesCovered"]/lines if lines != 0 else 0
+            coverage_percent_str = "%.2f%%" % (coverage_percent * 100)
+            tmp = record["ApexClassOrTrigger"]["Name"].ljust(50) + str(record["NumLinesCovered"]).ljust(22) + str(record["NumLinesUncovered"]).ljust(22) + coverage_percent_str.ljust(22)
+            coverage_info.append(tmp)
+        coverage_info.append(LINE_SPLIT)
+
+        total_lines = total_NumLinesCovered + total_NumLinesUncovered
+        total_coverage_percent_str = "%.2f%%" % ((total_NumLinesCovered/total_lines if total_lines != 0 else 0) * 100)
+        coverage_info.append("Overall".ljust(50) + str(total_NumLinesCovered).ljust(22) + str(total_NumLinesUncovered).ljust(22) + total_coverage_percent_str.ljust(22))
+        return coverage_info
 
     def _del_meta(self, meta):
         all_cache = self.get_cache()
