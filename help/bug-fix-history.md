@@ -1,5 +1,12 @@
 # SalesforceXyTools Update History
 
+## 2.0.2
+* Add Permisson Profile Builder(Profile/Permisson Set)
+* Save Module / Open Module
+* Fix New Metadata duplicate Error.
+* Fix Package.xml CustomSobject Builder
+* Pretty show run apex script, unescape `run apex script` log 
+
 ## 2.0.1
 * Fix Ant Deploy Bug.
 * Fix `open in browser`

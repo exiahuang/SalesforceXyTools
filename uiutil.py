@@ -153,6 +153,8 @@ class SublConsole(MyConsole):
 
     def show_in_new_tab(self, message_str, name=None):
         view = self.window.new_file()
+        view.settings().set('word_wrap', 'false')
+        view.set_syntax_file('Packages/Java/Java.tmLanguage')
         if name:
             view.set_name(name)
         view.run_command("insert_snippet", 

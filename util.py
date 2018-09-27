@@ -12,7 +12,7 @@ from time import sleep
 
 from .salesforce import *
 from . import baseutil
-from .baseutil import SysIo,SfdcXml
+from .baseutil import SysIo
 from .uiutil import SublConsole
 from .setting import SfBasicConfig
 
@@ -219,21 +219,37 @@ class CacheLoader(object):
 
     def reload(self):
         return
+
+    def save_dict(self, dict_obj, encoding='utf-8'):
+        self.save(json.dumps(dict_obj, ensure_ascii=False, indent=4), encoding=encoding)
     
-    def _load(self, deep=1, not_null_id=True):
+    def save(self, json_str, encoding='utf-8'):
+        full_path = self.full_path
+        if not os.path.exists(os.path.dirname(full_path)):
+            self.sublconsole.showlog("mkdir: " + os.path.dirname(full_path))
+            os.makedirs(os.path.dirname(full_path))
+        try:
+            fp = open(full_path, "w", encoding=encoding)
+            fp.write(json_str)
+        except Exception as e:
+            self.sublconsole.showlog('save file error! ' + full_path)
+            self.sublconsole.showlog(e)
+        finally:
+            fp.close()
+
+    def _load(self, deep=1, not_null_id=True, encoding='utf-8'):
         if self.always_reload:
             self.reload()
         if self.is_exist():
             data = {}
-            with open(self.full_path, "r", encoding='utf-8') as fp:
-                data = json.loads(fp.read(),'utf-8')
+            with open(self.full_path, "r", encoding=encoding) as fp:
+                data = json.loads(fp.read(),encoding)
             return data
         elif deep <= self.MAX_DEEP:
             self.reload()
             deep = deep + 1
             return self._load(deep, not_null_id)
         return
-
 
 class SobjectUtil(CacheLoader):
     def __init__(self, sf_basic_config = None):
@@ -250,8 +266,8 @@ class SobjectUtil(CacheLoader):
             name = meta["name"]
             allMetadataMap["sobjects"][name] = meta
         allMetadataMap["lastUpdated"] = str(datetime.now())
-
-        self.sublconsole.save_and_open_in_panel(json.dumps(allMetadataMap, ensure_ascii=False, indent=4), self.save_dir, self.file_name , is_open=False)
+        self.save_dict(allMetadataMap)
+        # self.sublconsole.save_and_open_in_panel(json.dumps(allMetadataMap, ensure_ascii=False, indent=4), self.save_dir, self.file_name , is_open=False)
 
     # get all fields from sobject
     def get_sobject_fields(self, sobject_name):
@@ -275,7 +291,9 @@ class SobjectUtil(CacheLoader):
         sobject_info = None
         if sobject_name in all_cache["sobjects"]:
             sobject_info = all_cache["sobjects"][sobject_name]
-            sobject_info["fields"] = self.get_sobject_fields(sobject_name)
+            sobject_info["sftypedesc"] = self.meta_api.get_sobject(sobject_name).describe()
+            sobject_info["fields"] = [baseutil.xstr(field["name"]) for field in sobject_info["sftypedesc"]["fields"]]
+            sobject_info["fields_obj"] = sobject_info["sftypedesc"]["fields"]
             sobject_info["soql"] = self.get_soql(sobject_name, sobject_info["fields"])
         return sobject_info
 
@@ -284,8 +302,9 @@ class SobjectUtil(CacheLoader):
     
     def get_sobject_info_list(self, sobject_name_list):
         return [ self.get_sobject_info(sobject_name) for sobject_name in sobject_name_list]
-        # all_cache = self.get_cache()
-        # return all_cache["sobjects"].values()
+    
+    # def _get_sobject_custom_fields(self, sftypedesc):
+    #     return [field for field in sftypedesc["fields"]]
 
     def get_sobject_name_list_for_sel(self):
         all_cache = self.get_cache()
@@ -323,7 +342,8 @@ class MetadataUtil(CacheLoader):
         self.sublconsole.showlog("start to reload metadata cache, please wait...")
         meta_api = sf_login(self.sf_basic_config, Soap_Type=MetadataApi)
         allMetadataResult = meta_api.getAllMetadataMap()
-        self.sublconsole.save_and_open_in_panel(json.dumps(allMetadataResult, ensure_ascii=False, indent=4), self.save_dir, self.file_name , is_open=False)
+        self.save_dict(allMetadataResult)
+        # self.sublconsole.save_and_open_in_panel(json.dumps(allMetadataResult, ensure_ascii=False, indent=4), self.save_dir, self.file_name , is_open=False)
 
     def get_meta_attr(self, full_path):
         sysio = SysIo()
@@ -530,9 +550,22 @@ class MetadataUtil(CacheLoader):
         print('>>>>2')
         return
 
+class SfDataUtil():
+    def __init__(self, sf_basic_config = None):
+        if sf_basic_config:
+            self.sf_basic_config = sf_basic_config
+        else:
+            self.sf_basic_config = SfBasicConfig()
+        self.tooling_api = sf_login(self.sf_basic_config, Soap_Type=ToolingApi)
+    
+    def get_profiles(self):
+        soql = "SELECT Name From Profile"
+        status_code, result = self.tooling_api.toolingQuery(soql)
+        if not "records" in result: return []
+        return [ record["Name"] for record in result["records"] ]
 
 class DownloadUtil(object):
-    def __init__(self, sf_basic_config = None):
+    def __init__(self, sf_basic_config = None, is_auto_download=True):
         if sf_basic_config:
             self.sf_basic_config = sf_basic_config
         else:
@@ -540,7 +573,8 @@ class DownloadUtil(object):
             
         self.sublconsole = SublConsole(self.sf_basic_config)
         self.settings = self.sf_basic_config.get_setting()
-        self.download_jar()
+        if is_auto_download:
+            self.download_jar()
     
     def download_jar(self):
         jar_home = self.sf_basic_config.get_default_jar_home()
@@ -602,10 +636,9 @@ class DataloaderUtil(DownloadUtil):
         return jar_name
 
 class MigrationToolUtil(DownloadUtil):
-    def __init__(self, sf_basic_config = None):
-        super(MigrationToolUtil, self).__init__(sf_basic_config=sf_basic_config)
+    def __init__(self, sf_basic_config = None, is_auto_download = True):
+        super(MigrationToolUtil, self).__init__(sf_basic_config=sf_basic_config, is_auto_download=is_auto_download)
         self.sysio = SysIo()
-        self.sdfcxml = SfdcXml()
     
     def get_jar_name(self):
         jar_name = "ant-salesforce.jar"
@@ -629,34 +662,49 @@ class MigrationToolUtil(DownloadUtil):
             shutil.copyfile(meta_xml, deploy_dir)
             self.copy_file_list.append((meta_xml, deploy_dir))
 
-    def _build_ant_xml_copy_task(self, deploy_root_dir):
-        template = """<project name="SalesforceXyTools Migration tools" default="copyfile" basedir=".">
-    <target name="copyfile">
-        <delete dir="src" />
-{copy_task}
-    </target>
-</project>"""
-        template_copy_task = """        <copy preservelastmodified="true"
-              file="{from_file}"
-              tofile="{to_file}" />"""
-        copy_task = []
-        for from_file, to_file in self.copy_file_list:
-            copy_task.append(template_copy_task.format(from_file=from_file, to_file=to_file))
-        copy_task_str = template.replace("{copy_task}", "\n".join(copy_task))
+### delete start: ant xml and copyfile.txt
+#     def _build_ant_xml_copy_task(self, deploy_root_dir):
+#         template = """<project name="SalesforceXyTools Migration tools" default="copyfile" basedir=".">
+#     <target name="copyfile">
+#         <delete dir="src" />
+# {copy_task}
+#     </target>
+# </project>"""
+#         template_copy_task = """        <copy preservelastmodified="true"
+#               file="{from_file}"
+#               tofile="{to_file}" />"""
+#         copy_task = []
+#         for from_file, to_file in self.copy_file_list:
+#             copy_task.append(template_copy_task.format(from_file=from_file, to_file=to_file))
+#         copy_task_str = template.replace("{copy_task}", "\n".join(copy_task))
         
-        save_path = os.path.join(deploy_root_dir, "build.copyfile.xml")
-        self.sysio.save_file(save_path, copy_task_str)
-        
-    def _build_copy_files_md(self, deploy_root_dir):
-        copy_task = []
-        for from_file, to_file in self.copy_file_list:
-            copy_task.append(from_file)
-        save_path = os.path.join(deploy_root_dir, "copyfile.txt")
-        self.sysio.save_file(save_path, "\n".join(copy_task))
+#         save_path = os.path.join(deploy_root_dir, "build.copyfile.xml")
+#         self.sysio.save_file(save_path, copy_task_str)
+#     def _build_copy_files_md(self, deploy_root_dir):
+#         copy_task = []
+#         for from_file, to_file in self.copy_file_list:
+#             copy_task.append(from_file)
+#         save_path = os.path.join(deploy_root_dir, "copyfile.txt")
+#         self.sysio.save_file(save_path, "\n".join(copy_task))
+### delete end
+
+    def _build_module_json(self, key, files):
+        module_json = CacheLoader(file_name="module.json", always_reload=False, sf_basic_config = self.sf_basic_config)
+        if module_json.is_exist():
+            module_json_cache = module_json.get_cache()
+        else:
+            module_json_cache = {}
+        module_json_cache[key] = {
+                    "desc" : "",
+                    "created" : str(datetime.now()),
+                    "files" : files
+            }
+        module_json.save_dict(module_json_cache)
 
     def copy_deploy_files(self, file_list, deploy_root_dir, api_version="40.0"):
         self._del_old_dir(deploy_root_dir)
         
+        copy_org_file_list = []
         self.copy_file_list = []
         for file in file_list:
             attr = self.sysio.get_file_attr(file)
@@ -667,12 +715,15 @@ class MigrationToolUtil(DownloadUtil):
             to_file = os.path.join(metadata_folder, attr["file_name"])
             shutil.copyfile(file, to_file)
             self.copy_file_list.append((file, to_file))
+            # copy_org_file_list.append(os.path.join(".", "src", attr["metadata_folder"], attr["metadata_sub_folder"], attr["file_name"]))
+            copy_org_file_list.append(file)
 
             self._copy_folder_xml(file, metadata_folder + "-meta.xml")
             self._copy_file_xml(file, os.path.join(metadata_folder, attr["file_name"] + "-meta.xml"))
         
-        self._build_ant_xml_copy_task(deploy_root_dir)
-        self._build_copy_files_md(deploy_root_dir)
+        self._build_module_json(os.path.basename(deploy_root_dir), copy_org_file_list)
+        # self._build_ant_xml_copy_task(deploy_root_dir)
+        # self._build_copy_files_md(deploy_root_dir)
         self.build_package_xml(os.path.join(deploy_root_dir, "src", "package.xml"), file_list, api_version)
 
     def build_package_xml(self, save_path, file_list, api_version="40.0"):
@@ -688,13 +739,6 @@ class MigrationToolUtil(DownloadUtil):
         packagexml = self._get_package_xml(file_attr_map, api_version)
         self.sysio.save_file(save_path, packagexml)
         return packagexml
-        # file_name_list = []
-        # for file in file_list:
-        #     attr = self.sysio.get_file_attr(file)
-        #     file_name_list.append(attr["file_name"])
-        # packagexml = self.sdfcxml.build_package_xml(file_name_list, api_version)
-        # save_path = os.path.join(deploy_root_dir, "package.xml")
-        # self.sysio.save_file(save_path, packagexml)
 
     def _get_package_xml(self, file_attr_map, api_version="40.0"):
         packagexml_types = ""
@@ -709,7 +753,6 @@ class MigrationToolUtil(DownloadUtil):
                 if member in members_check: continue
                 members_check.append(member)
                 members.append("""        <members>{member}</members>""".format(member=member))
-            # members = ["""        <members>{member}</members>""".format(member=attr["name"]) for attr in file_attr_list]
             packagexml_types = packagexml_types + PACKAGEXML_TYPE.format(members='\n'.join(members),name=metadata_type)
         packagexml = PACKAGE_XML.format(types=packagexml_types, version=api_version)
         return packagexml

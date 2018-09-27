@@ -108,17 +108,17 @@
                 "caption": "Copy FileName",
                 "command": "copy_filename"
             },
+            { "caption": "-" },
             {  
-                "caption":"Build Deploy Package From Open Files" ,  
+                "caption":"Save Module(From Open Files)" ,  
                 "command": "build_package",
                 "args" : {
                     "build_type" : "CopyFiles"
                 }
             },
-            { "caption": "-" },
             {
-                "caption": "Open Src From copyfile.txt",
-                "command": "open_copy_files"
+                "caption": "Open Module Source Code",
+                "command": "open_module"
             }
         ]
 	},

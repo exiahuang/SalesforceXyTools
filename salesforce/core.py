@@ -236,6 +236,11 @@ class MetadataApi(Soap):
                         "name" : "StandardValueSet",
                         "members" : soap_envelopes.get_StandardValueSet(self.sf_version)
                     })
+                elif metaObj["xmlName"] == "CustomObject":
+                    metadata_types.append({
+                        "name" : metaObj["xmlName"],
+                        "members" : self._getCustomObjectMembers()
+                    })
                 else:
                     metadata_types.append({
                         "name" : metaObj["xmlName"],
@@ -258,6 +263,9 @@ class MetadataApi(Soap):
                     "members" : members
                 })
         return metadata_types
+    
+    def _getCustomObjectMembers(self):
+        return [str(sobj["name"]) for sobj in self.describe()["sobjects"]]
 
     def buildPackageXml(self, retrive_metadata_objects=None):
         packagexml_types = ""

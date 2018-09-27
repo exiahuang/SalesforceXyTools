@@ -5,6 +5,7 @@ https://github.com/simple-salesforce/simple-salesforce
 
 import xml.dom.minidom
 from xml.sax.saxutils import quoteattr
+from xml.sax.saxutils import unescape
 
 # pylint: disable=invalid-name
 def getUniqueElementValueFromXmlString(xmlString, elementName):
@@ -22,8 +23,7 @@ def getUniqueElementValueFromXmlString(xmlString, elementName):
     if len(elementsByName) > 0:
         elementValue = elementsByName[0].toxml().replace(
             '<' + elementName + '>', '').replace('</' + elementName + '>', '')
-    return elementValue
-
+    return unescape(elementValue)
 
 def date_to_iso8601(date):
     """Returns an ISO8601 string from a date"""

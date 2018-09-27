@@ -216,6 +216,16 @@
                 ]
             },
             {
+                "caption": "Permission Builder",
+                "children":
+                [
+                    {  
+                        "caption":"Build Profile FieldPermissions" ,  
+                        "command": "build_filed_permissions"
+                    }
+                ]
+            },
+            {
                 "caption": "Migration Tool",
                 "children":
                 [
@@ -262,6 +272,23 @@
                     {
                         "caption": "Create All Test Data(Needed Field)",
                         "command": "create_all_test_data"
+                    }
+                ]
+            },
+            {
+                "caption": "Module Source",
+                "children":
+                [
+                    {  
+                        "caption":"Save Module(From Open Files)" ,  
+                        "command": "build_package",
+                        "args" : {
+                            "build_type" : "CopyFiles"
+                        }
+                    },
+                    {
+                        "caption": "Open Module Source Code",
+                        "command": "open_module"
                     }
                 ]
             },

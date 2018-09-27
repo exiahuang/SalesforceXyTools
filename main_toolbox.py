@@ -7,6 +7,7 @@ from .uiutil import SublConsole
 from . import baseutil
 from . import util
 from .salesforce import MetadataApi
+from .permission_util import FiledPermissionUtil
 
 #deploy open files
 class DeployDirCommand(sublime_plugin.WindowCommand):
@@ -115,8 +116,12 @@ class MigrationToolBuilderCommand(sublime_plugin.WindowCommand):
             return
         self.copy_open_files(file_list)
         
-        cmd = [self.osutil.get_cd_cmd(self.save_dir), self._get_deploy_cmd(type)]
-        self.osutil.os_run(cmd)
+        try:
+            cmd = [self.osutil.get_cd_cmd(self.save_dir), self._get_deploy_cmd(type)]
+            self.osutil.os_run(cmd)
+        except Exception as ex:
+            self.sublconsole.showlog("Please set ant! https://ant.apache.org/")
+            pass
     
     def _get_deploy_cmd(self, type):
         return self.ant_cmd_map[type]
@@ -161,7 +166,8 @@ class DataloaderConfigCommand(sublime_plugin.WindowCommand):
         self.sf_basic_config = SfBasicConfig()
         self.settings = self.sf_basic_config.get_setting()
         self.sublconsole = SublConsole(self.sf_basic_config)
-        self.sobject_util = util.SobjectUtil()
+        self.sobject_util = util.SobjectUtil(self.sf_basic_config)
+        self.is_picked_all = False
         self.picked_list = []
         self.save_dir = os.path.join(self.sf_basic_config.get_work_dir(), "AntDataloader")
         self.is_run = is_run
@@ -182,6 +188,13 @@ class DataloaderConfigCommand(sublime_plugin.WindowCommand):
         if picked > 1:
             self.sublconsole.showlog(sel_data)
             self._set_select_list(sel_data)
+            self._show_panel()
+        elif picked == 1:
+            self.is_picked_all = not self.is_picked_all
+            if self.is_picked_all:
+                self.picked_list = [data for data in self.sobject_name_list]
+            else:
+                self.picked_list = []
             self._show_panel()
         elif picked == 0:
             self.sublconsole.thread_run(target=self._build_dataloader)
@@ -222,17 +235,121 @@ class DataloaderConfigCommand(sublime_plugin.WindowCommand):
     def _get_sobject_panel_data(self):
         all_sobject = self.sobject_util.get_cache()
         sobject_name_list = ["__Start__", "__Select_Soject__"]
-        sobject_show_list = ["Start To Config", "Select Soject"]
+        sobject_show_list = ["Start To Config", "Select/UnSelect Soject"]
+        sobject_name_list2 = []
+        sobject_show_list2 = []
         for sobject_info in all_sobject["sobjects"].values():
-            sel_sign_str = "✓" if str(sobject_info["name"]) in self.picked_list else "X"
-            sobject_show_list.append( "    [%s] %s , %s" % (sel_sign_str, str(sobject_info["name"]), str(sobject_info["label"])))
-            sobject_name_list.append(str(sobject_info["name"]))
+            isPicked = str(sobject_info["name"]) in self.picked_list
+            if isPicked:
+                sel_sign_str = "✓"
+                sobject_show_list.append( "    [%s] %s , %s" % (sel_sign_str, str(sobject_info["name"]), str(sobject_info["label"])))
+                sobject_name_list.append(str(sobject_info["name"]))
+            else:
+                sel_sign_str = "X"
+                sobject_show_list2.append( "    [%s] %s , %s" % (sel_sign_str, str(sobject_info["name"]), str(sobject_info["label"])))
+                sobject_name_list2.append(str(sobject_info["name"]))
+        sobject_name_list.extend(sobject_name_list2)
+        sobject_show_list.extend(sobject_show_list2)
         return sobject_name_list,sobject_show_list
         
     def run_it(self):
         if self.is_run and os.path.exists(self.save_dir):
-            cmd = [self.osutil.get_cd_cmd(self.save_dir), "ant"]
-            self.osutil.os_run(cmd)
+            try:
+                cmd = [self.osutil.get_cd_cmd(self.save_dir), "ant"]
+                self.osutil.os_run(cmd)
+            except Exception as ex:
+                self.sublconsole.showlog('please config ant. https://ant.apache.org/')
+                pass
+
+#FieldPermission Builder
+class BuildFiledPermissions(sublime_plugin.WindowCommand):
+    def run(self):
+        self.is_picked_all = False
+        self.sf_basic_config = SfBasicConfig()
+        self.settings = self.sf_basic_config.get_setting()
+        self.sublconsole = SublConsole(self.sf_basic_config)
+        objects_dir = self.sf_basic_config.get_src_dir("objects")
+        if not os.path.isdir(objects_dir):
+            self.sublconsole.showlog("please check objects dir!")
+            return
+        self.permissionUtil = FiledPermissionUtil(objects_dir)
+        self.sfData_util = util.SfDataUtil(self.sf_basic_config)
+        self.picked_list = []
+        
+        self.save_path = os.path.join(self.sf_basic_config.get_sfdc_module_dir(), "PermissionBuilder", "src", "permissionsets" , "AllPermission.permissionset")
+        self.window.show_input_panel("Input your save path: " , self.save_path, self.on_input, None, None)
+        self.sublconsole.thread_run(target=self.on_input)
+
+    def on_input(self, args):
+        self.save_path = args
+        self._show_panel()
+    #     self._show_profiles_sel_panel()
+
+    # def _show_profiles_sel_panel(self):
+    #     self.profiles = self.sfData_util.get_profiles()
+    #     self.window.show_quick_panel(self.profiles, self.on_profile_sel_done, sublime.MONOSPACE_FONT)
+    
+    # def on_profile_sel_done(self, picked):
+    #     if 0 > picked < len(self.profiles):
+    #         return
+    #     self.sel_profile = self.profiles[picked]
+    #     self._show_panel()
+
+    def _show_panel(self):
+        self.pick_key_list, self.pick_show_list = self._get_sobject_panel_data()
+        self.window.show_quick_panel(self.pick_show_list, self.panel_done, sublime.MONOSPACE_FONT)
+
+    def panel_done(self, picked):
+        if 0 > picked < len(self.pick_key_list):
+            return
+        sel_data = self.pick_key_list[picked]
+        if picked > 1:
+            self.sublconsole.showlog(sel_data)
+            self._set_select_list(sel_data)
+            self._show_panel()
+        elif picked == 1:
+            self.is_picked_all = not self.is_picked_all
+            if self.is_picked_all:
+                self.picked_list = [str(data["key"]) for data in self.permissionUtil.get_all_fields()]
+            else:
+                self.picked_list = []
+            self._show_panel()
+        elif picked == 0:
+            # self.sublconsole.showlog(self.picked_list)
+            self.sublconsole.thread_run(target=self.main)
+
+    def main(self):
+        file_path, file_name = os.path.split(self.save_path)
+        name, file_extension = os.path.splitext(file_name)
+        permission_xml = self.permissionUtil.get_fieldPermission(permission_name = name, is_all_sobject_permission = self.is_picked_all, sel_field_list=self.picked_list)
+        self.sublconsole.save_and_open_in_panel(permission_xml, "", self.save_path)
+
+    def _get_sobject_panel_data(self):
+        all_fields = self.permissionUtil.get_all_fields()
+        pick_key_list = ["__Start__", "__Select_Soject__"]
+        pick_show_list = ["Start To Config", "Select/UnSelect All Fields"]
+        pick_key_list2 = []
+        pick_show_list2 = []
+
+        for aField in all_fields:
+            isPicked = str(aField["key"]) in self.picked_list
+            if isPicked:
+                sel_sign_str = "✓"
+                pick_show_list.append( "    [%s] %s , %s" % (sel_sign_str, str(aField["key"]), str(aField["label"])))
+                pick_key_list.append(str(aField["key"]))
+            else:
+                sel_sign_str = "X"
+                pick_show_list2.append( "    [%s] %s , %s" % (sel_sign_str, str(aField["key"]), str(aField["label"])))
+                pick_key_list2.append(str(aField["key"]))
+        pick_key_list.extend(pick_key_list2)
+        pick_show_list.extend(pick_show_list2)
+        return pick_key_list, pick_show_list
+
+    def _set_select_list(self, sel_data):
+        if sel_data in self.picked_list:
+            self.picked_list.remove(sel_data)
+        else:
+            self.picked_list.append(sel_data)
 
 
 class CopyAuraCommand(sublime_plugin.WindowCommand):
@@ -287,19 +404,33 @@ class OpenWithCommand(sublime_plugin.TextCommand):
     def is_visible(self):
         return sublime.platform() == "windows"
 
-class OpenCopyFilesCommand(sublime_plugin.TextCommand):
+class OpenModuleCommand(sublime_plugin.TextCommand):
     def run(self, edit):
-        txt = self.view.substr(sublime.Region(0, self.view.size()))
-        file_list = txt.split("\n")
-        window = sublime.active_window()
-        for file_name in file_list:
-            if os.path.isfile(file_name) and not file_name.endswith("-meta.xml"): 
-                window.open_file(file_name)
+        self.sf_basic_config = SfBasicConfig()
+        self.window = sublime.active_window()
+        self.module_json = util.CacheLoader(file_name="module.json", always_reload=False, sf_basic_config = self.sf_basic_config)
+        if self.module_json.is_exist():
+            self.module_json_cache = self.module_json.get_cache()
+            self._show_panel()
+        else:
+            self.sf_basic_config.showlog("not found moudle!")
 
-    def is_enabled(self):
-        if not self.view: return False
-        if not self.view.file_name(): return False
-        return self.view.file_name().endswith("copyfile.txt")
+    def _show_panel(self):
+        self.module_list = list(self.module_json_cache.keys())
+        self.window.show_quick_panel(self.module_list, self.panel_done, sublime.MONOSPACE_FONT)
+
+    def panel_done(self, picked):
+        if 0 > picked < len(self.module_list):
+            return
+        module_name = self.module_list[picked]
+        self._open_file(module_name)
+
+    def _open_file(self, module_name):
+            module_json_cache = self.module_json_cache
+            if module_name in module_json_cache:
+                for file_name in module_json_cache[module_name]["files"]:
+                    if os.path.isfile(file_name) and not file_name.endswith("-meta.xml"): 
+                        self.window.open_file(file_name)
 
 class OpenShellCommand(sublime_plugin.WindowCommand):
     def run(self):

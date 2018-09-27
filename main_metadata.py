@@ -107,6 +107,9 @@ class NewMetadataCommand(sublime_plugin.WindowCommand):
         self.sublconsole.thread_run(target=self.on_input)
 
     def on_input(self, args):
+        if os.path.exists(args):
+            self.sublconsole.showlog("Error ! %s is exist !" % args)
+            return
         self.sublconsole.thread_run(target=self.main_handle, args=(args, ))
 
     def main_handle(self, args = ''):
@@ -314,15 +317,18 @@ class BuildPackageCommand(sublime_plugin.WindowCommand):
             self._buildPackageFromFiles()
         elif self.build_type == "CopyFiles":
             open_files = [ _view.file_name() for _view in self.sf_basic_config.window.views()]
-            self.window.run_command("migration_tool_builder", {
-                "type" : "CopyFiles",
-                "file_list" : open_files,
-                "copy_to_dir" : self.save_path
-            })
+            if len(open_files) > 0:
+                self.window.run_command("migration_tool_builder", {
+                    "type" : "CopyFiles",
+                    "file_list" : open_files,
+                    "copy_to_dir" : self.save_path
+                })
+            else:
+                self.sublconsole.showlog("Nothing to do!")
 
     def _buildPackageFromFiles(self):
         open_files = [ _view.file_name() for _view in self.sf_basic_config.window.views()]
-        migration_util = util.MigrationToolUtil(self.sf_basic_config)
+        migration_util = util.MigrationToolUtil(sf_basic_config=self.sf_basic_config, is_auto_download=False)
         migration_util.build_package_xml(self.save_path, open_files, self.settings["api_version"])
 
     def _buildPackageFromServer(self):
@@ -362,7 +368,7 @@ class RetrieveZipCommand(sublime_plugin.WindowCommand):
     def _init_default_picked_list(self):
         self.current_picked_list = []
         for data in self.describeMetadataResult:
-            if data["xmlName"] in ["ApexClass", "ApexComponent", "ApexPage", "ApexTrigger", "ApexPage", "CustomObject"]:
+            if data["xmlName"] in ["ApexClass", "ApexComponent", "ApexPage", "ApexTrigger", "ApexPage", "CustomObject", "AuraDefinitionBundle"]:
                 self.current_picked_list.append(data)
 
     def on_input(self, args):
@@ -382,11 +388,20 @@ class RetrieveZipCommand(sublime_plugin.WindowCommand):
     def _get_sel_data(self):
         all_data = self.describeMetadataResult
         sel_key_list = ["__Start_To_Retrive__", "__Select_MetaData__"]
-        sel_show_list = ["Start To Retrive", "Select Metadata To Retrive"]
+        sel_show_list = ["Start To Retrive", "Select/Unselect All"]
+        sel_key_list2 = []
+        sel_show_list2 = []
         for data in all_data:
-            sel_sign_str = "✓" if data in self.current_picked_list else "X"
-            sel_show_list.append( "    [%s] %s" % (sel_sign_str, str(data["xmlName"])))
-            sel_key_list.append(data)
+            if data in self.current_picked_list:
+                sel_sign_str = "✓" 
+                sel_show_list.append( "    [%s] %s" % (sel_sign_str, str(data["xmlName"])))
+                sel_key_list.append(data)
+            else:
+                sel_sign_str = "X"
+                sel_show_list2.append( "    [%s] %s" % (sel_sign_str, str(data["xmlName"])))
+                sel_key_list2.append(data)
+        sel_show_list.extend(sel_show_list2)
+        sel_key_list.extend(sel_key_list2)
         return sel_key_list,sel_show_list
 
     def panel_done(self, picked):
@@ -433,12 +448,12 @@ class RetrieveZipCommand(sublime_plugin.WindowCommand):
                 message = "The src folder is exist. Start to backup the src to %s ?" % (new_src_name)
                 if sublime.ok_cancel_dialog(message, "OK!"): 
                     self.sublconsole.close_views(src_path)
-                    sleep(0.1)
+                    # sleep(0.1)
                     if not os.path.exists(backup_dir):
                         os.makedirs(backup_dir)
                     shutil.move(src_path, new_src_path)
                     # os.rename(src_path, new_src_path)
-                    sleep(0.5)
+                    sleep(1)
 
 class RetrieveSrcCommand(sublime_plugin.WindowCommand):
     def run(self):
