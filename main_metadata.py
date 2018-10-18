@@ -448,12 +448,13 @@ class RetrieveZipCommand(sublime_plugin.WindowCommand):
                 message = "The src folder is exist. Start to backup the src to %s ?" % (new_src_name)
                 if sublime.ok_cancel_dialog(message, "OK!"): 
                     self.sublconsole.close_views(src_path)
-                    # sleep(0.1)
                     if not os.path.exists(backup_dir):
                         os.makedirs(backup_dir)
-                    shutil.move(src_path, new_src_path)
-                    # os.rename(src_path, new_src_path)
-                    sleep(1)
+                    self.sublconsole.showlog('start to backup source')
+                    shutil.copytree(src_path, new_src_path)
+                    self.sublconsole.showlog('start to delete src folder')
+                    if os.path.exists(src_path):
+                        shutil.rmtree(src_path)
 
 class RetrieveSrcCommand(sublime_plugin.WindowCommand):
     def run(self):

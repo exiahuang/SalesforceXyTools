@@ -77,6 +77,7 @@ class AntConfig():
 
         build_xml_src = self.get_file(self.template_migration_tools_path, "build.xml")
         build_xml_src = build_xml_src.replace("{jar_path}", config_data["jar_path"])
+        build_xml_src = build_xml_src.replace("{target_proxy_body}", self._get_ant_proxy_body(config_data))
         self._save_file(os.path.join(save_path, "build.xml"), build_xml_src)
     
     def build_ant_dataloader(self, save_path, config_data):
@@ -91,6 +92,29 @@ class AntConfig():
         build_xml_src = build_xml_src.replace("{dataloader_jar_path}", config_data["dataloader_jar_path"]).replace("{ant_export_xml}", config_data["ant_export_xml"])
         self._save_file(os.path.join(save_path, "build.xml"), build_xml_src)
 
+    def _get_ant_proxy_body(self, config_data):
+        proxy_config = config_data["proxy"]
+        xml_str_list = []
+        if "use_proxy" in proxy_config and proxy_config["use_proxy"]:
+            if "nonproxyhosts" in proxy_config and proxy_config["nonproxyhosts"]:
+                xml_str_list.append('nonproxyhosts="' + proxy_config["nonproxyhosts"] + '"')
+            if "proxyhost" in proxy_config and proxy_config["proxyhost"]:
+                xml_str_list.append('proxyhost="' + proxy_config["proxyhost"] + '"')
+            if "proxypassword" in proxy_config and proxy_config["proxypassword"]:
+                xml_str_list.append('proxypassword="' + proxy_config["proxypassword"] + '"')
+            if "proxyport" in proxy_config and proxy_config["proxyport"]:
+                xml_str_list.append('proxyport="' + proxy_config["proxyport"] + '"')
+            if "proxyuser" in proxy_config and proxy_config["proxyuser"]:
+                xml_str_list.append('proxyuser="' + proxy_config["proxyuser"] + '"')
+            if "socksproxyhost" in proxy_config and proxy_config["socksproxyhost"]:
+                xml_str_list.append('socksproxyhost="' + proxy_config["socksproxyhost"] + '"')
+            if "socksproxyport"in proxy_config and proxy_config["socksproxyport"]:
+                xml_str_list.append('socksproxyport="' + proxy_config["socksproxyport"] + '"')
+            if len(xml_str_list) > 0 :
+                return "<setproxy " + " ".join(xml_str_list)  + "/>"
+            else:
+                return ""
+        return ""
 
     def _copy_all(self, org_path, dist_path):
         for file_name in os.listdir(org_path):

@@ -135,7 +135,8 @@ class MigrationToolBuilderCommand(sublime_plugin.WindowCommand):
             "username" : self.settings["username"],
             "password" : self.settings["password"],
             "serverurl" : self.settings["loginUrl"],
-            "jar_path" : migration_util.get_jar_path()
+            "jar_path" : migration_util.get_jar_path(),
+            "proxy" : self.sf_basic_config.get_proxy()
         }
         ant_config = AntConfig()
         ant_config.build_migration_tools(save_path=args, config_data=config_data)

@@ -1,5 +1,10 @@
 # SalesforceXyTools Update History
 
+## 2.0.3
+* Add `Proxy` config
+* Add `auto_save_to_server` config
+* Fix Retrieve Source `src` lock
+
 ## 2.0.2
 * Add Permisson Profile Builder(Profile/Permisson Set)
 * Save Module / Open Module

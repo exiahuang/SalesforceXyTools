@@ -309,6 +309,10 @@
                         "command": "switch_browser"
                     },
                     {
+                        "caption": "Proxy Config Wizard",
+                        "command": "proxy_config_wizard"
+                    },
+                    {
                         "caption": "Open Project Config File",
                         "command": "project_config"
                     }

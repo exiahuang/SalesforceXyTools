@@ -7,6 +7,7 @@ AUTHENTICATION_OAUTH2 = "oauth2"
 AUTHENTICATION_PASSWORD = "password"
 config_dir = '.xyconfig'
 # AUTHENTICATION_MAVENSMATE = "mavensmate"
+sys_http_proxy = os.getenv('http_proxy', '')
 
 class SfBasicConfig():
     def __init__(self, project_dir=None):
@@ -14,6 +15,7 @@ class SfBasicConfig():
         self.window = sublime.active_window()
         self.window_id = self.window.id()
         self._load()
+        self._init_proxy()
 
     def _load(self):
         # Load all settings
@@ -90,6 +92,26 @@ class SfBasicConfig():
         # debug(settings)
         
         return settings
+
+    def _init_proxy(self):
+        proxy = self.get_proxy()
+        if proxy["use_proxy"]:
+            http_proxy = sys_http_proxy
+            if not http_proxy:
+                if proxy["proxyuser"]:
+                    http_proxy = "http://{user}:{password}@{server}".format(
+                                    user=proxy["proxyuser"], password=proxy["proxypassword"], server=proxy["proxyhost"])
+                else:
+                    http_proxy = "http://{server}".format(server=proxy["proxyhost"])
+                if proxy["proxyport"]:
+                    http_proxy = http_proxy + ":" + proxy["proxyport"]
+            os.environ["http_proxy"] = http_proxy 
+            os.environ["https_proxy"] = http_proxy
+        elif "http_proxy" in os.environ:
+            os.environ.pop("http_proxy")
+            if "https_proxy" in os.environ:
+                os.environ.pop("https_proxy")
+        debug(os.getenv('http_proxy'))
 
     def save_session(self, session_str):
         debug('session_str--->')
@@ -268,6 +290,23 @@ class SfBasicConfig():
         self.setting["use_os_terminal"] = False
         return self.setting["use_os_terminal"]
 
+    def get_proxy(self):
+        if "proxy" in self.setting:
+            return self.setting["proxy"]
+        self.setting["proxy"] = {
+            "use_proxy" : False,
+            "proxyhost" : "127.0.0.1",
+            "proxyport" : "8888",
+            "proxyuser" : "proxyuser",
+            "proxypassword" : "proxypassword"
+        }
+        """
+            "nonproxyhosts" : "",
+            "socksproxyhost" : "",
+            "socksproxyport" : ""
+        """
+        return self.setting["proxy"]
+
     def get_user_home_dir(self):
         home = os.path.expanduser("~")
         return os.path.join(home, "salesforce-project")
@@ -277,6 +316,12 @@ class SfBasicConfig():
             return self.setting["jar_home"]
         self.setting["jar_home"] = os.path.join(self.get_user_home_dir(), "jar")
         return self.setting["jar_home"]
+    
+    def get_auto_save_to_server(self):
+        if "auto_save_to_server" in self.setting:
+            return self.setting["auto_save_to_server"]
+        self.setting["auto_save_to_server"] = False
+        return self.setting["auto_save_to_server"]
 
     ###############private method
     # current project dir
@@ -367,6 +412,7 @@ def get_default_project_config(config_file_full_path, jar_home):
     "authentication": "password", 
     "jar_home": "{jar_home}", 
     "use_os_terminal": false, 
+    "auto_save_to_server": false,
     "app" : {
         "winmerge": "{winmerge}", 
         "notepad": "{notepad}",
@@ -385,6 +431,13 @@ def get_default_project_config(config_file_full_path, jar_home):
         "Validation": "INFO", 
         "DB": "Info", 
         "System": "DEBUG"
+    },
+    "proxy": {
+        "use_proxy" : false,
+        "proxyhost" : "127.0.0.1",
+        "proxyport" : "8888",
+        "proxyuser" : "proxyuser",
+        "proxypassword" : "proxypassword"
     }
 }
 """.replace("{jar_home}", jar_home).replace("{winmerge}", get_winmerge()).replace("{notepad}", get_notepad())
