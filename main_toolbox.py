@@ -33,7 +33,7 @@ class RunAntMigrationToolCommand(sublime_plugin.TextCommand):
                 if file_name:
                     self.open_files.append(file_name)
             self.current_file = self.view.file_name()
-            self.sel_type_list = ["Build Ant Metadata Tool", "Backup Metadata", "Deploy Open Files To Server", "Deploy Open Files To Server(check only)"]
+            self.sel_type_list = ["Config Ant Metadata Tool", "Backup All Metadata", "Deploy Open Files To Server", "Deploy Open Files To Server(check only)"]
             self.sel_type_key_list = ["Build", "Backup", "DeployOpenFiles", "CheckDeployOpenFiles"]
 
         if self.current_file:
@@ -73,21 +73,15 @@ class MigrationToolBuilderCommand(sublime_plugin.WindowCommand):
             self.type = type
             self.copy_to_dir = copy_to_dir
             self.osutil = util.OsUtil(self.sf_basic_config)
-            if self._is_not_exist():
-                message = "Do you want to build ant migration tool first?"
-                if not sublime.ok_cancel_dialog(message, "Yes!"):
-                    return
-                self.sublconsole.thread_run(target=self.build_migration_tools, args=(self.save_dir, ))
-                return
 
             if type == "Backup":
-                self.run_it()
+                self.sublconsole.thread_run(target=self.backup_metadata)
             elif type == "Build":
                 self.sublconsole.thread_run(target=self.build_migration_tools, args=(self.save_dir, ))
             elif type == "CopyFiles":
                 self.sublconsole.thread_run(target=self.copy_open_files, args=(file_list, ))
             elif type in self.ant_cmd_map:
-                self.deploy_open_files(file_list, type)
+                self.sublconsole.thread_run(target=self.deploy_open_files, args=(file_list, type, ))
         except Exception as ex:
             self.sublconsole.showlog(ex)
             pass
@@ -117,6 +111,8 @@ class MigrationToolBuilderCommand(sublime_plugin.WindowCommand):
         self.copy_open_files(file_list)
         
         try:
+            if self._is_not_exist():
+                self.build_migration_tools(self.save_dir)
             cmd = [self.osutil.get_cd_cmd(self.save_dir), self._get_deploy_cmd(type)]
             self.osutil.os_run(cmd)
         except Exception as ex:
@@ -136,6 +132,7 @@ class MigrationToolBuilderCommand(sublime_plugin.WindowCommand):
             "password" : self.settings["password"],
             "serverurl" : self.settings["loginUrl"],
             "jar_path" : migration_util.get_jar_path(),
+            "jar_url_path" : migration_util.get_jar_url_path(),
             "proxy" : self.sf_basic_config.get_proxy()
         }
         ant_config = AntConfig()
@@ -148,7 +145,10 @@ class MigrationToolBuilderCommand(sublime_plugin.WindowCommand):
         self.sublconsole.showlog('build migration tool success!')
         # self.run_it()
 
-    def run_it(self):
+    def backup_metadata(self):
+        if self._is_not_exist():
+            self.build_migration_tools(self.save_dir)
+
         if os.path.exists(self.save_dir):
             cmd = [self.osutil.get_cd_cmd(self.save_dir), "metadata-backup"]
             self.osutil.os_run(cmd)
@@ -220,6 +220,7 @@ class DataloaderConfigCommand(sublime_plugin.WindowCommand):
             "username" : self.settings["username"],
             "EncryptionPassword" : encryptionPassword,
             "serverurl" : self.settings["loginUrl"],
+            "dataloader_url_path" : self.dlutil.get_jar_url_path(),
             "dataloader_jar_path" : self.dlutil.get_jar_path(),
             "ant_export_xml" : "\n        ".join(self.ant_xml_list)
         }

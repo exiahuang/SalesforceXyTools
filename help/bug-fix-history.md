@@ -1,5 +1,10 @@
 # SalesforceXyTools Update History
 
+## 2.0.4
+* Remove Python Jar `Auto Download`.
+* Add Ant Auto Download task.
+* Fix Code Creator.
+
 ## 2.0.3
 * Add `Proxy` config
 * Add `auto_save_to_server` config

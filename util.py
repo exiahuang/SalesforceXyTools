@@ -573,8 +573,9 @@ class DownloadUtil(object):
             
         self.sublconsole = SublConsole(self.sf_basic_config)
         self.settings = self.sf_basic_config.get_setting()
-        if is_auto_download:
-            self.download_jar()
+        # v2.0.4 donot auto download
+        # if is_auto_download:
+        #     self.download_jar()
     
     def download_jar(self):
         jar_home = self.sf_basic_config.get_default_jar_home()
@@ -598,6 +599,10 @@ class DownloadUtil(object):
             help_msg = "please copy %s to %s" % (jar_name, self.sf_basic_config.get_default_jar_home())
             self.sublconsole.showlog( "download %s error, %s, \n%s" % (url, str(e), help_msg))
             pass
+
+    def get_jar_url_path(self):
+        url = "http://salesforcexytools.com/mystatic/jar/" + self.get_jar_name()
+        return url
 
     def get_jar_path(self):
         jar_home = self.sf_basic_config.get_default_jar_home()

@@ -36,7 +36,11 @@
         </sequential>
     </macrodef>
 
-    <target name="start_export">
+    <target name="download_lib">
+        <get src="{dataloader_url_path}" dest="{dataloader_jar_path}" verbose="true" usetimestamp="true"/>
+    </target>
+
+    <target name="start_export" depends="download_lib">
         <!-- <export file="{FILE_NAME}" object="{SOBJECT_NAME}" soql="{SOQL}"/> -->
         {ant_export_xml}
     </target>

@@ -793,3 +793,23 @@ def get_soql_src(sobject, fields, sf_login_instance, condition='', has_comment=F
         soql_scr = ("select %s\nfrom %s\n%s" % (nocomment_fields_str, sobject, condition))
 
     return soql_scr
+
+
+def get_meta_xml(metatype, api_name, api_version):
+    if metatype in ["ApexClass", "ApexTrigger"]:
+        meta_xml = "\n".join([
+                        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+                        "<{0} xmlns=\"http://soap.sforce.com/2006/04/metadata\">",
+                        "    <apiVersion>{1}</apiVersion>",
+                        "    <status>Active</status>",
+                        "</{0}>"
+                ]).format(metatype, api_version)
+    elif metatype in ["ApexPage", "ApexComponent"]:
+        meta_xml = "\n".join([
+                    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+                    "<{0} xmlns=\"http://soap.sforce.com/2006/04/metadata\">",
+                    "    <apiVersion>{1}</apiVersion>",
+                    "    <label>{2}</label>",
+                    "</{0}>"
+            ]).format(metatype, api_version, api_name)
+    return meta_xml

@@ -1050,12 +1050,17 @@ class CreateSfdcCodeCommand(sublime_plugin.WindowCommand):
         is_open = False
         save_path_list = []
 
+        api_version = self.settings["api_version"]
+
         # dto Code
         self.sublconsole.showlog('start to build dto')
         dto_code, class_name = codecreator.get_dto_class(self.picked_name, sftypedesc["fields"], self.is_custom_only, self.include_validate)
-        file_name = sfdc_name_map['dto_file']        
+        file_name = sfdc_name_map['dto_file']
         save_path = self.sublconsole.save_and_open_in_panel(dto_code, classes_dir, file_name, is_open)
         save_path_list.append(save_path)
+        self.sublconsole.save_and_open_in_panel(codecreator.get_meta_xml("ApexClass", class_name, api_version), \
+                                                classes_dir, \
+                                                file_name + '-meta.xml', False)
 
         # dao Code
         self.sublconsole.showlog('start to build dao')
@@ -1063,6 +1068,9 @@ class CreateSfdcCodeCommand(sublime_plugin.WindowCommand):
         file_name = sfdc_name_map['dao_file']
         save_path = self.sublconsole.save_and_open_in_panel(dao_code, classes_dir, file_name, is_open)
         save_path_list.append(save_path)
+        self.sublconsole.save_and_open_in_panel(codecreator.get_meta_xml("ApexClass", class_name, api_version), \
+                                                classes_dir, \
+                                                file_name + '-meta.xml', False)
 
         # controller code
         self.sublconsole.showlog('start to build controller')
@@ -1070,6 +1078,9 @@ class CreateSfdcCodeCommand(sublime_plugin.WindowCommand):
         file_name = sfdc_name_map['controller_file']
         save_path = self.sublconsole.save_and_open_in_panel(controller_code, classes_dir, file_name, is_open)
         save_path_list.append(save_path)
+        self.sublconsole.save_and_open_in_panel(codecreator.get_meta_xml("ApexClass", class_name, api_version), \
+                                                classes_dir, \
+                                                file_name + '-meta.xml', False)
 
         # visualforce code
         self.sublconsole.showlog('start to build visualforce')
@@ -1077,6 +1088,9 @@ class CreateSfdcCodeCommand(sublime_plugin.WindowCommand):
         file_name = sfdc_name_map['vf_file']
         save_path = self.sublconsole.save_and_open_in_panel(vf_code, pages_dir, file_name, is_open)
         save_path_list.append(save_path)
+        self.sublconsole.save_and_open_in_panel(codecreator.get_meta_xml("ApexPage", class_name, api_version), \
+                                                pages_dir, \
+                                                file_name + '-meta.xml', False)
 
         # list controller code
         self.sublconsole.showlog('start to build list controller')
@@ -1084,6 +1098,9 @@ class CreateSfdcCodeCommand(sublime_plugin.WindowCommand):
         file_name = sfdc_name_map['list_controller_file']
         save_path = self.sublconsole.save_and_open_in_panel(list_controller_code, classes_dir, file_name, is_open)
         save_path_list.append(save_path)
+        self.sublconsole.save_and_open_in_panel(codecreator.get_meta_xml("ApexClass", class_name, api_version), \
+                                                classes_dir, \
+                                                file_name + '-meta.xml', False)
 
         # visualforce code
         self.sublconsole.showlog('start to build list visualforce')
@@ -1091,6 +1108,9 @@ class CreateSfdcCodeCommand(sublime_plugin.WindowCommand):
         file_name = sfdc_name_map['list_vf_file']
         save_path = self.sublconsole.save_and_open_in_panel(list_vf_code, pages_dir, file_name, is_open)
         save_path_list.append(save_path)
+        self.sublconsole.save_and_open_in_panel(codecreator.get_meta_xml("ApexPage", class_name, api_version), \
+                                                pages_dir, \
+                                                file_name + '-meta.xml', False)
 
         # SfdcXyController
         self.sublconsole.showlog('start to build SfdcXyController')
@@ -1098,6 +1118,9 @@ class CreateSfdcCodeCommand(sublime_plugin.WindowCommand):
         file_name = 'SfdcXyController.cls'
         save_path = self.sublconsole.save_and_open_in_panel(src_code, classes_dir, file_name, is_open)
         save_path_list.append(save_path)
+        self.sublconsole.save_and_open_in_panel(codecreator.get_meta_xml("ApexClass", "SfdcXyController", api_version), \
+                                                classes_dir, \
+                                                file_name + '-meta.xml', False)
 
         if sublime.ok_cancel_dialog('Create Source Over,Do you want to open the sources? '):
             for save_path in save_path_list:

@@ -51,11 +51,11 @@
 		"caption": "SFDC-XY Code Creator",
 		"children":[
             {
-                "caption": "Creat SQOL",
+                "caption": "Create SQOL",
                 "command": "soql_create"
             },
             {
-                "caption": "Creat test code",
+                "caption": "Create test code",
                 "command": "create_test_code"
             },
             {

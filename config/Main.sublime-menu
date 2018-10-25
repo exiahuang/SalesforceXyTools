@@ -245,7 +245,7 @@
                 "children":
                 [
                     {
-                        "caption": "Creat SQOL",
+                        "caption": "Create SQOL",
                         "command": "soql_create"
                     },
                     {
