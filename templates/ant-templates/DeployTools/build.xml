@@ -1,0 +1,65 @@
+<project name="SalesforceXyTools Migration tools" default="deployCodeCheckOnly" basedir="." xmlns:sf="antlib:com.salesforce">
+    <property file="build.properties"/>
+    <property environment="env"/>
+    <property name="deployRoot"     value="src"/>
+    <condition property="sf.username" value=""> <not> <isset property="sf.username"/> </not> </condition>
+    <condition property="sf.password" value=""> <not> <isset property="sf.password"/> </not> </condition>
+    <condition property="sf.sessionId" value=""> <not> <isset property="sf.sessionId"/> </not> </condition>
+
+    <taskdef resource="com/salesforce/antlib.xml" uri="antlib:com.salesforce">
+        <classpath>
+            <pathelement location="{jar_path}" />
+        </classpath>
+    </taskdef>
+
+    <target name="init">
+        <antcall target="proxy" />
+        <antcall target="download_lib" />
+    </target>
+
+    <target name="proxy">
+        {target_proxy_body}
+    </target>
+
+    <target name="download_lib">
+        <get src="{jar_url_path}" dest="{jar_path}" verbose="true" usetimestamp="true"/>
+    </target>
+
+    <!-- Shows check only; never actually saves to the server -->
+    <target name="deployCodeCheckOnly" depends="init">
+      <sf:deploy username="${sf.username}" password="${sf.password}" sessionId="${sf.sessionId}" 
+                serverurl="${sf.serverurl}" maxPoll="${sf.maxPoll}" pollWaitMillis="${sf.pollWaitMillis}"
+                deployRoot="${deployRoot}" checkOnly="true"/>
+    </target>
+    
+    <!-- Shows deploying code & running tests for code in directory -->
+    <target name="deployCode" depends="init">
+      <!-- Upload the contents of the "${deployRoot}" directory, running the tests for just 1 class -->
+      <sf:deploy username="${sf.username}" password="${sf.password}" sessionId="${sf.sessionId}" 
+                serverurl="${sf.serverurl}" maxPoll="${sf.maxPoll}" pollWaitMillis="${sf.pollWaitMillis}"
+                deployRoot="${deployRoot}" testLevel="RunSpecifiedTests" rollbackOnError="true">
+         <runTest>SampleDeployClass</runTest> 
+      </sf:deploy>
+    </target>
+
+   <!-- Shows deploying code with no TestLevel sepcified -->
+    <target name="deployCodeNoTestLevelSpecified" depends="init">
+      <sf:deploy username="${sf.username}" password="${sf.password}" sessionId="${sf.sessionId}" 
+                serverurl="${sf.serverurl}" maxPoll="${sf.maxPoll}" pollWaitMillis="${sf.pollWaitMillis}"
+                deployRoot="${deployRoot}" rollbackOnError="true"/>
+    </target>
+  <!-- Shows deploying code and running tests only within the org namespace -->
+  <target name="deployCodeRunLocalTests" depends="init">
+    <sf:deploy username="${sf.username}" password="${sf.password}" sessionId="${sf.sessionId}" 
+              serverurl="${sf.serverurl}" maxPoll="${sf.maxPoll}" pollWaitMillis="${sf.pollWaitMillis}"
+              deployRoot="${deployRoot}" rollbackOnError="true"  testlevel="RunLocalTests"/>
+  </target>
+
+    <!-- Shows deploying code, running all tests, and running tests (1 of which fails), and logging. -->
+    <target name="deployCodeFailingTest" depends="init">
+      <!-- Upload the contents of the "${deployRoot}" package, running all tests -->
+      <sf:deploy username="${sf.username}" password="${sf.password}" sessionId="${sf.sessionId}"
+                serverurl="${sf.serverurl}" maxPoll="${sf.maxPoll}" pollWaitMillis="${sf.pollWaitMillis}"
+                deployRoot="${deployRoot}" testLevel="RunAllTestsInOrg" rollbackOnError="true" logType="Debugonly"/>
+    </target>
+</project>

@@ -101,6 +101,7 @@ class MigrationToolBuilderCommand(sublime_plugin.WindowCommand):
             deploy_root_dir = self.sf_basic_config.get_deploy_tmp_dir()
         migration_util.copy_deploy_files(file_list, deploy_root_dir, str(self.settings["api_version"]))
         self.sublconsole.showlog("Copy Files Done ! " + deploy_root_dir)
+        self._copy_build_xml(deploy_root_dir, "DeployTools")
     
     def deploy_open_files(self, file_list, type):
         message = "Are you sure to deploy files?"
@@ -123,9 +124,17 @@ class MigrationToolBuilderCommand(sublime_plugin.WindowCommand):
         return self.ant_cmd_map[type]
 
     def build_migration_tools(self, args):
-        # download ant-salesforce.jar
+        self._copy_build_xml(args, "MigrationTools")
+        save_path = os.path.join(args, "package.xml")
+        meta_api = util.sf_login(self.sf_basic_config, Soap_Type=MetadataApi)
+        packagexml = meta_api.buildPackageXml()
+        self.sublconsole.save_and_open_in_panel(packagexml, "", save_path , is_open=False)
+        self.sublconsole.showlog('build migration tool success!')
+        # self.run_it()
+    
+    def _copy_build_xml(self, save_path, template_name):
+        # not download ant-salesforce.jar
         migration_util = util.MigrationToolUtil()
-
         self.sublconsole.showlog('start to build migration tool')
         config_data = {
             "username" : self.settings["username"],
@@ -136,14 +145,7 @@ class MigrationToolBuilderCommand(sublime_plugin.WindowCommand):
             "proxy" : self.sf_basic_config.get_proxy()
         }
         ant_config = AntConfig()
-        ant_config.build_migration_tools(save_path=args, config_data=config_data)
-
-        save_path = os.path.join(args, "package.xml")
-        meta_api = util.sf_login(self.sf_basic_config, Soap_Type=MetadataApi)
-        packagexml = meta_api.buildPackageXml()
-        self.sublconsole.save_and_open_in_panel(packagexml, "", save_path , is_open=False)
-        self.sublconsole.showlog('build migration tool success!')
-        # self.run_it()
+        ant_config.build_migration_tools(save_path=save_path, config_data=config_data, template_name=template_name)
 
     def backup_metadata(self):
         if self._is_not_exist():

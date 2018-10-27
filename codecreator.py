@@ -355,22 +355,23 @@ def get_dto_class(class_name, fields, is_custom_only=False, include_validate=Fal
         if baseutil.xstr(field['type']) == 'reference':
             tmpVal = {}
             ref_sbj = field['referenceTo'][0]
-            ref_sbj_namespace = get_sfdc_namespace(ref_sbj)
-            ref_sbj_namespace['dto_relationship_name'] = field['relationshipName']
-            tmpVal['declare_type'] = ref_sbj_namespace['dto']
-            tmpVal['declare_name'] = ref_sbj_namespace['dto_instance']
-            # comment
-            comment = 'reference to sobject : ' + ref_sbj
-            class_body += get_code_snippet(CS_COMMENT, comment)
-            # define
-            class_body += get_code_snippet(CS_DECLARE, tmpVal)
+            if not ref_sbj in ["RecordType"]:
+                ref_sbj_namespace = get_sfdc_namespace(ref_sbj)
+                ref_sbj_namespace['dto_relationship_name'] = field['relationshipName']
+                tmpVal['declare_type'] = ref_sbj_namespace['dto']
+                tmpVal['declare_name'] = ref_sbj_namespace['dto_instance']
+                # comment
+                comment = 'reference to sobject : ' + ref_sbj
+                class_body += get_code_snippet(CS_COMMENT, comment)
+                # define
+                class_body += get_code_snippet(CS_DECLARE, tmpVal)
 
-            # init DTO at init()
-            init_body += "\n";
-            init_body += ("\t\tthis.{dto_instance} = new {dto}();\n").format(**ref_sbj_namespace);
-            
-            # constructor 'reference'
-            constructor_body += ('\t\t\tthis.{dto_instance} = new {dto}(sobj.{dto_relationship_name});\n').format(**ref_sbj_namespace);
+                # init DTO at init()
+                init_body += "\n";
+                init_body += ("\t\tthis.{dto_instance} = new {dto}();\n").format(**ref_sbj_namespace);
+                
+                # constructor 'reference'
+                constructor_body += ('\t\t\tthis.{dto_instance} = new {dto}(sobj.{dto_relationship_name});\n').format(**ref_sbj_namespace);
 
 
         # if picklist or multipicklist

@@ -48,6 +48,7 @@ class AntConfig():
     dir_path = os.path.dirname(os.path.realpath(__file__))
     template_folder = "ant-templates"
     MigrationTools_folder = "MigrationTools"
+    Deploy_folder = "DeployTools"
     AntDataloader_folder = "AntDataloader"
 
     def __init__(self):
@@ -58,7 +59,6 @@ class AntConfig():
         else:
             self.root_path = self.dir_path
 
-        self.template_migration_tools_path = os.path.join(self.root_path, self.template_folder, self.MigrationTools_folder)
         self.template_ant_dataloader_path = os.path.join(self.root_path, self.template_folder, self.AntDataloader_folder)
 
     def get_file(self, sub_folder, name):
@@ -67,15 +67,16 @@ class AntConfig():
             template = fp.read()
         return template
 
-    def build_migration_tools(self, save_path, config_data):
+    def build_migration_tools(self, save_path, config_data, template_name="MigrationTools"):
         if not os.path.exists(save_path):
             os.makedirs(save_path)
-        self._copy_all(self.template_migration_tools_path, save_path)
-        build_properties_src = self.get_file(self.MigrationTools_folder, "build.properties")
+        tmp_migration_tools_path = os.path.join(self.root_path, self.template_folder, template_name)
+        self._copy_all(tmp_migration_tools_path, save_path)
+        build_properties_src = self.get_file(template_name, "build.properties")
         build_properties_src = build_properties_src.format(**config_data)
         self._save_file(os.path.join(save_path, "build.properties"), build_properties_src)
 
-        build_xml_src = self.get_file(self.template_migration_tools_path, "build.xml")
+        build_xml_src = self.get_file(tmp_migration_tools_path, "build.xml")
         build_xml_src = build_xml_src.replace("{jar_path}", config_data["jar_path"])  \
                                      .replace("{target_proxy_body}", self._get_ant_proxy_body(config_data))  \
                                      .replace("{jar_url_path}", config_data["jar_url_path"])
