@@ -715,6 +715,13 @@ class MigrationToolUtil(DownloadUtil):
             attr = self.sysio.get_file_attr(file)
             if not attr or not attr["is_sfdc_file"] or not attr["metadata_folder"]: continue
             metadata_folder = os.path.join(deploy_root_dir, "src", attr["metadata_folder"], attr["metadata_sub_folder"])
+
+            # deploy lightning component folder
+            if attr['metadata_type'] == "AuraDefinitionBundle":
+                if not os.path.exists(metadata_folder):
+                    shutil.copytree(attr['file_path'] , metadata_folder)
+                continue
+
             if not os.path.exists(metadata_folder):
                 os.makedirs(metadata_folder, exist_ok=True)
             to_file = os.path.join(metadata_folder, attr["file_name"])

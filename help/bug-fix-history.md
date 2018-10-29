@@ -1,9 +1,11 @@
 # SalesforceXyTools Update History
 
 
+## 2.0.6
+* Fix Lightning delpoy bug.
+
 ## 2.0.5
 * Fix Save module bug.
-
 
 ## 2.0.4
 * Remove Python Jar `Auto Download`.

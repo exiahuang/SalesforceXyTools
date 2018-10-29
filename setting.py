@@ -8,6 +8,7 @@ AUTHENTICATION_PASSWORD = "password"
 config_dir = '.xyconfig'
 # AUTHENTICATION_MAVENSMATE = "mavensmate"
 sys_http_proxy = os.getenv('http_proxy', '')
+sys_https_proxy = os.getenv('https_proxy', '')
 
 class SfBasicConfig():
     def __init__(self, project_dir=None):
@@ -107,9 +108,15 @@ class SfBasicConfig():
                     http_proxy = http_proxy + ":" + proxy["proxyport"]
             os.environ["http_proxy"] = http_proxy 
             os.environ["https_proxy"] = http_proxy
-        elif "http_proxy" in os.environ:
-            os.environ.pop("http_proxy")
-            if "https_proxy" in os.environ:
+        else:
+            if sys_http_proxy:
+                os.environ["http_proxy"] = sys_http_proxy
+            elif "http_proxy" in os.environ:
+                os.environ.pop("http_proxy")
+
+            if sys_https_proxy:
+                os.environ["https_proxy"] = sys_https_proxy
+            elif "https_proxy" in os.environ:
                 os.environ.pop("https_proxy")
         debug(os.getenv('http_proxy'))
 
