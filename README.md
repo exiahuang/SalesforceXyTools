@@ -40,8 +40,14 @@ SalesforceXyToolsForSublime is based on python and open source below.
 1. [xlsxwriter (License: BSD)](https://github.com/jmcnamara/XlsxWriter)
 2. [Simple-Salesforce (License: Apache 2.0)](https://pypi.python.org/pypi/simple-salesforce/0.72.2)
 3. [requests (License: Apache 2.0)](https://pypi.python.org/pypi/requests/2.12.3)
+4. [Apex Template From MavensMate](https://github.com/joeferraro/MavensMate/tree/master/app/lib/templates/github)
 
-
+# Include Salesforce Migration Tool And Dataloader
+> Include salesforce ant-salesforce.jar and dataloader.jar
+> ant-salesforce.jar and dataloader.jar will be downloaded by salesforcexytools.
+> You will not need to download them.
+1. [Ant Migration Tool](https://developer.salesforce.com/docs/atlas.en-us.216.0.daas.meta/daas/meta_development.htm)
+2. [Data Loader](https://developer.salesforce.com/docs/atlas.en-us.216.0.dataLoader.meta/dataLoader/data_loader.htm)
 
 # SalesforceXyToolsForSublime Reference
 

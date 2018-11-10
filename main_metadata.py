@@ -601,6 +601,17 @@ class UpdateMetadataCommand(sublime_plugin.TextCommand):
                 """ % (result["problemType"], result["problem"], result["lineNumber"],result["columnNumber"])
         self.view.show_popup(msg)
 
+    def is_enabled(self):
+        file_name = self.view.file_name()
+        if file_name is None:
+            return False
+        check = os.path.isfile(file_name) and \
+                (( file_name.find(".cls") > -1 ) or \
+                 ( file_name.find(".component") > -1 ) or \
+                 ( file_name.find(".page") > -1 ) or \
+                 ( file_name.find(".trigger") > -1 ))
+        return check
+
 class RefreshMetadataCommand(sublime_plugin.TextCommand):
     def run(self, edit, is_diff=False):
         self.org_file_full_path = file_name = self.view.file_name()
@@ -657,6 +668,16 @@ class RefreshMetadataCommand(sublime_plugin.TextCommand):
         except Exception as ex:
             self.sublconsole.showlog(ex, 'error')
 
+    def is_enabled(self):
+        file_name = self.view.file_name()
+        if file_name is None:
+            return False
+        check = os.path.isfile(file_name) and \
+                (( file_name.find(".cls") > -1 ) or \
+                 ( file_name.find(".component") > -1 ) or \
+                 ( file_name.find(".page") > -1 ) or \
+                 ( file_name.find(".trigger") > -1 ))
+        return check
 
 
 ##########################################################################################
@@ -677,6 +698,19 @@ class RunTestClassCommand(sublime_plugin.TextCommand):
             self.sublconsole.thread_run(target=self.metadata_util.run_test, args=([self.meta_attr["id"]], ))
         else:
             self.sublconsole.showlog('can not found id!')
+
+    def is_enabled(self):
+        file_name = self.view.file_name()
+        if file_name is None:
+            return False
+        contents = self.view.substr(sublime.Region(0, self.view.size()))
+
+        check = os.path.isfile(file_name) and \
+                file_name.find(".cls") > -1  and \
+                (( contents.find("@isTest") > -1 ) or \
+                 ( contents.find("testMethod") > -1 )
+                )
+        return check
 
 class ShowCodeCoverageCommand(sublime_plugin.WindowCommand):
     def run(self):

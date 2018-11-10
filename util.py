@@ -565,7 +565,7 @@ class SfDataUtil():
         return [ record["Name"] for record in result["records"] ]
 
 class DownloadUtil(object):
-    def __init__(self, sf_basic_config = None, is_auto_download=True):
+    def __init__(self, sf_basic_config = None, is_auto_download=False):
         if sf_basic_config:
             self.sf_basic_config = sf_basic_config
         else:
@@ -574,8 +574,8 @@ class DownloadUtil(object):
         self.sublconsole = SublConsole(self.sf_basic_config)
         self.settings = self.sf_basic_config.get_setting()
         # v2.0.4 donot auto download
-        # if is_auto_download:
-        #     self.download_jar()
+        if is_auto_download:
+            self.download_jar()
     
     def download_jar(self):
         jar_home = self.sf_basic_config.get_default_jar_home()
@@ -615,7 +615,7 @@ class DownloadUtil(object):
 
 class DataloaderUtil(DownloadUtil):
     def __init__(self, sf_basic_config = None):
-        super(DataloaderUtil, self).__init__(sf_basic_config=sf_basic_config)
+        super(DataloaderUtil, self).__init__(sf_basic_config=sf_basic_config, is_auto_download=True)
 
     def getEncryptionPassword(self):
         password = ""
@@ -641,7 +641,7 @@ class DataloaderUtil(DownloadUtil):
         return jar_name
 
 class MigrationToolUtil(DownloadUtil):
-    def __init__(self, sf_basic_config = None, is_auto_download = True):
+    def __init__(self, sf_basic_config = None, is_auto_download = False):
         super(MigrationToolUtil, self).__init__(sf_basic_config=sf_basic_config, is_auto_download=is_auto_download)
         self.sysio = SysIo()
     

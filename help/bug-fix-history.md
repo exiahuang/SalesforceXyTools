@@ -1,5 +1,8 @@
 # SalesforceXyTools Update History
 
+## 2.0.7
+* Ant-Dataloader : Auto download dataloader.jar in sublime
+* Migration Tools : Do not Auto download ant-salesforce.jar in sublime
 
 ## 2.0.6
 * Fix Lightning delpoy bug.

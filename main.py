@@ -976,6 +976,14 @@ class CreateTestCodeCommand(sublime_plugin.TextCommand):
             self.sublconsole.showlog(e)
             return
 
+    def is_enabled(self):
+        file_name = self.view.file_name()
+        if file_name is None:
+            return False
+        check = os.path.isfile(file_name) and \
+                (( file_name.find(".cls") > -1 ) )
+        return check
+
 #Create VisualForce/Controller/DTO/DAO Code
 class CreateSfdcCodeCommand(sublime_plugin.WindowCommand):
     def run(self):
