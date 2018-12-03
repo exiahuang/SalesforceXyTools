@@ -505,13 +505,17 @@ class SysIo():
             attr["dir"] = os.path.basename(file_path)
             attr["p_dir"] = os.path.basename(os.path.dirname(file_path))
             attr["name"] = name
-            attr["extension"] = file_extension.replace('.','')
+            attr["extension"] = file_extension.replace('.','') if file_extension else ''
             attr["metadata_type"] = ''
             attr["metadata_folder"] = ''
             attr["metadata_sub_folder"] = ''
             attr["is_sfdc_file"] = True
 
-            if attr["p_dir"] in ["aura", "reports", "dashboards", "documents", "email"]:
+            if os.path.isdir(full_file_path) and attr["dir"] == "aura":
+                attr["metadata_sub_folder"] = ""
+                attr["metadata_folder"] = attr["dir"]
+                attr["metadata_type"] = "AuraDefinitionBundle"
+            elif attr["p_dir"] in ["aura", "reports", "dashboards", "documents", "email"]:
                 attr["metadata_sub_folder"] = attr["dir"]
                 attr["metadata_folder"] = attr["p_dir"]
                 attr["metadata_type"] = self._get_specil_metadata_type(attr["p_dir"])
@@ -535,6 +539,7 @@ class SysIo():
                 attr["file_key"] = "%s/%s" % (attr["metadata_folder"], attr["file_name"])
             return attr
         except Exception as e:
+            print(e)
             return None
 
     def save_file(self, full_path, content, encoding='utf-8'):

@@ -9,11 +9,21 @@
                 "args": {"dirs": []}
             },
             {
+                "caption": "Open Lightning Component", 
+                "command": "open_aura",
+                "args": {"dirs": []}
+            },
+            {
                 "caption": "Deploy Directory To SFDC", 
                 "command": "deploy_dir",
                 "args": {"dirs": []}
             },
-            { "caption": "-" }
+            { "caption": "-" },
+            {
+                "caption": "Delete Lightning Component(Danger)", 
+                "command": "delete_aura",
+                "args": {"dirs": []}
+            }
         ]
     },
     { "caption": "-" }

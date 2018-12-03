@@ -1,5 +1,13 @@
 # SalesforceXyTools Update History
 
+## 2.0.8
+* Preview Visualforce Page
+* Preview Lightning UI
+* Side bar : Delete Lightning Component
+* Side bar : Open Lightning Component
+* Fix bug : Open Lightning Component In Browser
+
+
 ## 2.0.7
 * Ant-Dataloader : Auto download dataloader.jar in sublime
 * Migration Tools : Do not Auto download ant-salesforce.jar in sublime

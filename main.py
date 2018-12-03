@@ -1351,18 +1351,16 @@ class ShowSalesforcexytoolsLogsCommand(sublime_plugin.ApplicationCommand):
         sublconsole.showlog('Open Salesforcexytools Logs Panel')
 
 
-
 ##########################################################################################
 #Main Util
 ##########################################################################################
 # salesforce_instance is Salesforce instance from simple-salesforce
-def login_sf_home(self, sf_basic_config, salesforce_instance, browser='default', broswer_path=''):
+def login_sf_home(self, sf_basic_config, salesforce_instance, browser='default', broswer_path='', returl='/home/home.jsp'):
         try:
             self.sublconsole.debug(">>login sf home")
             sf = salesforce_instance
             sfdesc = sf.describe()
              
-            returl = '/home/home.jsp'
             login_url = ('https://{instance}/secur/frontdoor.jsp?sid={sid}&retURL={returl}'
                          .format(instance=sf.sf_instance,
                                  sid=sf.session_id,

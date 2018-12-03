@@ -468,24 +468,50 @@ class RetrieveSrcCommand(sublime_plugin.WindowCommand):
 ##########################################################################################
 class DeleteThisMetadataCommand(sublime_plugin.TextCommand):
     def run(self, edit):
-        self.file_name = file_name = self.view.file_name()
+        file_name = self.view.file_name()
         if file_name is None:
             return
-        
+        DeleteMetadataHelper().run_delete_meta(file_name)
+
+# delete_aura
+class DeleteAuraCommand(sublime_plugin.WindowCommand):
+    def run(self, dirs):
         self.sf_basic_config = SfBasicConfig()
         self.settings = self.sf_basic_config.get_setting()
         self.sublconsole = SublConsole(self.sf_basic_config)
-        self.metadata_util = util.MetadataUtil(self.sf_basic_config)
-        self.meta_attr = self.metadata_util.get_meta_attr(file_name)
-        self.sublconsole.debug(self.meta_attr)
+
+        if len(dirs) == 0: return False
+        aura_name = os.path.basename(dirs[0])
+        dir_path = os.path.dirname(dirs[0])
+        dir_name = os.path.basename(dir_path)
+        if dir_name != "aura":
+            self.sublconsole.showlog("It seems not a lightinig component! ")
+            return
+
+        DeleteMetadataHelper().run_delete_meta(dirs[0])
+ 
+    def is_enabled(self, dirs):
+        if len(dirs) == 0: return False
+        dir_path = os.path.dirname(dirs[0])
+        dir_name = os.path.basename(dir_path)
+        return dir_name == "aura"
+
+class DeleteMetadataHelper:
+    def run_delete_meta(self, file_name):
+        self.file_name = file_name
+        self.sf_basic_config = SfBasicConfig()
+        self.settings = self.sf_basic_config.get_setting()
+        self.sublconsole = SublConsole(self.sf_basic_config)
         
-        self.sublconsole.showlog("delete file: " + file_name)
+        self.metadata_util = util.MetadataUtil(self.sf_basic_config)
+        self.meta_attr = self.metadata_util.get_meta_attr(self.file_name)
+        if not self.meta_attr or "id" not in self.meta_attr :
+            self.sublconsole.show_in_dialog("can not find metadata id")
+            return
         self._delete_meta()
 
     def _delete_meta(self):
         sel_meta = self.meta_attr
-        self.sublconsole.debug('>>>delete meta')
-        self.sublconsole.debug(sel_meta)
         message = "Are you sure to delete %s?  id=%s " % (sel_meta["fileName"], sel_meta["id"])
         if not sublime.ok_cancel_dialog(message, "Delete!!"): 
             self.sublconsole.showlog('cancel delete metadata: ' + sel_meta["fileName"])
@@ -515,12 +541,21 @@ class DeleteThisMetadataCommand(sublime_plugin.TextCommand):
             self.sublconsole.showlog(ex, 'error')
     
     def _delete_local_file(self):
-        os.remove(self.file_name)
-        self.sublconsole.showlog("delete local file done! " + self.file_name)
+        if os.path.isdir(self.file_name):
+            message = "Do you want to delete local lightning files?  %s" % (self.file_name)
+            if sublime.ok_cancel_dialog(message, "Delete!!"): 
+                self.sublconsole.showlog("delete local file start: " + self.file_name)
+                shutil.rmtree(self.file_name)
+                self.sublconsole.showlog("delete local file done! ")
+        elif os.path.isfile(self.file_name):
+            os.remove(self.file_name)
+            self.sublconsole.showlog("delete local file done! " + self.file_name)
 
     def _delete_metadata_cache(self):
         self.metadata_util.delete_metadata_cache(self.file_name)
 
+# open_metadata_in_browser
+# open_in_browser
 class OpenMetadataInBrowserCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         self.file_name = file_name = self.view.file_name()
@@ -530,11 +565,47 @@ class OpenMetadataInBrowserCommand(sublime_plugin.TextCommand):
         self.settings = self.sf_basic_config.get_setting()
         self.sublconsole = SublConsole(self.sf_basic_config)
         self.metadata_util = util.MetadataUtil(self.sf_basic_config)
+        self.sublconsole.showlog("select file: " + file_name)
+        self.meta_attr = self.metadata_util.get_meta_attr(file_name)
+        if self.meta_attr['metadata_type'] == 'AuraDefinitionBundle':
+            self.meta_attr = self.metadata_util.get_meta_attr(os.path.dirname(file_name))
+        self.sublconsole.debug(self.meta_attr)
+        self.metadata_util.open_in_web(self.meta_attr)
 
+    def is_enabled(self):
+        file_name = self.view.file_name()
+        if file_name is None:
+            return False
+        return True
+
+
+# open_aura
+class OpenAuraCommand(sublime_plugin.WindowCommand):
+    def run(self, dirs):
+        self.sf_basic_config = SfBasicConfig()
+        self.settings = self.sf_basic_config.get_setting()
+        self.sublconsole = SublConsole(self.sf_basic_config)
+
+        if len(dirs) == 0: return False
+        aura_name = os.path.basename(dirs[0])
+        dir_path = os.path.dirname(dirs[0])
+        dir_name = os.path.basename(dir_path)
+        if dir_name != "aura":
+            self.sublconsole.showlog("It seems not a lightinig component! ")
+            return
+        
+        file_name = dirs[0]
+        self.metadata_util = util.MetadataUtil(self.sf_basic_config)
         self.sublconsole.showlog("select file: " + file_name)
         self.meta_attr = self.metadata_util.get_meta_attr(file_name)
         self.sublconsole.debug(self.meta_attr)
         self.metadata_util.open_in_web(self.meta_attr)
+
+    def is_enabled(self, dirs):
+        if len(dirs) == 0: return False
+        dir_path = os.path.dirname(dirs[0])
+        dir_name = os.path.basename(dir_path)
+        return dir_name == "aura"
 
 
 class UpdateMetadataCommand(sublime_plugin.TextCommand):
@@ -768,3 +839,47 @@ class OpenSobjectInBrowserCommand(sublime_plugin.WindowCommand):
             "type": "ApexTrigger",
             "object_name" : sel_sobject
         })
+
+class PreviewLightningAppCommand(sublime_plugin.TextCommand):
+    def run(self, edit):
+        full_path = self.view.file_name()
+        if full_path != None:
+            str_list = full_path.split(baseutil.get_slash())
+            file_name = str(str_list[-1])
+
+            self.sf_basic_config = SfBasicConfig()
+            sf = util.sf_login(self.sf_basic_config)
+            returl = '/c/' + file_name
+            login_url = ('https://{instance}/secur/frontdoor.jsp?sid={sid}&retURL={returl}'
+                        .format(instance=sf.sf_instance,
+                                sid=sf.session_id,
+                                returl=returl))
+            util.open_in_default_browser(self.sf_basic_config, login_url)
+
+    def is_enabled(self):
+        file_name = self.view.file_name()
+        if file_name is None:
+            return False
+        return os.path.isfile(file_name) and file_name.find(".app") > -1 
+
+class PreviewVfCommand(sublime_plugin.TextCommand):
+    def run(self, edit):
+        full_path = self.view.file_name()
+        if full_path != None:
+            str_list = full_path.split(baseutil.get_slash())
+            file_name = str(str_list[-1])
+
+            self.sf_basic_config = SfBasicConfig()
+            sf = util.sf_login(self.sf_basic_config)
+            returl = '/apex/' + file_name.replace('.page', '')
+            login_url = ('https://{instance}/secur/frontdoor.jsp?sid={sid}&retURL={returl}'
+                        .format(instance=sf.sf_instance,
+                                sid=sf.session_id,
+                                returl=returl))
+            util.open_in_default_browser(self.sf_basic_config, login_url)
+
+    def is_enabled(self):
+        file_name = self.view.file_name()
+        if file_name is None:
+            return False
+        return os.path.isfile(file_name) and file_name.find(".page") > -1 

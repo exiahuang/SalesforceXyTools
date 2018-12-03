@@ -15,6 +15,7 @@ from . import baseutil
 from .baseutil import SysIo
 from .uiutil import SublConsole
 from .setting import SfBasicConfig
+from .const import AURA_DEFTYPE_EXT
 
 ##########################################################################################
 #Salesforce Util
@@ -342,8 +343,20 @@ class MetadataUtil(CacheLoader):
         self.sublconsole.showlog("start to reload metadata cache, please wait...")
         meta_api = sf_login(self.sf_basic_config, Soap_Type=MetadataApi)
         allMetadataResult = meta_api.getAllMetadataMap()
+        aura_soql = 'SELECT  Id, CreatedDate, CreatedById, LastModifiedDate, LastModifiedById, SystemModstamp, AuraDefinitionBundle.DeveloperName, AuraDefinitionBundleId, DefType, Format FROM AuraDefinition'
+        AuraDefinition = meta_api.query(aura_soql)
+        AuraDefinition_MetadataMap = {}
+        if AuraDefinition and 'records' in AuraDefinition:
+            for meta in AuraDefinition['records']:
+                deftype = meta["DefType"]
+                if deftype in AURA_DEFTYPE_EXT:
+                    aura_name = meta["AuraDefinitionBundle"]["DeveloperName"]
+                    aura_dict = AuraDefinition_MetadataMap[aura_name] if aura_name in AuraDefinition_MetadataMap else {}
+                    aura_key = "%s%s" % (aura_name, AURA_DEFTYPE_EXT[deftype])
+                    aura_dict[aura_key] = meta
+                    AuraDefinition_MetadataMap[aura_name] = aura_dict
+        allMetadataResult["AuraDefinition"] = AuraDefinition_MetadataMap
         self.save_dict(allMetadataResult)
-        # self.sublconsole.save_and_open_in_panel(json.dumps(allMetadataResult, ensure_ascii=False, indent=4), self.save_dir, self.file_name , is_open=False)
 
     def get_meta_attr(self, full_path):
         sysio = SysIo()

@@ -48,3 +48,22 @@ sfTypeSwitcher = {
     "trigger": "ApexTrigger",
     "workflow": "Workflow"
 }
+
+
+AURA_DEFTYPE_EXT = {
+    "APPLICATION" : "App.app",
+    "CONTROLLER" : "Controller.js",
+    "COMPONENT" : ".cmp",
+    "EVENT" : "Event.evt",
+    "HELPER" : "Helper.js",
+    "STYLE" : ".css",
+    "DOCUMENTATION" : ".auradoc",
+    "RENDERER" : "Renderer.js",
+    "DESIGN" : ".design",
+    "INTERFACE" : "",
+    "PROVIDER" : "",
+    "MODEL" : "",
+    "TESTSUITE" : "",
+    "TOKENS" : "",
+    "SVG" : ".svg"
+}
