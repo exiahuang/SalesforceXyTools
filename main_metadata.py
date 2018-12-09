@@ -567,8 +567,8 @@ class OpenMetadataInBrowserCommand(sublime_plugin.TextCommand):
         self.metadata_util = util.MetadataUtil(self.sf_basic_config)
         self.sublconsole.showlog("select file: " + file_name)
         self.meta_attr = self.metadata_util.get_meta_attr(file_name)
-        if self.meta_attr['metadata_type'] == 'AuraDefinitionBundle':
-            self.meta_attr = self.metadata_util.get_meta_attr(os.path.dirname(file_name))
+        # if self.meta_attr['metadata_type'] == 'AuraDefinitionBundle':
+        #     self.meta_attr = self.metadata_util.get_meta_attr(os.path.dirname(file_name))
         self.sublconsole.debug(self.meta_attr)
         self.metadata_util.open_in_web(self.meta_attr)
 
@@ -621,7 +621,6 @@ class UpdateMetadataCommand(sublime_plugin.TextCommand):
 
         self.sublconsole.showlog("select file: " + file_name)
         self.sublconsole.debug(self.meta_attr)
-        
         self.sublconsole.thread_run(target=self.updateMeta)
     
     def updateMeta(self, deep=0):
@@ -647,8 +646,25 @@ class UpdateMetadataCommand(sublime_plugin.TextCommand):
                     self.sublconsole.showlog("start to show different")
                     self.view.run_command("refresh_metadata", {"is_diff": True})
                 return
-        self._update_meta_to_server()
+        
+        if self.meta_attr["is_lux"]:
+            self._updateLux()
+            return
 
+        self._update_meta_to_server()
+    
+    # Lightning update
+    def _updateLux(self):
+        body = self.view.substr(sublime.Region(0, self.view.size()))
+        tooling_api = util.sf_login(self.sf_basic_config, Soap_Type=ToolingApi)
+        status_code, result = tooling_api.updateLux(self.meta_attr["id"], {"Source" : body})
+        if status_code > 300:
+            self.sublconsole.showlog(result, type="error")
+        else:
+            self.metadata_util.update_metadata_cache(self.file_name, self.meta_attr["id"])
+            self.sublconsole.showlog("update metadata done: Id=%s, Name=%s, Type=%s." % (self.meta_attr["id"], self.meta_attr["file_name"], self.meta_attr["type"]))
+
+    # apex, visualforce, trigger, component update
     def _update_meta_to_server(self):
         body = self.view.substr(sublime.Region(0, self.view.size()))
         tooling_api = util.sf_login(self.sf_basic_config, Soap_Type=ToolingApi)
@@ -676,12 +692,9 @@ class UpdateMetadataCommand(sublime_plugin.TextCommand):
         file_name = self.view.file_name()
         if file_name is None:
             return False
-        check = os.path.isfile(file_name) and \
-                (( file_name.find(".cls") > -1 ) or \
-                 ( file_name.find(".component") > -1 ) or \
-                 ( file_name.find(".page") > -1 ) or \
-                 ( file_name.find(".trigger") > -1 ))
-        return check
+        
+        attr = baseutil.SysIo().get_file_attr(file_name)
+        return attr["is_lux"] or attr["is_src"]
 
 class RefreshMetadataCommand(sublime_plugin.TextCommand):
     def run(self, edit, is_diff=False):
@@ -726,7 +739,12 @@ class RefreshMetadataCommand(sublime_plugin.TextCommand):
             # self.sublconsole.showlog(result)
             if status_code == 200:
                 self.sublconsole.showlog('refresh success')
-                content_key = "Body" if self.meta_attr["type"] in ["ApexClass", "ApexTrigger"] else "Markup"
+                if self.meta_attr["type"] in ["ApexClass", "ApexTrigger"]:
+                    content_key = "Body"
+                elif self.meta_attr["type"] in ["ApexPage", "ApexComponent"]:
+                    content_key = "Markup"
+                elif self.meta_attr["type"] in ["AuraDefinition"]:
+                    content_key = "Source"
                 self.sublconsole.save_file(self.save_file_full_path, result[content_key])
 
                 if self.is_diff:
@@ -743,12 +761,9 @@ class RefreshMetadataCommand(sublime_plugin.TextCommand):
         file_name = self.view.file_name()
         if file_name is None:
             return False
-        check = os.path.isfile(file_name) and \
-                (( file_name.find(".cls") > -1 ) or \
-                 ( file_name.find(".component") > -1 ) or \
-                 ( file_name.find(".page") > -1 ) or \
-                 ( file_name.find(".trigger") > -1 ))
-        return check
+
+        attr = baseutil.SysIo().get_file_attr(file_name)
+        return attr["is_src"] or attr["is_lux"]
 
 
 ##########################################################################################

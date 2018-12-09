@@ -67,3 +67,17 @@ AURA_DEFTYPE_EXT = {
     "TOKENS" : "",
     "SVG" : ".svg"
 }
+
+
+AURA_TYPE = {
+    "App.app" : "APPLICATION" ,
+    "Controller.js" : "CONTROLLER" ,
+    ".cmp" : "COMPONENT" ,
+    "Event.evt" : "EVENT" ,
+    "Helper.js" : "HELPER" ,
+    ".css" : "STYLE" ,
+    ".auradoc" : "DOCUMENTATION" ,
+    "Renderer.js" : "RENDERER" ,
+    ".design" : "DESIGN" ,
+    ".svg" : "SVG"
+}

@@ -7,7 +7,7 @@ import shutil
 from xml.dom import minidom
 from xml.etree import ElementTree
 from xml.etree.ElementTree import Element, SubElement, Comment
-from .const import sfTypeSwitcher
+from .const import sfTypeSwitcher, AURA_TYPE
 
 def debug(msg):
     print(msg)
@@ -495,21 +495,26 @@ class SysIo():
 
     def get_file_attr(self, full_file_path):
         try:
-            attr = {}
             # dir_path = os.path.dirname(full_file_path)
             # dir_name = os.path.basename(dir_path)
             file_path, file_name = os.path.split(full_file_path)
             name, file_extension = os.path.splitext(file_name)
-            attr["file_path"] = file_path
-            attr["file_name"] = file_name
-            attr["dir"] = os.path.basename(file_path)
-            attr["p_dir"] = os.path.basename(os.path.dirname(file_path))
-            attr["name"] = name
-            attr["extension"] = file_extension.replace('.','') if file_extension else ''
-            attr["metadata_type"] = ''
-            attr["metadata_folder"] = ''
-            attr["metadata_sub_folder"] = ''
-            attr["is_sfdc_file"] = True
+            attr = {
+                "name" : name,
+                "file_path" : file_path,
+                "file_name" : file_name,
+                "dir" : os.path.basename(file_path),
+                "p_dir" : os.path.basename(os.path.dirname(file_path)),
+                "extension" : file_extension.replace('.','') if file_extension else '',
+                "metadata_type" : "",
+                "metadata_folder" : "",
+                "metadata_sub_folder" : "",
+                "is_sfdc_file" : True,
+                "is_src" : file_extension in [".cls", ".component", ".page", ".trigger"] and os.path.isfile(full_file_path),
+                "is_lux" : False,
+                "lux_type" : "",
+                "lux_name" : ""
+            }
 
             if os.path.isdir(full_file_path) and attr["dir"] == "aura":
                 attr["metadata_sub_folder"] = ""
@@ -537,6 +542,15 @@ class SysIo():
                 attr["file_key"] = "%s/%s/%s" % (attr["metadata_folder"], attr["metadata_sub_folder"], attr["file_name"])
             else:
                 attr["file_key"] = "%s/%s" % (attr["metadata_folder"], attr["file_name"])
+            
+            attr["is_lux"] = attr["metadata_type"] == "AuraDefinitionBundle" and os.path.isfile(full_file_path)
+            if attr["is_lux"]:
+                attr["metadata_type"] = "AuraDefinition"
+                for k, v in AURA_TYPE.items():
+                    if k in file_name:
+                        attr["lux_type"] = v
+                        attr["lux_name"] = file_name.replace(k, '')
+                        break
             return attr
         except Exception as e:
             print(e)

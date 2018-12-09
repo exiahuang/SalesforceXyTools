@@ -343,7 +343,15 @@ class MetadataUtil(CacheLoader):
         self.sublconsole.showlog("start to reload metadata cache, please wait...")
         meta_api = sf_login(self.sf_basic_config, Soap_Type=MetadataApi)
         allMetadataResult = meta_api.getAllMetadataMap()
-        aura_soql = 'SELECT  Id, CreatedDate, CreatedById, LastModifiedDate, LastModifiedById, SystemModstamp, AuraDefinitionBundle.DeveloperName, AuraDefinitionBundleId, DefType, Format FROM AuraDefinition'
+        allMetadataResult["AuraDefinition"] = self._load_lux_cache()
+        self.save_dict(allMetadataResult)
+
+    def _load_lux_cache(self, attr=None):
+        aura_soql = 'SELECT  Id, CreatedDate, CreatedById, CreatedBy.Name, LastModifiedDate, LastModifiedById, LastModifiedBy.Name, AuraDefinitionBundle.DeveloperName, AuraDefinitionBundleId, DefType, Format FROM AuraDefinition'
+        if attr:
+            aura_soql = aura_soql + " Where AuraDefinitionBundle.DeveloperName = '%s' and DefType = '%s' limit 1" % (attr["lux_name"], attr["lux_type"])
+        
+        meta_api = sf_login(self.sf_basic_config, Soap_Type=MetadataApi)
         AuraDefinition = meta_api.query(aura_soql)
         AuraDefinition_MetadataMap = {}
         if AuraDefinition and 'records' in AuraDefinition:
@@ -351,12 +359,29 @@ class MetadataUtil(CacheLoader):
                 deftype = meta["DefType"]
                 if deftype in AURA_DEFTYPE_EXT:
                     aura_name = meta["AuraDefinitionBundle"]["DeveloperName"]
-                    aura_dict = AuraDefinition_MetadataMap[aura_name] if aura_name in AuraDefinition_MetadataMap else {}
-                    aura_key = "%s%s" % (aura_name, AURA_DEFTYPE_EXT[deftype])
-                    aura_dict[aura_key] = meta
-                    AuraDefinition_MetadataMap[aura_name] = aura_dict
-        allMetadataResult["AuraDefinition"] = AuraDefinition_MetadataMap
-        self.save_dict(allMetadataResult)
+                    aura_key = "aura/%s/%s%s" % (aura_name, aura_name, AURA_DEFTYPE_EXT[deftype])
+                    AuraDefinition_MetadataMap[aura_key] = {
+                            "id": meta["Id"], 
+                            "fileName": aura_key, 
+                            "fullName": aura_name + AURA_DEFTYPE_EXT[deftype], 
+                            "createdById": meta["CreatedById"], 
+                            "createdByName": meta["CreatedBy"]["Name"], 
+                            "createdDate": meta["CreatedDate"], 
+                            "lastModifiedById": meta["LastModifiedById"],  
+                            "lastModifiedByName": meta["LastModifiedBy"]["Name"] if meta["LastModifiedBy"] else '', 
+                            "lastModifiedDate": meta["LastModifiedDate"], 
+                            "manageableState": "", 
+                            "type": "AuraDefinition", 
+                            "AuraDefinitionSrc": True, 
+                            "DefType": meta["DefType"], 
+                            "DefExt": AURA_DEFTYPE_EXT[deftype], 
+                            "Format": meta["Format"], 
+                            "AuraDefinitionBundleId": meta["AuraDefinitionBundleId"], 
+                            "AuraDefinitionBundleName": aura_name
+                        }
+                    if attr:
+                        return AuraDefinition_MetadataMap[aura_key]
+        return AuraDefinition_MetadataMap
 
     def get_meta_attr(self, full_path):
         sysio = SysIo()
@@ -424,6 +449,8 @@ class MetadataUtil(CacheLoader):
             self._save_meta(server_meta)
             return "Maybe the server metadata is lasted!"
         self.sublconsole.debug('>>>check is modified')
+        self.sublconsole.debug(attr)
+        self.sublconsole.debug(server_meta)
         self.sublconsole.debug('File=%s, Id=%s, local : %s , server : %s' % (attr["file_key"], attr["id"], attr["lastModifiedDate"], server_meta["lastModifiedDate"]))
         if attr["lastModifiedDate"].replace('+0000', 'Z') != server_meta["lastModifiedDate"].replace('+0000', 'Z'):
             return "%s is modified by %s, %s, are you sure to update it?" % (server_meta["fileName"], server_meta["lastModifiedByName"], server_meta["lastModifiedDate"])
@@ -437,21 +464,25 @@ class MetadataUtil(CacheLoader):
             returl = '/01Q?setupid=WorkflowRules'
         elif sel_category == "CustomLabels":
             returl = '/101'
+        elif sel_category == "AuraDefinition" and all (k in sel_meta for k in ("id", "DefType", "Format", "AuraDefinitionBundleId")):
+            returl = '/_ui/common/apex/debug/ApexCSIPage?action=openFile&extent=AuraDefinition&Id=%s&AuraDefinitionBundleId=%s&DefType=%s&Format=%s' % (sel_meta["id"], sel_meta["AuraDefinitionBundleId"], sel_meta["DefType"],sel_meta["Format"])
         elif sel_meta and "id" in sel_meta and sel_meta["id"]:
             returl = '/' + sel_meta["id"]
         elif sel_category == "CustomObject":
             returl = '/p/setup/layout/LayoutFieldList?type=' + sel_meta["fullName"]
+
         return returl
 
     def open_in_web(self, sel_meta):
         returl = self.get_web_url(sel_meta)
         if returl:
+            import urllib.parse
             # open in browser
             sf = sf_login(self.sf_basic_config)
             login_url = ('https://{instance}/secur/frontdoor.jsp?sid={sid}&retURL={returl}'
                         .format(instance=sf.sf_instance,
                                 sid=sf.session_id,
-                                returl=returl))
+                                returl=urllib.parse.quote(returl)))
             self.sublconsole.debug(login_url)
             open_in_default_browser(self.sf_basic_config, login_url)
         else:
@@ -513,54 +544,56 @@ class MetadataUtil(CacheLoader):
     def _get_server_meta(self, full_path, id):
         attr = self.get_meta_attr(full_path)
         attr["id"] = id
-        soql = "SELECT  Id, Name, CreatedDate, CreatedById, CreatedBy.Name, LastModifiedDate, LastModifiedById, LastModifiedBy.Name FROM %s Where Id = '%s'" % (attr["metadata_type"], id)
-        tooling_api = sf_login(self.sf_basic_config, Soap_Type=ToolingApi)
-        result = tooling_api.query(soql)
-        if 'records' in result and len(result['records']) > 0:
-            record = result['records'][0]
-            meta_cache_bean = {
-                "createdById": record["CreatedById"], 
-                "createdByName": record["CreatedBy"]["Name"], 
-                "createdDate": record["CreatedDate"], 
-                "fileName": attr["metadata_folder"] + "/" + attr["file_name"], 
-                "fullName": attr["name"], 
-                "id": record["Id"], 
-                "lastModifiedById": record["LastModifiedById"], 
-                "lastModifiedByName": record["LastModifiedBy"]["Name"], 
-                "lastModifiedDate": record["LastModifiedDate"], 
-                "manageableState": "", 
-                "type": attr["metadata_type"]
-            }
-            return meta_cache_bean
+        if attr["is_lux"]:
+            return self._load_lux_cache(attr)
+        else:
+            soql = "SELECT  Id, Name, CreatedDate, CreatedById, CreatedBy.Name, LastModifiedDate, LastModifiedById, LastModifiedBy.Name FROM %s Where Id = '%s'" % (attr["metadata_type"], id)
+            tooling_api = sf_login(self.sf_basic_config, Soap_Type=ToolingApi)
+            result = tooling_api.query(soql)
+            if 'records' in result and len(result['records']) > 0:
+                record = result['records'][0]
+                meta_cache_bean = {
+                    "createdById": record["CreatedById"], 
+                    "createdByName": record["CreatedBy"]["Name"], 
+                    "createdDate": record["CreatedDate"], 
+                    "fileName": attr["metadata_folder"] + "/" + attr["file_name"], 
+                    "fullName": attr["name"], 
+                    "id": record["Id"], 
+                    "lastModifiedById": record["LastModifiedById"], 
+                    "lastModifiedByName": record["LastModifiedBy"]["Name"], 
+                    "lastModifiedDate": record["LastModifiedDate"], 
+                    "manageableState": "", 
+                    "type": attr["metadata_type"]
+                }
+                return meta_cache_bean
         return
     
-    def update_metadata_cache_by_filename(self, full_path):
+    def update_metadata_cache_by_filename(self, full_path, is_lux=False):
         attr = self.get_meta_attr(full_path)
-        if "metadata_type" not in attr or "name" not in attr: return
-        soql = "SELECT  Id, Name, CreatedDate, CreatedById, CreatedBy.Name, LastModifiedDate, LastModifiedById, LastModifiedBy.Name FROM %s Where Name = '%s' limit 1" % (attr["metadata_type"], attr["name"])
-        tooling_api = sf_login(self.sf_basic_config, Soap_Type=ToolingApi)
-        result = tooling_api.query(soql)
-        if 'records' in result and len(result['records']) > 0:
-            record = result['records'][0]
-            print('>>>>1')
-            print(record)
-            meta_cache_bean = {
-                "createdById": record["CreatedById"], 
-                "createdByName": record["CreatedBy"]["Name"], 
-                "createdDate": record["CreatedDate"], 
-                "fileName": attr["metadata_folder"] + "/" + attr["file_name"], 
-                "fullName": attr["name"], 
-                "id": record["Id"], 
-                "lastModifiedById": record["LastModifiedById"], 
-                "lastModifiedByName": record["LastModifiedBy"]["Name"], 
-                "lastModifiedDate": record["LastModifiedDate"], 
-                "manageableState": "", 
-                "type": attr["metadata_type"]
-            }
-            self._save_meta(meta_cache_bean)
-        
-        print(soql)
-        print('>>>>2')
+        if is_lux :
+            print('update lightning cache')
+            self._save_meta(self._load_lux_cache(attr))
+        else:
+            if "metadata_type" not in attr or "name" not in attr: return
+            soql = "SELECT  Id, Name, CreatedDate, CreatedById, CreatedBy.Name, LastModifiedDate, LastModifiedById, LastModifiedBy.Name FROM %s Where Name = '%s' limit 1" % (attr["metadata_type"], attr["name"])
+            tooling_api = sf_login(self.sf_basic_config, Soap_Type=ToolingApi)
+            result = tooling_api.query(soql)
+            if 'records' in result and len(result['records']) > 0:
+                record = result['records'][0]
+                meta_cache_bean = {
+                    "createdById": record["CreatedById"], 
+                    "createdByName": record["CreatedBy"]["Name"], 
+                    "createdDate": record["CreatedDate"], 
+                    "fileName": attr["metadata_folder"] + "/" + attr["file_name"], 
+                    "fullName": attr["name"], 
+                    "id": record["Id"], 
+                    "lastModifiedById": record["LastModifiedById"], 
+                    "lastModifiedByName": record["LastModifiedBy"]["Name"], 
+                    "lastModifiedDate": record["LastModifiedDate"], 
+                    "manageableState": "", 
+                    "type": attr["metadata_type"]
+                }
+                self._save_meta(meta_cache_bean)
         return
 
 class SfDataUtil():
@@ -730,7 +763,7 @@ class MigrationToolUtil(DownloadUtil):
             metadata_folder = os.path.join(deploy_root_dir, "src", attr["metadata_folder"], attr["metadata_sub_folder"])
 
             # deploy lightning component folder
-            if attr['metadata_type'] == "AuraDefinitionBundle":
+            if attr["is_lux"]:
                 if not os.path.exists(metadata_folder):
                     shutil.copytree(attr['file_path'] , metadata_folder)
                 continue
@@ -771,13 +804,14 @@ class MigrationToolUtil(DownloadUtil):
             members = []
             members_check = []
             for attr in file_attr_list:
-                if metadata_type == "AuraDefinitionBundle":
+                if attr["is_lux"]:
                     member = attr["metadata_sub_folder"]
                 else:
                     member = attr["name"] if not attr["metadata_sub_folder"] else "%s/%s" % (attr["metadata_sub_folder"],attr["name"])
                 if member in members_check: continue
                 members_check.append(member)
                 members.append("""        <members>{member}</members>""".format(member=member))
+            metadata_type = "AuraDefinitionBundle" if attr["is_lux"] else metadata_type
             packagexml_types = packagexml_types + PACKAGEXML_TYPE.format(members='\n'.join(members),name=metadata_type)
         packagexml = PACKAGE_XML.format(types=packagexml_types, version=api_version)
         return packagexml

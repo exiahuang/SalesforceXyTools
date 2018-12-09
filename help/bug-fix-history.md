@@ -1,5 +1,15 @@
 # SalesforceXyTools Update History
 
+## 2.0.9
+* Support Lightning Dev
+    - Save to server
+    - Refresh From Server
+    - Diff with Server
+    - Delete Lightning
+    - Open in Browser(Open in SFDC Dev console)
+    - Open Lightning Component(Open AuraDefinitionBundle)
+    - refresh auraAuraDefinition metadata cache
+
 ## 2.0.8
 * Preview Visualforce Page
 * Preview Lightning UI

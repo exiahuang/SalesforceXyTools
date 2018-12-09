@@ -424,9 +424,6 @@ class MetadataApi(Soap):
         request_body = soap_envelopes.get_retrieve_unpackaged_envelope(session_id=self.session_id, package_type_list=self.packageTypeList(), api_version=self.sf_version)
         return self._doSoapQuery("retrieveResponse", request_body)
 
-    # def updateMetadata(self):
-    #     self.myconsole.debug('>>>updateMetadata')
-
 class ToolingApi(Salesforce):
     def __init__(
             self, username=None, password=None, security_token=None,
@@ -550,6 +547,13 @@ class ToolingApi(Salesforce):
 
     def updateApexClass(self, id, body):
         self.updateMetadata("ApexClass", id, body)
+
+    def updateLux(self, id, post_body):
+        url = self.base_url + 'tooling/sobjects/AuraDefinition/' + id
+        status_code, result = self._call_api(method="PATCH", url=url, data=post_body, return_type="text")
+        print(status_code)
+        print(result)
+        return status_code, result
 
     def runTestAsynchronous(self, id_list):
         url = self.base_url + "tooling/runTestsAsynchronous/?classids=" + ",".join(id_list)
