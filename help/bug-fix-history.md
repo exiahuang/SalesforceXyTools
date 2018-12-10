@@ -1,5 +1,9 @@
 # SalesforceXyTools Update History
 
+## 2.1.0
+* Refresh Lightning Component
+* cache bug fix
+
 ## 2.0.9
 * Support Lightning Dev
     - Save to server

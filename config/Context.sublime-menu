@@ -40,19 +40,6 @@
             {
                 "caption": "Preview Lightning App",
                 "command": "preview_lightning_app"
-            },
-			{ "caption": "-" },
-            {
-                "caption": "Open Controller",
-                "command": "open_controller"
-            },
-            {
-                "caption": "Open VisualPage",
-                "command": "open_visualpage"
-            },
-            {
-                "caption": "Open TestClass",
-                "command": "open_testclass"
             }
 		]
 	},

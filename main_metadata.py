@@ -23,6 +23,7 @@ from .salesforce import (
     )
 from .templates import Template
 from .uiutil import SublConsole
+from .const import AURA_DEFTYPE_EXT
 
 
 ##########################################################################################
@@ -649,9 +650,8 @@ class UpdateMetadataCommand(sublime_plugin.TextCommand):
         
         if self.meta_attr["is_lux"]:
             self._updateLux()
-            return
-
-        self._update_meta_to_server()
+        else:
+            self._update_meta_to_server()
     
     # Lightning update
     def _updateLux(self):
@@ -765,6 +765,50 @@ class RefreshMetadataCommand(sublime_plugin.TextCommand):
         attr = baseutil.SysIo().get_file_attr(file_name)
         return attr["is_src"] or attr["is_lux"]
 
+
+# refresh_aura
+class RefreshAuraCommand(sublime_plugin.WindowCommand):
+    def run(self, dirs):
+        self.sf_basic_config = SfBasicConfig()
+        self.settings = self.sf_basic_config.get_setting()
+        self.sublconsole = SublConsole(self.sf_basic_config)
+        self.metadata_util = util.MetadataUtil(self.sf_basic_config)
+
+        if len(dirs) == 0: return False
+        aura_name = os.path.basename(dirs[0])
+        dir_path = os.path.dirname(dirs[0])
+        dir_name = os.path.basename(dir_path)
+        if dir_name != "aura":
+            self.sublconsole.showlog("It seems not a lightinig component! ")
+            return
+        
+        self.aura_dir = dirs[0]
+        self.sublconsole.thread_run(target=self._refresh_aura)
+    
+    def _refresh_aura(self):
+        attr = baseutil.SysIo().get_file_attr(self.aura_dir)
+        aura_soql = "SELECT Id, CreatedDate, CreatedById, CreatedBy.Name, LastModifiedDate, LastModifiedById, LastModifiedBy.Name, AuraDefinitionBundle.DeveloperName, AuraDefinitionBundleId, DefType, Format, Source FROM AuraDefinition"
+        aura_soql = aura_soql + " Where AuraDefinitionBundle.DeveloperName = '%s'" % (attr["file_name"])
+        tooling_api = util.sf_login(self.sf_basic_config, Soap_Type=ToolingApi)
+        result = tooling_api.query(aura_soql)
+        if 'records' in result and len(result['records']) > 0:
+            for file in os.listdir(self.aura_dir):
+                if not "-meta.xml" in file:
+                    os.remove( os.path.join(self.aura_dir, file) )
+            for AuraDefinition in result['records']:
+                if AuraDefinition["DefType"] in AURA_DEFTYPE_EXT:
+                    fileName = attr["file_name"] + AURA_DEFTYPE_EXT[AuraDefinition["DefType"]]
+                    self.sublconsole.save_file( os.path.join(self.aura_dir, fileName), AuraDefinition["Source"])
+            self.metadata_util.update_lux_metas(result['records'])
+            self.sublconsole.showlog("Refresh lightinig ok! ")
+        else:
+            self.sublconsole.showlog("Refresh lightinig error! ", type="error")
+
+    def is_enabled(self, dirs):
+        if len(dirs) == 0: return False
+        dir_path = os.path.dirname(dirs[0])
+        dir_name = os.path.basename(dir_path)
+        return dir_name == "aura"
 
 ##########################################################################################
 # Apex Test

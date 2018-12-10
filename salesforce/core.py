@@ -551,8 +551,6 @@ class ToolingApi(Salesforce):
     def updateLux(self, id, post_body):
         url = self.base_url + 'tooling/sobjects/AuraDefinition/' + id
         status_code, result = self._call_api(method="PATCH", url=url, data=post_body, return_type="text")
-        print(status_code)
-        print(result)
         return status_code, result
 
     def runTestAsynchronous(self, id_list):

@@ -512,6 +512,7 @@ class SysIo():
                 "is_sfdc_file" : True,
                 "is_src" : file_extension in [".cls", ".component", ".page", ".trigger"] and os.path.isfile(full_file_path),
                 "is_lux" : False,
+                "is_lux_root" : False,
                 "lux_type" : "",
                 "lux_name" : ""
             }
@@ -520,6 +521,7 @@ class SysIo():
                 attr["metadata_sub_folder"] = ""
                 attr["metadata_folder"] = attr["dir"]
                 attr["metadata_type"] = "AuraDefinitionBundle"
+                attr["is_lux_root"] = True
             elif attr["p_dir"] in ["aura", "reports", "dashboards", "documents", "email"]:
                 attr["metadata_sub_folder"] = attr["dir"]
                 attr["metadata_folder"] = attr["p_dir"]

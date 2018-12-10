@@ -4,21 +4,26 @@
         "caption": "Sfdx-Xy",
         "children":[
             {
-                "caption": "Copy Lightning Component", 
-                "command": "copy_aura",
+                "caption": "Deploy Directory To SFDC", 
+                "command": "deploy_dir",
                 "args": {"dirs": []}
             },
+            { "caption": "-" },
             {
                 "caption": "Open Lightning Component", 
                 "command": "open_aura",
                 "args": {"dirs": []}
             },
             {
-                "caption": "Deploy Directory To SFDC", 
-                "command": "deploy_dir",
+                "caption": "Refresh Lightning Component", 
+                "command": "refresh_aura",
                 "args": {"dirs": []}
             },
-            { "caption": "-" },
+            {
+                "caption": "Copy Lightning Component", 
+                "command": "copy_aura",
+                "args": {"dirs": []}
+            },
             {
                 "caption": "Delete Lightning Component(Danger)", 
                 "command": "delete_aura",
