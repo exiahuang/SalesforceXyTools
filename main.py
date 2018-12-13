@@ -348,7 +348,7 @@ class RunApexScriptCommand(sublime_plugin.TextCommand):
 
         sel_area = self.view.sel()
         if sel_area[0].empty():
-          self.sublconsole.show_in_dialog("Please select the Tooling SOQL !!")
+          self.sublconsole.show_in_dialog("Please select the Apex Script !!")
           return
         else:
             sel_string = self.view.substr(sel_area[0])

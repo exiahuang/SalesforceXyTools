@@ -23,7 +23,7 @@ from .salesforce import (
     )
 from .templates import Template
 from .uiutil import SublConsole
-from .const import AURA_DEFTYPE_EXT
+from .const import AURA_DEFTYPE_EXT, SF_FLODER_TO_TYPE
 
 
 ##########################################################################################
@@ -942,3 +942,31 @@ class PreviewVfCommand(sublime_plugin.TextCommand):
         if file_name is None:
             return False
         return os.path.isfile(file_name) and file_name.find(".page") > -1 
+
+
+##########################################################################################
+# Side bar : Refresh sf metadata
+# TODO
+##########################################################################################
+class RefreshDirCommand(sublime_plugin.WindowCommand):
+    def run(self, dirs):
+        self.sf_basic_config = SfBasicConfig()
+        self.settings = self.sf_basic_config.get_setting()
+        self.sublconsole = SublConsole(self.sf_basic_config)
+
+        if not dirs: 
+            self.sublconsole.showlog("It seems not a directory! ")
+            return
+        
+        dir_name = os.path.basename(dirs[0])
+        if dir_name not in SF_FLODER_TO_TYPE: 
+            self.sublconsole.showlog("Not support type : %s ." % (dir_name))
+            return
+        
+        self.meta_type = SF_FLODER_TO_TYPE[dir_name]
+        self.sublconsole.thread_run(target=self.main)
+
+    def main(self):
+        self.sublconsole.showlog("start to refresh %s..." % (self.meta_type))
+        # self.settings.get_tmp_dir()
+        # self.meta_api.retrieveZip(zip_file_name=tmp, retrive_metadata_objects=self.current_picked_list)

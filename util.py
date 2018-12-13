@@ -221,6 +221,10 @@ class CacheLoader(object):
     def reload(self):
         return
 
+    def clean(self):
+        if os.path.exists(self.full_path):
+            os.remove(self.full_path)
+
     def save_dict(self, dict_obj, encoding='utf-8'):
         self.save(json.dumps(dict_obj, ensure_ascii=False, indent=4), encoding=encoding)
     
@@ -259,6 +263,7 @@ class SobjectUtil(CacheLoader):
 
     def reload(self):
         self.sublconsole.showlog("start to reload metadata cache, please wait...")
+        self.clean()
         allMetadataResult = self.meta_api.describe()
         
         allMetadataMap = {}
@@ -341,53 +346,63 @@ class MetadataUtil(CacheLoader):
 
     def reload(self):
         self.sublconsole.showlog("start to reload metadata cache, please wait...")
+        self.clean()
         meta_api = sf_login(self.sf_basic_config, Soap_Type=MetadataApi)
+        
         allMetadataResult = meta_api.getAllMetadataMap()
         allMetadataResult["AuraDefinition"] = self._load_lux_cache()
         self.save_dict(allMetadataResult)
     
     def _covert_AuraDefinition_to_cache_dict(self, AuraDefinition_records):
         AuraDefinition_MetadataMap = {}
-        for AuraDefinition in AuraDefinition_records:
-            deftype = AuraDefinition["DefType"]
-            if deftype in AURA_DEFTYPE_EXT:
-                aura_name = AuraDefinition["AuraDefinitionBundle"]["DeveloperName"]
-                aura_key = "aura/%s/%s%s" % (aura_name, aura_name, AURA_DEFTYPE_EXT[deftype])
-                AuraDefinition_MetadataMap[aura_key] = {
-                        "id": AuraDefinition["Id"], 
-                        "fileName": aura_key, 
-                        "fullName": aura_name + AURA_DEFTYPE_EXT[deftype], 
-                        "createdById": AuraDefinition["CreatedById"], 
-                        "createdByName": AuraDefinition["CreatedBy"]["Name"], 
-                        "createdDate": AuraDefinition["CreatedDate"], 
-                        "lastModifiedById": AuraDefinition["LastModifiedById"],  
-                        "lastModifiedByName": AuraDefinition["LastModifiedBy"]["Name"] if AuraDefinition["LastModifiedBy"] else '', 
-                        "lastModifiedDate": AuraDefinition["LastModifiedDate"], 
-                        "manageableState": "", 
-                        "type": "AuraDefinition", 
-                        "AuraDefinitionSrc": True, 
-                        "DefType": AuraDefinition["DefType"], 
-                        "DefExt": AURA_DEFTYPE_EXT[deftype], 
-                        "Format": AuraDefinition["Format"], 
-                        "AuraDefinitionBundleId": AuraDefinition["AuraDefinitionBundleId"], 
-                        "AuraDefinitionBundleName": aura_name
-                    }
-        return AuraDefinition_MetadataMap
+        try:
+            for AuraDefinition in AuraDefinition_records:
+                deftype = AuraDefinition["DefType"]
+                if deftype in AURA_DEFTYPE_EXT:
+                    aura_name = AuraDefinition["AuraDefinitionBundle"]["DeveloperName"]
+                    aura_key = "aura/%s/%s%s" % (aura_name, aura_name, AURA_DEFTYPE_EXT[deftype])
+                    AuraDefinition_MetadataMap[aura_key] = {
+                            "id": AuraDefinition["Id"], 
+                            "fileName": aura_key, 
+                            "fullName": aura_name + AURA_DEFTYPE_EXT[deftype], 
+                            "createdById": AuraDefinition["CreatedById"], 
+                            "createdByName": AuraDefinition["CreatedBy"]["Name"] if AuraDefinition["CreatedBy"] else '', 
+                            "createdDate": AuraDefinition["CreatedDate"], 
+                            "lastModifiedById": AuraDefinition["LastModifiedById"],  
+                            "lastModifiedByName": AuraDefinition["LastModifiedBy"]["Name"] if AuraDefinition["LastModifiedBy"] else '', 
+                            "lastModifiedDate": AuraDefinition["LastModifiedDate"], 
+                            "manageableState": "", 
+                            "type": "AuraDefinition", 
+                            "AuraDefinitionSrc": True, 
+                            "DefType": AuraDefinition["DefType"], 
+                            "DefExt": AURA_DEFTYPE_EXT[deftype], 
+                            "Format": AuraDefinition["Format"], 
+                            "AuraDefinitionBundleId": AuraDefinition["AuraDefinitionBundleId"], 
+                            "AuraDefinitionBundleName": aura_name
+                        }
+            return AuraDefinition_MetadataMap
+        except Exception as ex:
+            self.sublconsole.showlog(ex, 'error'))
+            return AuraDefinition_MetadataMap
 
     def _load_lux_cache(self, attr=None):
-        aura_soql = 'SELECT Id, CreatedDate, CreatedById, CreatedBy.Name, LastModifiedDate, LastModifiedById, LastModifiedBy.Name, AuraDefinitionBundle.DeveloperName, AuraDefinitionBundleId, DefType, Format FROM AuraDefinition'
-        if attr:
-            aura_soql = aura_soql + " Where AuraDefinitionBundle.DeveloperName = '%s' and DefType = '%s' limit 1" % (attr["lux_name"], attr["lux_type"])
-        
-        meta_api = sf_login(self.sf_basic_config, Soap_Type=MetadataApi)
-        AuraDefinition = meta_api.query(aura_soql)
-        AuraDefinition_MetadataMap = {}
-        if AuraDefinition and 'records' in AuraDefinition:
-            AuraDefinition_MetadataMap = self._covert_AuraDefinition_to_cache_dict(AuraDefinition['records'])
-        if attr: 
-            if len(AuraDefinition_MetadataMap) > 0 : return list(AuraDefinition_MetadataMap.values())[0]
-            else : return {}
-        return AuraDefinition_MetadataMap
+        try:
+            aura_soql = 'SELECT Id, CreatedDate, CreatedById, CreatedBy.Name, LastModifiedDate, LastModifiedById, LastModifiedBy.Name, AuraDefinitionBundle.DeveloperName, AuraDefinitionBundleId, DefType, Format FROM AuraDefinition'
+            if attr:
+                aura_soql = aura_soql + " Where AuraDefinitionBundle.DeveloperName = '%s' and DefType = '%s' limit 1" % (attr["lux_name"], attr["lux_type"])
+            
+            meta_api = sf_login(self.sf_basic_config, Soap_Type=MetadataApi)
+            AuraDefinition = meta_api.query(aura_soql)
+            AuraDefinition_MetadataMap = {}
+            if AuraDefinition and 'records' in AuraDefinition:
+                AuraDefinition_MetadataMap = self._covert_AuraDefinition_to_cache_dict(AuraDefinition['records'])
+            if attr: 
+                if len(AuraDefinition_MetadataMap) > 0 : return list(AuraDefinition_MetadataMap.values())[0]
+                else : return {}
+            return AuraDefinition_MetadataMap
+        except Exception as ex:
+            self.sublconsole.showlog(ex, 'error'))
+            return {}
 
     def get_meta_attr(self, full_path):
         sysio = SysIo()
@@ -566,13 +581,13 @@ class MetadataUtil(CacheLoader):
                 record = result['records'][0]
                 meta_cache_bean = {
                     "createdById": record["CreatedById"], 
-                    "createdByName": record["CreatedBy"]["Name"], 
+                    "createdByName": record["CreatedBy"]["Name"] if record["CreatedBy"] else '', 
                     "createdDate": record["CreatedDate"], 
                     "fileName": attr["metadata_folder"] + "/" + attr["file_name"], 
                     "fullName": attr["name"], 
                     "id": record["Id"], 
                     "lastModifiedById": record["LastModifiedById"], 
-                    "lastModifiedByName": record["LastModifiedBy"]["Name"], 
+                    "lastModifiedByName": record["LastModifiedBy"]["Name"] if record["LastModifiedBy"] else '', 
                     "lastModifiedDate": record["LastModifiedDate"], 
                     "manageableState": "", 
                     "type": attr["metadata_type"]
@@ -598,13 +613,13 @@ class MetadataUtil(CacheLoader):
                 record = result['records'][0]
                 meta_cache_bean = {
                     "createdById": record["CreatedById"], 
-                    "createdByName": record["CreatedBy"]["Name"], 
+                    "createdByName": record["CreatedBy"]["Name"] if record["CreatedBy"] else '', 
                     "createdDate": record["CreatedDate"], 
                     "fileName": attr["metadata_folder"] + "/" + attr["file_name"], 
                     "fullName": attr["name"], 
                     "id": record["Id"], 
                     "lastModifiedById": record["LastModifiedById"], 
-                    "lastModifiedByName": record["LastModifiedBy"]["Name"], 
+                    "lastModifiedByName": record["LastModifiedBy"]["Name"] if record["LastModifiedBy"] else '',
                     "lastModifiedDate": record["LastModifiedDate"], 
                     "manageableState": "", 
                     "type": attr["metadata_type"]

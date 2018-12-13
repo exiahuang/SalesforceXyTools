@@ -1,11 +1,27 @@
 [
 	{
-	    "keys": ["alt+l"],
-	    "command": "login_sfdc"
+	    "keys": ["alt+ctrl+s"],
+	    "command": "update_metadata"
+	},
+	{
+	    "keys": ["alt+ctrl+r"],
+	    "command": "refresh_metadata"
+	},
+	{
+	    "keys": ["alt+ctrl+m"],
+	    "command": "run_ant_migration_tool"
+	},
+	{
+	    "keys": ["alt+ctrl+b"],
+	    "command": "open_metadata_in_browser"
 	},
 	{
 	    "keys": ["alt+ctrl+l"],
-	    "command": "login_project"
+	    "command": "login_sfdc"
+	},
+	{
+	    "keys": ["alt+ctrl+c"],
+	    "command": "copy_filename"
 	},
 
 	// SFDC SOQL,
@@ -17,10 +33,11 @@
 	    "keys": ["alt+ctrl+w"],
 	    "command": "tooling_query"
 	},
-	// {
-	//     "keys": ["alt+ctrl+a"],
-	//     "command": "run_apex_script"
-	// },
+	{
+	    "keys": ["alt+ctrl+e"],
+	    "command": "run_apex_script"
+	},
+	
 	// {
 	//     "keys": ["alt+ctrl+x"],
 	//     "command": "soql_create"
@@ -71,17 +88,5 @@
 	{
 	    "keys": ["alt+h"],
 	    "command": "create_test_code"
-	},
-	{
-	    "keys": ["alt+ctrl+c"],
-	    "command": "open_controller"
-	},
-	{
-	    "keys": ["alt+ctrl+v"],
-	    "command": "open_visualpage"
-	},
-	{
-	    "keys": ["alt+ctrl+t"],
-	    "command": "open_testclass"
 	}
 ]

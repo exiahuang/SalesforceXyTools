@@ -97,6 +97,10 @@
 		"caption": "SFDC-XY Toolbox",
 		"children":[
             {
+                "caption": "Json String Format",
+                "command": "json_format"
+            },
+            {
                 "caption": "Open With",
                 "command": "open_with"
             },

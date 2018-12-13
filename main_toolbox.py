@@ -453,3 +453,26 @@ class TestxCommand(sublime_plugin.WindowCommand):
         cmd = "cmd"
         # os.system(cmd)
         subprocess.Popen(cmd)
+
+class JsonFormatCommand(sublime_plugin.TextCommand):
+    def run(self, edit):
+        self.window = sublime.active_window()
+        sel_area = self.view.sel()
+        if not sel_area[0].empty():
+            strx = self.view.substr(sel_area[0])
+            import json
+            result = json.loads(strx)
+
+            self.window.run_command("insert_snippet", 
+                {
+                    "contents": json.dumps(result, indent=4, ensure_ascii=False)
+                }
+            )
+
+class XopenDirCommand(sublime_plugin.WindowCommand):
+    def run(self, dirs):
+        self.window.run_command("open_dir", 
+            {
+                "dir": dirs[0]
+            }
+        )

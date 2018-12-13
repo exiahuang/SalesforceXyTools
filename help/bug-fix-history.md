@@ -1,5 +1,11 @@
 # SalesforceXyTools Update History
 
+## 2.1.1
+* toolbox : json format
+* toolbox : open dir
+* cache bug fix
+* Add short-key
+
 ## 2.1.0
 * Refresh Lightning Component
 * cache bug fix

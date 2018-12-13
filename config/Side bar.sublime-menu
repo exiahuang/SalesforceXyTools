@@ -8,6 +8,11 @@
                 "command": "deploy_dir",
                 "args": {"dirs": []}
             },
+            // {
+            //     "caption": "Refresh dir", 
+            //     "command": "refresh_dir",
+            //     "args": {"dirs": []}
+            // },
             { "caption": "-" },
             {
                 "caption": "Open Lightning Component", 
@@ -27,6 +32,12 @@
             {
                 "caption": "Delete Lightning Component(Danger)", 
                 "command": "delete_aura",
+                "args": {"dirs": []}
+            },
+            { "caption": "-" },
+            {
+                "caption": "Open dir", 
+                "command": "xopen_dir",
                 "args": {"dirs": []}
             }
         ]
