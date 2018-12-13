@@ -382,7 +382,7 @@ class MetadataUtil(CacheLoader):
                         }
             return AuraDefinition_MetadataMap
         except Exception as ex:
-            self.sublconsole.showlog(ex, 'error'))
+            self.sublconsole.showlog(ex, 'error')
             return AuraDefinition_MetadataMap
 
     def _load_lux_cache(self, attr=None):
@@ -401,7 +401,7 @@ class MetadataUtil(CacheLoader):
                 else : return {}
             return AuraDefinition_MetadataMap
         except Exception as ex:
-            self.sublconsole.showlog(ex, 'error'))
+            self.sublconsole.showlog(ex, 'error')
             return {}
 
     def get_meta_attr(self, full_path):
