@@ -130,7 +130,7 @@ SF_FLODER_TO_TYPE = {
     "layouts" : "Layout",
     "letterheads" : "Letterhead",
     "lightningBolts" : "LightningBolt",
-    "lightningComponentBundles" : "LightningComponentBundle",
+    "lwc" : "LightningComponentBundle",
     "lightningExperienceThemes" : "LightningExperienceTheme",
     "liveChatAgentConfigs" : "LiveChatAgentConfig",
     "liveChatButtons" : "LiveChatButton",
@@ -199,7 +199,7 @@ SF_FLODER_TO_TYPE = {
 }
 
 AURA_DEFTYPE_EXT = {
-    "APPLICATION" : "App.app",
+    "APPLICATION" : ".app",
     "CONTROLLER" : "Controller.js",
     "COMPONENT" : ".cmp",
     "EVENT" : "Event.evt",
@@ -218,7 +218,7 @@ AURA_DEFTYPE_EXT = {
 
 
 AURA_TYPE = {
-    "App.app" : "APPLICATION" ,
+    ".app" : "APPLICATION" ,
     "Controller.js" : "CONTROLLER" ,
     ".cmp" : "COMPONENT" ,
     "Event.evt" : "EVENT" ,

@@ -490,6 +490,7 @@ class SysIo():
             "dashboards" : "Dashboard",
             "documents" : "Document",
             "email" : "EmailTemplate",
+            "lwc" : "LightningComponentBundle"
         }
         return folder_to_metadata_type_dict[metadata_folder]
 
@@ -513,6 +514,8 @@ class SysIo():
                 "is_src" : file_extension in [".cls", ".component", ".page", ".trigger"] and os.path.isfile(full_file_path),
                 "is_lux" : False,
                 "is_lux_root" : False,
+                "is_lwc" : False,
+                "is_lwc_root" : False,
                 "lux_type" : "",
                 "lux_name" : ""
             }
@@ -522,11 +525,16 @@ class SysIo():
                 attr["metadata_folder"] = attr["dir"]
                 attr["metadata_type"] = "AuraDefinitionBundle"
                 attr["is_lux_root"] = True
-            elif attr["p_dir"] in ["aura", "reports", "dashboards", "documents", "email"]:
+            elif os.path.isdir(full_file_path) and attr["dir"] == "lwc":
+                attr["metadata_sub_folder"] = ""
+                attr["metadata_folder"] = attr["dir"]
+                attr["metadata_type"] = "LightningComponentBundle"
+                attr["is_lwc_root"] = True
+            elif attr["p_dir"] in ["lwc", "aura", "reports", "dashboards", "documents", "email"]:
                 attr["metadata_sub_folder"] = attr["dir"]
                 attr["metadata_folder"] = attr["p_dir"]
                 attr["metadata_type"] = self._get_specil_metadata_type(attr["p_dir"])
-            elif attr["dir"] in ["aura", "reports", "dashboards", "documents", "email"]:
+            elif attr["dir"] in ["lwc", "aura", "reports", "dashboards", "documents", "email"]:
                 attr["metadata_sub_folder"] = ""
                 attr["metadata_folder"] = attr["dir"]
                 attr["metadata_type"] = self._get_specil_metadata_type(attr["p_dir"])
@@ -546,6 +554,7 @@ class SysIo():
                 attr["file_key"] = "%s/%s" % (attr["metadata_folder"], attr["file_name"])
             
             attr["is_lux"] = attr["metadata_type"] == "AuraDefinitionBundle" and os.path.isfile(full_file_path)
+            attr["is_lwc"] = attr["metadata_type"] == "LightningComponentBundle" and os.path.isfile(full_file_path)
             if attr["is_lux"]:
                 attr["metadata_type"] = "AuraDefinition"
                 for k, v in AURA_TYPE.items():

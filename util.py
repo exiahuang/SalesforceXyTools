@@ -390,7 +390,7 @@ class MetadataUtil(CacheLoader):
             aura_soql = 'SELECT Id, CreatedDate, CreatedById, CreatedBy.Name, LastModifiedDate, LastModifiedById, LastModifiedBy.Name, AuraDefinitionBundle.DeveloperName, AuraDefinitionBundleId, DefType, Format FROM AuraDefinition'
             if attr:
                 aura_soql = aura_soql + " Where AuraDefinitionBundle.DeveloperName = '%s' and DefType = '%s' limit 1" % (attr["lux_name"], attr["lux_type"])
-            
+
             meta_api = sf_login(self.sf_basic_config, Soap_Type=MetadataApi)
             AuraDefinition = meta_api.query(aura_soql)
             AuraDefinition_MetadataMap = {}
@@ -560,13 +560,15 @@ class MetadataUtil(CacheLoader):
         self.sublconsole.save_and_open_in_panel(json.dumps(all_cache, ensure_ascii=False, indent=4), self.save_dir, self.file_name , is_open=False)
 
     def _save_meta(self, server_meta):
-        all_cache = self.get_cache()
-        if server_meta["type"] not in all_cache:
-            all_cache[server_meta["type"]] = {}
-        all_cache[server_meta["type"]][server_meta["fileName"]] = server_meta
         self.sublconsole.debug("_save_meta")
-        self.sublconsole.debug(server_meta)
-        self.sublconsole.save_and_open_in_panel(json.dumps(all_cache, ensure_ascii=False, indent=4), self.save_dir, self.file_name , is_open=False)
+        all_cache = self.get_cache()
+        print(server_meta)
+        if server_meta and "type" in server_meta:
+            if server_meta["type"] not in all_cache:
+                all_cache[server_meta["type"]] = {}
+            all_cache[server_meta["type"]][server_meta["fileName"]] = server_meta
+            self.sublconsole.debug(server_meta)
+            self.sublconsole.save_and_open_in_panel(json.dumps(all_cache, ensure_ascii=False, indent=4), self.save_dir, self.file_name , is_open=False)
 
     def _get_server_meta(self, full_path, id):
         attr = self.get_meta_attr(full_path)
@@ -802,7 +804,8 @@ class MigrationToolUtil(DownloadUtil):
             metadata_folder = os.path.join(deploy_root_dir, "src", attr["metadata_folder"], attr["metadata_sub_folder"])
 
             # deploy lightning component folder
-            if attr["is_lux"]:
+
+            if attr["is_lux"] or ("is_lwc" in attr and attr["is_lwc"]):
                 if not os.path.exists(metadata_folder):
                     shutil.copytree(attr['file_path'] , metadata_folder)
                 continue
@@ -843,7 +846,7 @@ class MigrationToolUtil(DownloadUtil):
             members = []
             members_check = []
             for attr in file_attr_list:
-                if attr["is_lux"]:
+                if ("is_lux" in attr and attr["is_lux"]) or ("is_lwc" in attr and attr["is_lwc"]):
                     member = attr["metadata_sub_folder"]
                 else:
                     member = attr["name"] if not attr["metadata_sub_folder"] else "%s/%s" % (attr["metadata_sub_folder"],attr["name"])

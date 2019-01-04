@@ -946,7 +946,6 @@ class PreviewVfCommand(sublime_plugin.TextCommand):
 
 ##########################################################################################
 # Side bar : Refresh sf metadata
-# TODO
 ##########################################################################################
 class RefreshDirCommand(sublime_plugin.WindowCommand):
     def run(self, dirs):
@@ -958,15 +957,37 @@ class RefreshDirCommand(sublime_plugin.WindowCommand):
             self.sublconsole.showlog("It seems not a directory! ")
             return
         
-        dir_name = os.path.basename(dirs[0])
-        if dir_name not in SF_FLODER_TO_TYPE: 
-            self.sublconsole.showlog("Not support type : %s ." % (dir_name))
-            return
-        
-        self.meta_type = SF_FLODER_TO_TYPE[dir_name]
+        self.sel_dirs = []
+        for a_dir in dirs:
+            dir_name = os.path.basename(a_dir)
+            self.sel_dirs.append(dir_name)
+            if dir_name not in SF_FLODER_TO_TYPE: 
+                self.sublconsole.showlog("Not support type : %s ." % (dir_name))
+                return
+        # self.meta_type = SF_FLODER_TO_TYPE[dir_name]
         self.sublconsole.thread_run(target=self.main)
 
     def main(self):
-        self.sublconsole.showlog("start to refresh %s..." % (self.meta_type))
-        # self.settings.get_tmp_dir()
-        # self.meta_api.retrieveZip(zip_file_name=tmp, retrive_metadata_objects=self.current_picked_list)
+        self.sublconsole.showlog("start to refresh %s..." % (self.sel_dirs))
+        self.meta_api = util.sf_login(self.sf_basic_config, Soap_Type=MetadataApi)
+        retrive_metadata_objects = []
+        for metaObj in self.meta_api.describeMetadata()["metadataObjects"]:
+            if metaObj['directoryName'] in self.sel_dirs:
+                retrive_metadata_objects.append(metaObj)
+        if len(retrive_metadata_objects) > 0 :
+            tmp_dir = self.sf_basic_config.get_tmp_dir()
+            tmp_file = os.path.join(tmp_dir, "tmp_src.zip")
+            tmp_src_dir = os.path.join(tmp_dir, "tmp_src")
+            if os.path.exists(tmp_file):
+                os.remove(tmp_file)
+            if os.path.exists(tmp_src_dir):
+                shutil.rmtree(tmp_src_dir)
+            self.meta_api.retrieveZip(zip_file_name=tmp_file, retrive_metadata_objects=retrive_metadata_objects)
+            if os.path.exists(tmp_file):
+                self.meta_api.unzipfile(tmp_file, tmp_src_dir, self.settings["src_dir"])
+                tmp_package_xml_path = os.path.join(tmp_src_dir, self.settings["src_dir"], "package.xml")
+                if os.path.exists(tmp_package_xml_path): os.remove(tmp_package_xml_path)
+                from distutils import dir_util
+                dir_util.copy_tree(os.path.join(tmp_src_dir, self.settings["src_dir"]), os.path.join(self.sf_basic_config.get_src_root(), self.settings["src_dir"]))
+        else:
+            self.sublconsole.showlog("Sorry , Nothing to do. ")

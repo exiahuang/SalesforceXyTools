@@ -8,11 +8,11 @@
                 "command": "deploy_dir",
                 "args": {"dirs": []}
             },
-            // {
-            //     "caption": "Refresh dir", 
-            //     "command": "refresh_dir",
-            //     "args": {"dirs": []}
-            // },
+            {
+                "caption": "Retrieve Dir From Server", 
+                "command": "refresh_dir",
+                "args": {"dirs": []}
+            },
             { "caption": "-" },
             {
                 "caption": "Open Lightning Component", 

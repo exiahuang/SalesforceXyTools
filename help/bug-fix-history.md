@@ -1,5 +1,10 @@
 # SalesforceXyTools Update History
 
+## 2.1.3
+* Support Lightning Web Components(LWC) deploy
+* Side bar : Retrieve Dir From Server
+* Fix Lightning App Save
+
 ## 2.1.1
 * toolbox : json format
 * toolbox : open dir
