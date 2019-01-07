@@ -745,13 +745,15 @@ class MigrationToolUtil(DownloadUtil):
         file_path, file_name = os.path.split(org_file_path)
         xml_file_path = file_path + "-meta.xml"
         if os.path.isfile(xml_file_path):
-            shutil.copyfile(xml_file_path, save_full_path)
+            # shutil.copyfile(xml_file_path, save_full_path)
+            self.copyfile(xml_file_path, save_full_path)
             self.copy_file_list.append((xml_file_path, save_full_path))
     
     def _copy_file_xml(self, org_file_path, deploy_dir):
         meta_xml = org_file_path + "-meta.xml"
         if os.path.isfile(meta_xml):
-            shutil.copyfile(meta_xml, deploy_dir)
+            # shutil.copyfile(meta_xml, deploy_dir)
+            self.copyfile(meta_xml, deploy_dir)
             self.copy_file_list.append((meta_xml, deploy_dir))
 
 ### delete start: ant xml and copyfile.txt
@@ -792,6 +794,11 @@ class MigrationToolUtil(DownloadUtil):
                     "files" : files
             }
         module_json.save_dict(module_json_cache)
+    
+    def copyfile(self, file, to_file, encoding='utf-8'):
+        with open(file, 'rU', encoding=encoding) as infile,                 \
+             open(to_file, 'w', newline='\n', encoding=encoding) as outfile:
+                 outfile.writelines(infile.readlines())
 
     def copy_deploy_files(self, file_list, deploy_root_dir, api_version="40.0"):
         self._del_old_dir(deploy_root_dir)
@@ -813,7 +820,8 @@ class MigrationToolUtil(DownloadUtil):
             if not os.path.exists(metadata_folder):
                 os.makedirs(metadata_folder, exist_ok=True)
             to_file = os.path.join(metadata_folder, attr["file_name"])
-            shutil.copyfile(file, to_file)
+            # shutil.copyfile(file, to_file)
+            self.copyfile(file, to_file)
             self.copy_file_list.append((file, to_file))
             # copy_org_file_list.append(os.path.join(".", "src", attr["metadata_folder"], attr["metadata_sub_folder"], attr["file_name"]))
             copy_org_file_list.append(file)

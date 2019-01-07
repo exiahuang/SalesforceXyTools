@@ -121,8 +121,6 @@ class SublConsole(MyConsole):
             self.window.open_file(file_path)
 
     def save_and_open_in_panel(self, message_str, save_dir, save_file_name , is_open=True):
-        print('----->save_file_name ' + save_file_name)
-        print('----->is_open ' + xstr(is_open))
         save_path =  os.path.join(save_dir, save_file_name)
         self.debug(save_dir)
         self.debug(save_file_name)
@@ -143,7 +141,7 @@ class SublConsole(MyConsole):
             self.showlog("mkdir: " + os.path.dirname(full_path))
             os.makedirs(os.path.dirname(full_path))
         try:
-            fp = open(full_path, "w", encoding=encoding)
+            fp = open(full_path, "w", newline='\n', encoding=encoding)
             fp.write(content)
         except Exception as e:
             self.showlog('save file error! ' + full_path)

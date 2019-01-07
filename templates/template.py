@@ -126,9 +126,9 @@ class AntConfig():
             if (os.path.isfile(full_file_name)):
                 shutil.copy(full_file_name, dist_path)
 
-    def _save_file(self, full_path, content, encoding='utf-8'):
+    def _save_file(self, full_path, content, newline='\n', encoding='utf-8'):
         try:
-            fp = open(full_path, "w", encoding=encoding)
+            fp = open(full_path, "w", newline=newline, encoding=encoding)
             fp.write(content)
         except Exception as e:
             print('save file error! ' + full_path)

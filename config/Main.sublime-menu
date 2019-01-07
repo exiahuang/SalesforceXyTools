@@ -41,7 +41,27 @@
                         "caption":"Reload Metadata Cache" ,  
                         "command": "reload_metadata_cache"
                     },
-                    { "caption": "-" }
+                    { "caption": "-" },
+                    {
+                        "caption": "Project Config Wizard",
+                        "command": "project_config_wizard"
+                    },
+                    {
+                        "caption": "Change Authentication Type",
+                        "command": "change_auth_type"
+                    },
+                    {
+                        "caption": "Switch Browser",
+                        "command": "switch_browser"
+                    },
+                    {
+                        "caption": "Proxy Config Wizard",
+                        "command": "proxy_config_wizard"
+                    },
+                    {
+                        "caption": "Open Project Config File",
+                        "command": "project_config"
+                    }
                 ]
             },
             {  
@@ -293,31 +313,6 @@
                 ]
             },
             { "caption": "-" },
-            {  
-                "caption":"Project Settings","children":  
-                [
-                    {
-                        "caption": "Project Config Wizard",
-                        "command": "project_config_wizard"
-                    },
-                    {
-                        "caption": "Change Authentication Type",
-                        "command": "change_auth_type"
-                    },
-                    {
-                        "caption": "Switch Browser",
-                        "command": "switch_browser"
-                    },
-                    {
-                        "caption": "Proxy Config Wizard",
-                        "command": "proxy_config_wizard"
-                    },
-                    {
-                        "caption": "Open Project Config File",
-                        "command": "project_config"
-                    }
-                ]
-            },
             {  
                 "caption":"Sublime Settings","children":  
                 [     

@@ -194,12 +194,12 @@ def get_file_name_no_extension(path):
     return os.path.splitext(base)[0]
 
 
-def save_file(full_path, content, encoding='utf-8'):
+def save_file(full_path, content, newline='\n', encoding='utf-8'):
     if not os.path.exists(os.path.dirname(full_path)):
         showlog("mkdir: " + os.path.dirname(full_path))
         os.makedirs(os.path.dirname(full_path))
     try:
-        fp = open(full_path, "w", encoding=encoding)
+        fp = open(full_path, "w", newline=newline, encoding=encoding)
         fp.write(content)
     except Exception as e:
         showlog('save file error!\n' + full_path)
@@ -567,12 +567,12 @@ class SysIo():
             print(e)
             return None
 
-    def save_file(self, full_path, content, encoding='utf-8'):
+    def save_file(self, full_path, content, newline='\n', encoding='utf-8'):
         if not os.path.exists(os.path.dirname(full_path)):
             showlog("mkdir: " + os.path.dirname(full_path))
             os.makedirs(os.path.dirname(full_path))
         try:
-            fp = open(full_path, "w", encoding=encoding)
+            fp = open(full_path, "w", newline='\n', encoding=encoding)
             fp.write(content)
         except Exception as e:
             showlog('save file error!\n' + full_path)

@@ -1,5 +1,9 @@
 # SalesforceXyTools Update History
 
+## 2.1.4
+* deploy bug fix
+* 
+
 ## 2.1.3
 * Support Lightning Web Components(LWC) deploy
 * Side bar : Retrieve Dir From Server
