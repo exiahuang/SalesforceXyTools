@@ -131,7 +131,7 @@ class ProjectConfigWizardCommand(sublime_plugin.WindowCommand):
             {"key" : "api_version",
              "value" : settings["api_version"],
              "type" : "select",
-             "option" : ["45.0(pre-release)", "44.0", "43.0", "42.0", "41.0", "40.0", "39.0", "38.0", "37.0", "36.0"],
+             "option" : ["45.0", "44.0", "43.0", "42.0", "41.0", "40.0", "39.0", "38.0", "37.0", "36.0"],
              "option-v" : [45.0, 44.0, 43.0, 42.0, 41.0, 40.0, 39.0, 38.0, 37.0, 36.0]
             },
             {"key" : "auto_save_to_server",

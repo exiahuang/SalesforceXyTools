@@ -91,9 +91,8 @@ class AntConfig():
         self._save_file(os.path.join(save_path, "config.properties"), build_properties_src)
         
         build_xml_src = self.get_file(self.template_ant_dataloader_path, "build.xml")
-        build_xml_src = build_xml_src.replace("{dataloader_jar_path}", config_data["dataloader_jar_path"]) \
-                                     .replace("{ant_export_xml}", config_data["ant_export_xml"]) \
-                                     .replace("{dataloader_url_path}", config_data["dataloader_url_path"])
+        build_xml_src = build_xml_src.replace("{ant_export_xml}", config_data["ant_export_xml"]) \
+                                     .replace("{dataloader_jar_name}", config_data["dataloader_jar_name"])
         self._save_file(os.path.join(save_path, "build.xml"), build_xml_src)
 
     def _get_ant_proxy_body(self, config_data):

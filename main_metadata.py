@@ -369,7 +369,7 @@ class RetrieveZipCommand(sublime_plugin.WindowCommand):
     def _init_default_picked_list(self):
         self.current_picked_list = []
         for data in self.describeMetadataResult:
-            if data["xmlName"] in ["ApexClass", "ApexComponent", "ApexPage", "ApexTrigger", "ApexPage", "CustomObject", "AuraDefinitionBundle"]:
+            if data["xmlName"] in ["ApexClass", "ApexComponent", "ApexPage", "ApexTrigger", "ApexPage", "CustomObject", "AuraDefinitionBundle", "LightningComponentBundle"]:
                 self.current_picked_list.append(data)
 
     def on_input(self, args):

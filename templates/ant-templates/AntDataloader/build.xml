@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="Export" default="start_export">
+    <property environment="env"/>
+    <property name="dataloader.jar" location="${user.home}/jar"/>
+    <property name="dataloader.fullpath" location="${dataloader.jar}/{dataloader_jar_name}"/>
+    <property name="dataloader.url" value="http://salesforcexytools.com/mystatic/jar/{dataloader_jar_name}"/>
     <tstamp>
         <format property="today" pattern="yyyyMMdd_HHmm"/>
     </tstamp>
@@ -24,8 +28,8 @@
                 <replacefilter token="_file_" value="@{file}_${today}.csv"/>
             </replace>
             <java 
-                classname="com.salesforce.dataloader.process.ProcessRunner" 
-                classpath="{dataloader_jar_path}" 
+                classname="com.salesforce.dataloader.process.ProcessRunner"
+                classpath="${dataloader.fullpath}"
                 failonerror="true">
                 <sysproperty key="salesforce.config.dir" value="."/>
                 <arg line="process.name=@{object}"/>
@@ -37,7 +41,8 @@
     </macrodef>
 
     <target name="download_lib">
-        <get src="{dataloader_url_path}" dest="{dataloader_jar_path}" verbose="true" usetimestamp="true"/>
+        <mkdir dir="${dataloader.jar}"/>
+        <get src="${dataloader.url}" dest="${dataloader.fullpath}" verbose="true" usetimestamp="true"/>
     </target>
 
     <target name="start_export" depends="download_lib">

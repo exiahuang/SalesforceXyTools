@@ -1,8 +1,12 @@
 # SalesforceXyTools Update History
 
+## 2.1.5
+* fix ant build.xml
+* fix remoteSite, flexipages, staticresources deploy error
+* retrieve LWC 
+
 ## 2.1.4
 * deploy bug fix
-* 
 
 ## 2.1.3
 * Support Lightning Web Components(LWC) deploy

@@ -820,8 +820,12 @@ class MigrationToolUtil(DownloadUtil):
             if not os.path.exists(metadata_folder):
                 os.makedirs(metadata_folder, exist_ok=True)
             to_file = os.path.join(metadata_folder, attr["file_name"])
-            # shutil.copyfile(file, to_file)
-            self.copyfile(file, to_file)
+            
+            if attr["metadata_folder"] in ["aura", "classes", "components", "objects", "pages", "triggers"]:
+                self.copyfile(file, to_file)
+            else:
+                shutil.copyfile(file, to_file)
+
             self.copy_file_list.append((file, to_file))
             # copy_org_file_list.append(os.path.join(".", "src", attr["metadata_folder"], attr["metadata_sub_folder"], attr["file_name"]))
             copy_org_file_list.append(file)

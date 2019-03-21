@@ -222,8 +222,9 @@ class DataloaderConfigCommand(sublime_plugin.WindowCommand):
             "username" : self.settings["username"],
             "EncryptionPassword" : encryptionPassword,
             "serverurl" : self.settings["loginUrl"],
-            "dataloader_url_path" : self.dlutil.get_jar_url_path(),
-            "dataloader_jar_path" : self.dlutil.get_jar_path(),
+            "dataloader_jar_name" : self.dlutil.get_jar_name(),
+            # "dataloader_url_path" : self.dlutil.get_jar_url_path(),
+            # "dataloader_jar_path" : self.dlutil.get_jar_path(),
             "ant_export_xml" : "\n        ".join(self.ant_xml_list)
         }
         ant_config = AntConfig()

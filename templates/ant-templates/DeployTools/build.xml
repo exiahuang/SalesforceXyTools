@@ -2,13 +2,14 @@
     <property file="build.properties"/>
     <property environment="env"/>
     <property name="deployRoot"     value="src"/>
+    <property name="jar_dir" location="${user.home}/jar"/>
     <condition property="sf.username" value=""> <not> <isset property="sf.username"/> </not> </condition>
     <condition property="sf.password" value=""> <not> <isset property="sf.password"/> </not> </condition>
     <condition property="sf.sessionId" value=""> <not> <isset property="sf.sessionId"/> </not> </condition>
 
     <taskdef resource="com/salesforce/antlib.xml" uri="antlib:com.salesforce">
         <classpath>
-            <pathelement location="{jar_path}" />
+            <pathelement location="${jar_dir}" />
         </classpath>
     </taskdef>
 
@@ -22,7 +23,8 @@
     </target>
 
     <target name="download_lib">
-        <get src="{jar_url_path}" dest="{jar_path}" verbose="true" usetimestamp="true"/>
+        <mkdir dir="${jar_dir}"/>
+        <get src="{jar_url_path}" dest="${jar_dir}" verbose="true" usetimestamp="true"/>
     </target>
 
     <!-- Shows check only; never actually saves to the server -->
