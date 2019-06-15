@@ -893,15 +893,16 @@ class OsUtil():
             
         self.sublconsole = SublConsole(self.sf_basic_config)
         self.settings = self.sf_basic_config.get_setting()
+        self.sys_encoding = sys.getfilesystemencoding()
 
-    def run_in_sublime_cmd(self, cmd_list):
-        self.sublconsole.thread_run(target=self._run_cmd, args=(cmd_list,))
+    def run_in_sublime_cmd(self, cmd_list, encoding=None):
+        if not encoding: encoding = self.sys_encoding
+        self.sublconsole.thread_run(target=self._run_cmd, args=(cmd_list, encoding,))
     
-    def _run_cmd(self, cmd_list):
+    def _run_cmd(self, cmd_list, encoding):
         self.sublconsole.showlog("*" * 80)
         cmd_str = self._get_cmd_str(cmd_list)
         process = subprocess.Popen(cmd_str, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        encoding = sys.getfilesystemencoding()
         # encoding = 'shift-jis'
         while True:
             line = process.stdout.readline()
@@ -909,6 +910,8 @@ class OsUtil():
                 #the real code does filtering here
                 try:
                     msg = line.rstrip().decode(encoding)
+                except UnicodeDecodeError as ex:
+                    msg = line.rstrip().decode(self.sys_encoding)
                 except Exception as ex:
                     msg = line.rstrip()
                 self.sublconsole.showlog(msg, show_time=False)
@@ -935,9 +938,9 @@ class OsUtil():
 
     def get_cd_cmd(self, path):
         if sublime.platform() == "windows":
-            return "cd /d " + path
+            return "cd /d \"%s\"" % (path)
         else:
-            return "cd " + path
+            return "cd \"%s\"" % (path)
 
 
 class DiffUtil():

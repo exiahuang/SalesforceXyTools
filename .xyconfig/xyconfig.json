@@ -1,0 +1,38 @@
+{
+    "username": "input your username",
+    "password": "input your password",
+    "security_token": "",
+    "is_sandbox": true,
+    "api_version": 40.0,
+    "src_dir": "src",
+    "authentication": "password", 
+    "jar_home": "C:\\Users\\Exia\\salesforce-project\\jar", 
+    "use_os_terminal": false, 
+    "auto_save_to_server": false,
+    "app" : {
+        "winmerge": "C:\\Program Files\\WinMerge\\WinMergeU.exe", 
+        "notepad": "C:\\Program Files (x86)\\Notepad++\\notepad++.exe {file_name}",
+        "Bash" : "cmd /k cd /d {file_dir}"
+    },
+    "default_browser": "chrome", 
+    "browsers": {
+        "chrome": "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe", 
+        "IE": "C:\\Program Files\\Internet Explorer\\iexplore.exe"
+    }, 
+    "debug_levels": {
+        "Apex_Code": "DEBUG", 
+        "Callout": "INFO", 
+        "Workflow": "INFO", 
+        "Apex_Profiling": "INFO", 
+        "Validation": "INFO", 
+        "DB": "Info", 
+        "System": "DEBUG"
+    },
+    "proxy": {
+        "use_proxy" : false,
+        "proxyhost" : "127.0.0.1",
+        "proxyport" : "8888",
+        "proxyuser" : "proxyuser",
+        "proxypassword" : "proxypassword"
+    }
+}

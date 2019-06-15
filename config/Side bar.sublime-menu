@@ -42,5 +42,15 @@
             }
         ]
     },
+    {
+        "caption": "SFDX",
+        "children":[
+            {
+                "caption": "Deploy Directory To SFDC", 
+                "command": "deploy_dir",
+                "args": {"dirs": []}
+            },
+        ]
+    },
     { "caption": "-" }
 ]

@@ -366,5 +366,35 @@
                 "command": "about_hxy"
             }
         ]
+    },
+    {
+        "caption": "SFDX",
+        "mnemonic": "DX",
+        "id": "SFDX",
+        "children":
+        [
+            {
+                "caption": "SFDC Command",
+                "command": "sfdx"
+            },
+            {  
+                "caption":"Sfdx Settings – User" ,  
+                "command": "open_sfdx_setting"
+            },  
+            {  
+                "caption":"Sfdx Settings – Default" ,  
+                "command": "open_file", "args":  
+                {  
+                    "file": "${packages}/SalesforceXyTools/config/sfdx.sublime-settings"  
+                }     
+            },  
+            {
+                "caption": "Sfdx Help",
+                "command": "xy_open_url", "args":  
+                {  
+                    "url": "https://github.com/exiahuang/SalesforceXyTools/wiki/SalesforceXyTools-Support-SFDX-develop"
+                }
+            },
+        ]
     }
 ]

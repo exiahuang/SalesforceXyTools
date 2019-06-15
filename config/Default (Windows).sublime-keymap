@@ -88,5 +88,9 @@
 	{
 	    "keys": ["alt+h"],
 	    "command": "create_test_code"
+	},
+	{
+	    "keys": ["ctrl+alt+o"],
+	    "command": "sfdx"
 	}
 ]

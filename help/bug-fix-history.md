@@ -1,5 +1,8 @@
 # SalesforceXyTools Update History
 
+## 2.1.6
+* support sfdx command
+
 ## 2.1.5
 * fix ant build.xml
 * fix remoteSite, flexipages, staticresources deploy error

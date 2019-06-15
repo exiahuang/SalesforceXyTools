@@ -1,0 +1,213 @@
+{
+	// ${workspaceFolder} - the path of the folder opened in Sublime
+	// ${workspaceFolderBasename} - the name of the folder opened in Sublime without any slashes (/)
+	// ${file} - the current opened file
+	// ${relativeFile} - the current opened file relative to workspaceFolder
+	// ${fileBasename} - the current opened file's basename
+	// ${fileBasenameNoExtension} - the current opened file's basename with no file extension
+	// ${fileDirname} - the current opened file's dirname
+	// ${fileExtname} - the current opened file's extension
+	// ${cwd} - the task runner's current working directory on startup
+	// ${selectedText} - the current selected text in the active file
+    // ${select:SFDX_ALIAS} - SFDX Alias
+    // ${input:custom_string} - Custom String
+    // set default input value in "custom_env" object
+	"tasks" : [
+		{
+			"label" : "java:version",
+			"command": "java -version"
+		},
+		{
+			"label" : "echo:env",
+			"command": "echo JAVA_HOME:${env:JAVA_HOME}, USERPROFILE:${env:USERPROFILE}"
+		},
+		{
+			"label" : "force:alias:list",
+			"command": "sfdx force:alias:list"
+		},
+        {
+            "label": "force:project:create",
+            "command": "sfdx force:project:create -n \"${input:workspaceFolder}\" --template standard",
+        },
+        {
+            // --setdefaultusername 
+            "label": "force:auth:web:login",
+            "command": "sfdx force:auth:web:login --instanceurl ${select:instanceurl} --setalias ${input:alias_name}",
+            "os_termial": true
+        },
+        {
+            "label": "force:org:open",
+            "command": "sfdx force:org:open -p ${select:sfdc_url} -u ${select:SFDX_ALIAS}"
+        },
+        {
+            "label": "force:config:set:defaultusername",
+            "command": "sfdx force:config:set defaultusername=${select:SFDX_ALIAS}"
+        },
+        {
+            "label": "force:alias:set",
+            "command": "sfdx force:alias:set DevHub=${input:DevHub}"
+        },
+        {
+            "label": "force:org:list",
+            "command": "sfdx force:org:list"
+        },
+        {
+            "label": "force:source:retrieve:from_package_xml",
+            "command": "sfdx force:source:retrieve --manifest \"${input:package_xml}\""
+        },
+        {
+            "label": "force:source:retrieve:metadata",
+            "command": "sfdx force:source:retrieve --metadata \"${select:METADATA}\""
+        },
+        {
+            "label": "force:source:retrieve:metadata:base",
+            "command": "sfdx force:source:retrieve --metadata \"${input:base_metadata}\""
+        },
+        {
+            "label": "force:source:retrieve:sourcepath",
+            "command": "sfdx force:source:retrieve --sourcepath \"${input:sourcepath}\""
+        },
+        {
+            "label": "force:source:retrieve:current_file",
+            "command": "sfdx force:source:retrieve -p \"${file}\""
+        },
+        {
+            "label": "force:source:deploy:sourcepath",
+            "command": "sfdx force:source:deploy -p \"${input:sourcepath}\" --targetusername=${select:SFDX_ALIAS}"
+        },
+        {
+            "label": "force:source:deploy:current_file",
+            "command": "sfdx force:source:deploy --loglevel fatal --sourcepath \"${file}\" --targetusername=${select:SFDX_ALIAS}"
+        },
+        {
+            "label": "force:source:deploy:metadata",
+            "command": "sfdx force:source:deploy --loglevel fatal --metadata \"${select:METADATA}\""
+        },
+        {
+            "label": "force:apex:execute",
+            "command": "sfdx force:apex:execute --apexcodefile \"${input:file}\" --loglevel=${select:LOGLEVEL}"
+        },
+        {
+            "label": "force:apex:log:get:n",
+            "command": "sfdx force:apex:log:get -u ${select:SFDX_ALIAS} -n ${input:number}"
+        },
+        {
+            "label": "force:apex:log:get:id",
+            "command": "sfdx force:apex:log:get -i ${input:ID} --color"
+        },
+        {
+            "label": "force:apex:log:list",
+            "command": "sfdx force:apex:log:list -u ${select:SFDX_ALIAS}"
+        },
+        {
+            "label": "force:apex:log:tail",
+            "command": "sfdx force:apex:log:tail --loglevel ${select:LOGLEVEL} -u ${select:SFDX_ALIAS} -c",
+            "os_termial" : true
+        },
+        {
+            "label": "force:apex:log:tail:write_to_file",
+            "command": "sfdx force:apex:log:tail --loglevel ${select:LOGLEVEL} -u ${select:SFDX_ALIAS} >> ${input:log_file}",
+            "os_termial" : true
+        },
+        {
+            "label": "force:help",
+            "command": "sfdx force -h > doc/sfdx_command_help.txt"
+        },
+        {
+            "label": "force:doc:commands:list",
+            "command": "sfdx force:doc:commands:list"
+        },
+        /////////////////////////
+        // force:apex:class:create            # create an Apex class
+        // force:apex:trigger:create          # create an Apex trigger
+        // force:lightning:app:create         # create a Lightning app
+        // force:lightning:component:create   # create a Lightning component
+        // force:lightning:event:create       # create a Lightning event
+        // force:lightning:interface:create   # create a Lightning interface
+        // force:lightning:test:create        # create a Lightning test
+        // force:visualforce:component:create # create a Visualforce component
+        // force:visualforce:page:create      # create a Visualforce page
+        {
+            "label": "force:visualforce:component:create",
+            "command": "sfdx force:visualforce:component:create -n ${input:name} -l ${input:label} --outputdir \"${input:sourcepath_component}\""
+        },
+        {
+            "label": "force:visualforce:page:create",
+            "command": "sfdx force:visualforce:page:create -n ${input:page_name} --outputdir \"${input:sourcepath_vf}\""
+        },
+        {
+            "label": "force:lightning:test:create",
+            "command": "sfdx force:lightning:test:create -n ${input:aura_name} -d \"${input:sourcepath_aura}\""
+        },
+        {
+            "label": "force:lightning:interface:create",
+            "command": "sfdx force:lightning:interface:create -n ${input:aura_name} -d \"${input:sourcepath_aura}\""
+        },
+        {
+            "label": "force:lightning:event:create",
+            "command": "sfdx force:lightning:event:create -n ${input:aura_name} -d \"${input:sourcepath_aura}\""
+        },
+        {
+            "label": "force:lightning:component:create:aura",
+            "command": "sfdx force:lightning:component:create -n ${input:aura_name} -d \"${input:sourcepath_aura}\""
+        },
+        {
+            "label": "force:lightning:app:create",
+            "command": "sfdx force:lightning:app:create -n ${input:aura_name} -d \"${input:sourcepath_aura}\""
+        },
+        {
+            "label": "force:apex:trigger:create",
+            "command": "sfdx force:apex:trigger:create -n ${input:trigger_name} --outputdir \"${input:sourcepath_trigger}\""
+        },
+        {
+            "label": "force:apex:class:create",
+            "command": "sfdx force:apex:class:create -n ${input:apex_name} --outputdir \"${input:sourcepath_apex}\" --template ${select:apex_template}"
+        },
+        {
+            "label": "force:lightning:component:create:lwc",
+            "command": "sfdx force:lightning:component:create --type lwc -n ${input:lwc_name} --outputdir \"${input:sourcepath_lwc}\""
+        },
+        /////////////////////////Data
+        {
+            "label": "force:data:soql:query",
+            "command": "sfdx force:data:soql:query -q \"${input:soql_str}\" "
+        },
+        {
+            "label": "force:data:soql:query:write_to_file",
+            "command": "sfdx force:data:soql:query -q \"${input:soql}\" > ${input:soql_result}"
+        },
+        {
+            "label": "force:data:tree:export",
+            "command": "sfdx force:data:tree:export -q \"${input:soql}\" --outputdir=${input:data_dir}"
+        },
+        //{
+        //    "label": "force:source:pull",
+        //    "command": "sfdx force:source:pull"
+        //},
+	],
+    "custom_env" : {
+        "log_file" : "./sfdc_tail.log",
+        "data_dir" : "./data/",
+        "soql_result" : "./sfdc_soql.log",
+        "sourcepath" : "./force-app/main/default",
+        "sourcepath_aura" : "./force-app/main/default/aura",
+        "sourcepath_lwc" : "./force-app/main/default/lwc",
+        "sourcepath_apex" : "./force-app/main/default/classes",
+        "sourcepath_trigger" : "./force-app/main/default/triggers",
+        "sourcepath_vf" : "./force-app/main/default/pages",
+        "sourcepath_component" : "./force-app/main/default/components",
+        "package_xml" : "./manifest/package.xml",
+        "number" : 1,
+        "sfdc_url" : [
+                        "/home/home.jsp",
+                        "/_ui/common/apex/debug/ApexCSIPage",
+                        "/setup/ui/listApexTraces.apexp?setupid=ApexDebugLogs",
+                        "/p/setup/custent/CustomObjectsPage?setupid=CustomObjects"
+                    ],
+        "base_metadata" : "ApexClass, ApexPage, ApexComponent, ApexTrigger, LightningComponentBundle, AuraDefinitionBundle, CustomObject",
+        "apex_template" : ["DefaultApexClass", "ApexException", "ApexUnitTest", "InboundEmailService"],
+        "METADATA" : [ "ApexClass", "ApexPage", "ApexComponent", "ApexTrigger", "LightningComponentBundle", "AuraDefinitionBundle", "CustomObject", "ActionLinkGroupTemplate", "AnalyticSnapshot", "ArticleType", "ApexTestSuite", "AppMenu", "ApprovalProcess", "AssignmentRules", "AuthProvider", "AutoResponseRules", "BotVersion", "BrandingSet", "CallCenter", "CampaignInfluenceModel", "CaseSubjectParticle", "Certificate", "ChatterExtension", "CleanDataService", "CMSConnectSource", "Community", "CommunityTemplateDefinition", "CommunityThemeDefinition", "ConnectedApp", "ContentAsset", "CorsWhitelistOrigin", "CspTrustedSite", "CustomApplication", "CustomApplicationComponent", "CustomFeedFilter", "CustomLabels", "CustomObjectTranslation", "CustomPageWebLink", "CustomPermission", "CustomSite", "CustomTab", "CustomValue", "CustomValue", "Dashboard", "DataCategoryGroup", "DelegateGroup", "Document", "DuplicateRule", "EclairGeoData", "EmailServicesFunction", "EmailTemplate", "EmbeddedServiceBranding", "EmbeddedServiceConfig", "EmbeddedServiceFieldService", "EmbeddedServiceLiveAgent", "EntitlementProcess", "EntitlementTemplate", "EscalationRules", "EventDelivery", "EventSubscription", "ExternalDataSource", "ExternalServiceRegistration", "FeatureParameterBoolean", "FeatureParameterDate", "FeatureParameterInteger", "FlexiPage", "Flow", "FlowCategory", "FlowDefinition", "Folder", "GlobalPicklist", "GlobalPicklistValue", "GlobalValueSet", "GlobalValueSetTranslation", "Group", "HomePageComponent", "HomePageLayout", "InstalledPackage", "KeywordList", "Layout", "Letterhead", "LightningBolt", "LightningExperienceTheme", "LiveChatAgentConfig", "LiveChatButton", "LiveChatDeployment", "LiveChatSensitiveDataRule", "ManagedTopics", "MatchingRule", "Metadata", "MetadataWithContent", "MilestoneType", "MlDomain", "ModerationRule", "NamedCredential", "Network", "NetworkBranding", "Package", "PathAssistant", "PermissionSet", "PlatformCachePartition", "Portal", "PostTemplate", "PresenceDeclineReason", "PresenceUserConfig", "Profile", "ProfileActionOverride", "ProfilePasswordPolicy", "Queue", "QueueRoutingConfig", "QuickAction", "RemoteSiteSetting", "Report", "ReportType", "Role", "RoleOrTerritory", "SamlSsoConfig", "Scontrol", "ServiceChannel", "ServicePresenceStatus", "SharedTo", "SharingBaseRule", "SharingRules", "SharingSet", "SiteDotCom", "Skill", "StandardValueSet", "StandardValueSetTranslation", "StaticResource", "SynonymDictionary", "Territory", "Territory2", "Territory2Model", "Territory2Rule", "Territory2Type", "TopicsForObjects", "TransactionSecurityPolicy", "Translations", "UserCriteria", "WaveApplication", "WaveDataflow", "WaveDashboard", "WaveDataset", "WaveLens", "WaveTemplateBundle", "WaveXmd", "Workflow"], 
+        "LOGLEVEL" : ["trace", "debug", "info", "warn", "error", "fatal"],
+        "instanceurl" : ["https://login.salesforce.com", "https://test.salesforce.com"]
+    }
+}
