@@ -32,6 +32,7 @@
 
 - Auto Backup all metadata script(**Set your schedule, backup your sfdc metadata.**).
 
+- Support sfdx command (From v2.1.6), [Document](https://github.com/exiahuang/SalesforceXyTools/wiki/SalesforceXyTools-Support-SFDX-develop)
 
 # Basic on OpenSource
 
