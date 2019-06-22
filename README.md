@@ -34,6 +34,8 @@
 
 - Support sfdx command (From v2.1.6), [Document](https://github.com/exiahuang/SalesforceXyTools/wiki/SalesforceXyTools-Support-SFDX-develop)
 
+- Support git command (From v2.1.7), [Document](https://github.com/exiahuang/SalesforceXyTools/wiki/SalesforceXyTools-Support-Git)
+
 # Basic on OpenSource
 
 SalesforceXyToolsForSublime is based on python and open source below.

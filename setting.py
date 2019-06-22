@@ -449,7 +449,6 @@ def get_default_project_config(config_file_full_path, jar_home):
 }
 """.replace("{jar_home}", jar_home).replace("{winmerge}", get_winmerge()).replace("{notepad}", get_notepad())
 
-    save_file(config_file_full_path, pro_config)
     return json.loads(pro_config)
 
 def get_winmerge():

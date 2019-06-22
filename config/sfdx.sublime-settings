@@ -89,11 +89,13 @@
         },
         {
             "label": "force:apex:log:get:n",
-            "command": "sfdx force:apex:log:get -u ${select:SFDX_ALIAS} -n ${input:number}"
+            "command": "sfdx force:apex:log:get -u ${select:SFDX_ALIAS} -n ${input:number}",
+            "os_termial" : true
         },
         {
             "label": "force:apex:log:get:id",
-            "command": "sfdx force:apex:log:get -i ${input:ID} --color"
+            "command": "sfdx force:apex:log:get -i ${input:ID} --color",
+            "os_termial" : true
         },
         {
             "label": "force:apex:log:list",
@@ -101,17 +103,17 @@
         },
         {
             "label": "force:apex:log:tail",
-            "command": "sfdx force:apex:log:tail --loglevel ${select:LOGLEVEL} -u ${select:SFDX_ALIAS} -c",
+            "command": "sfdx force:apex:log:tail --loglevel ${select:LOGLEVEL} -u ${select:SFDX_ALIAS} -c --skiptraceflag",
             "os_termial" : true
         },
         {
             "label": "force:apex:log:tail:write_to_file",
-            "command": "sfdx force:apex:log:tail --loglevel ${select:LOGLEVEL} -u ${select:SFDX_ALIAS} >> ${input:log_file}",
+            "command": "sfdx force:apex:log:tail --loglevel ${select:LOGLEVEL} -u ${select:SFDX_ALIAS} --skiptraceflag >> ${input:log_file}",
             "os_termial" : true
         },
         {
             "label": "force:help",
-            "command": "sfdx force -h > doc/sfdx_command_help.txt"
+            "command": "sfdx force -h"
         },
         {
             "label": "force:doc:commands:list",
@@ -184,8 +186,321 @@
         //    "label": "force:source:pull",
         //    "command": "sfdx force:source:pull"
         //},
-	],
+
+    //////////////////////////Git Command Start/////////////////////////////////    
+        {
+            "label" : "git:version",
+            "encoding": "UTF-8",
+            "command": "git --version"
+        },
+        {
+            "label" : "git:gui",
+            "os_termial": true,
+            "command": "git gui"
+        },
+        {
+            "label" : "git:init",
+            "encoding": "UTF-8",
+            "command": "git init"
+        },
+        {
+            "label" : "git:add",
+            "encoding": "UTF-8",
+            "command": "git add ${input:git_add_file}"
+        },
+        {
+            "label" : "git:add:all",
+            "encoding": "UTF-8",
+            "command": "git add --all"
+        },
+        {
+            "label" : "git:clone",
+            "encoding": "UTF-8",
+            "command": "git clone ${input:git_url}"
+        },
+        {
+            "label" : "git:log:pretty",
+            "encoding": "UTF-8",
+            "command": "git log ${git_log_format} --date-order"
+        },
+        {
+            "label" : "git:log:pretty:graph",
+            "encoding": "UTF-8",
+            "command": "git log ${git_log_format} --date-order --graph"
+        },
+        {
+            "label" : "git:log:pretty:n",
+            "encoding": "UTF-8",
+            "command": "git log -${input:git_log_number} ${git_log_format}"
+        },
+        {
+            "label" : "git:log:pretty:graph:n",
+            "encoding": "UTF-8",
+            "command": "git log -${input:git_log_number} ${git_log_format} --graph"
+        },
+        {
+            "label" : "git:fetch:all",
+            "encoding": "UTF-8",
+            "command": "git fetch --all"
+        },
+        {
+            "label" : "git:pull:all",
+            "encoding": "UTF-8",
+            "command": "git pull --all"
+        },
+        {
+            "label" : "git:branch:list",
+            "encoding": "UTF-8",
+            "command": "git branch ${select:git_branch}"
+        },
+        {
+            "label" : "git:branch:list_local",
+            "encoding": "UTF-8",
+            "command": "git branch"
+        },
+        {
+            "label" : "git:checkout:branch_name",
+            "encoding": "UTF-8",
+            "command": "git checkout ${input:git_branch_name}"
+        },
+        {
+            "label" : "git:checkout:new_branch_name",
+            "encoding": "UTF-8",
+            "command": "git checkout -b ${input:git_branch_name}"
+        },
+        {
+            "label" : "git:branch:delete",
+            "encoding": "UTF-8",
+            "command": "git branch --delete ${input:git_branch_name}"
+        },
+        {
+            "label" : "git:checkout:master",
+            "encoding": "UTF-8",
+            "command": "git checkout master"
+        },
+        {
+            "label" : "git:tag",
+            "encoding": "UTF-8",
+            "command": "git tag"
+        },
+        {
+            "label" : "git:status",
+            "encoding": "UTF-8",
+            "command" : "git status -s"
+        },
+        {
+            "label" : "git:log",
+            "encoding": "UTF-8",
+            "command" : "git log"
+        },
+        {
+            "label" : "git:log:stat",
+            "encoding": "UTF-8",
+            "command" : "git log --stat"
+        },
+        {
+            "label" : "git:log:search",
+            "encoding": "UTF-8",
+            "command" : "git log ${git_log_format} --grep \"${input:keyword}\" "
+        },
+        {
+            "label" : "git:log:tag",
+            "encoding": "UTF-8",
+            "command" : "git log ${input:tag} HEAD --pretty=format:%s"
+        },
+        {
+            "label" : "git:log:feature",
+            "encoding": "UTF-8",
+            "command" : "git log ${input:tag} HEAD --grep feature"
+        },
+        {
+            "label" : "git:log:follow",
+            "encoding": "UTF-8",
+            "command" : "git log --follow [file]"
+        },
+        {
+            "label" : "git:log:diff",
+            "encoding": "UTF-8",
+            "command" : "git log -p ${input:file}"
+        },
+        {
+            "label" : "git:log:5",
+            "encoding": "UTF-8",
+            "command" : "git log -5 --pretty --oneline"
+        },
+        {
+            "label" : "git:shortlog",
+            "encoding": "UTF-8",
+            "command" : "git shortlog -sn"
+        },
+        {
+            "label" : "git:blame",
+            "encoding": "UTF-8",
+            "command" : "git blame ${input:file}"
+        },
+        {
+            "label" : "git:diff",
+            "encoding": "UTF-8",
+            "command" : "git diff"
+        },
+        {
+            "label" : "git:diff:cached",
+            "encoding": "UTF-8",
+            "command" : "git diff --cached ${input:file}"
+        },
+        {
+            "label" : "git:diff:head",
+            "encoding": "UTF-8",
+            "command" : "git diff HEAD"
+        },
+        {
+            "label" : "git:diff:branch:name-only",
+            "encoding": "UTF-8",
+            "command" : "git diff ${input:branch1}...${input:branch2} --name-only"
+        },
+        {
+            "label" : "git:diff:branch",
+            "encoding": "UTF-8",
+            "command" : "git diff ${input:branch1}...${input:branch2} "
+        },
+        {
+            "label" : "git:diff:today",
+            "encoding": "UTF-8",
+            "command" : "git diff --shortstat \"@{0 day ago}\""
+        },
+        {
+            "label" : "git:diff:file",
+            "encoding": "UTF-8",
+            "command" : "git diff -- \"${file}\""
+        },
+        {
+            "label" : "git:show",
+            "encoding": "UTF-8",
+            "command": "git show"
+        },
+        {
+            "label" : "git:show:commit",
+            "encoding": "UTF-8",
+            "command": "git show ${input:commit_id}"
+        },
+        {
+            "label" : "git:show:commit:name-only",
+            "encoding": "UTF-8",
+            "command" : "git show --name-only ${input:commit_id}"
+        },
+        {
+            "label" : "git:show:commit:filename",
+            "encoding": "UTF-8",
+            "command" : "git show ${input:commit}:${input:file}"
+        },
+        {
+            "label" : "git:commit:diff",
+            "encoding": "UTF-8",
+            "command" : "git diff ${input:commit1} ${input:commit2} --stat "
+        },
+        {
+            "label" : "git:reflog",
+            "encoding": "UTF-8",
+            "command" : "git reflog"
+        },
+        {
+            "label" : "git:commit",
+            "encoding": "UTF-8",
+            "command" : "git commit -m \"${input:git_commit_message}\""
+        },
+        {
+            "label" : "git:remote:add:origin",
+            "encoding": "UTF-8",
+            "command" : "git remote add origin ${input:git_remote_url}"
+        },
+        {
+            "label" : "git:remote:verbose",
+            "encoding": "UTF-8",
+            "command" : "git remote -v"
+        },
+        {
+            "label" : "git:push:origin_to_master",
+            "encoding": "UTF-8",
+            "command" : "git push -u origin ${input:git_master}"
+        },
+        {
+            "label" : "git:stash:save",
+            "encoding": "UTF-8",
+            "command" : "git stash save \"${input:git_statsh_message}\""
+        },
+        {
+            "label" : "git:stash:show",
+            "encoding": "UTF-8",
+            "command" : "git stash show ${input:git_statsh_name}"
+        },
+        {
+            "label" : "git:stash:show:p",
+            "encoding": "UTF-8",
+            "command" : "git stash show ${input:git_statsh_name} -p"
+        },
+        {
+            "label" : "git:stash:list",
+            "encoding": "UTF-8",
+            "command" : "git stash list"
+        },
+        {
+            "label" : "git:stash:apply",
+            "encoding": "UTF-8",
+            "command" : "git stash apply ${input:git_statsh_name}"
+        },
+        {
+            "label" : "git:stash:drop",
+            "encoding": "UTF-8",
+            "command" : "git stash drop ${input:git_statsh_name}"
+        },
+        {
+            "label" : "git:reset",
+            "encoding": "UTF-8",
+            "command" : "git reset HEAD ."
+        },
+        {
+            "label" : "git:reset:file",
+            "encoding": "UTF-8",
+            "command" : "git reset ${input:git_reset_file_or_dir}"
+        },
+        {
+            "label" : "git:config:open",
+            "command": "\"${execPath}\" .git/config"
+        },
+        {
+            "label" : "git:config:set",
+            "encoding": "UTF-8",
+            "command": "git config ${select:git_config_key} ${input:git_config_val}"
+        },
+        {
+            "label" : "git:config:set:core.quotepath:false",
+            "encoding": "UTF-8",
+            "command": "git config core.quotepath false"
+        },
+        {
+            "label" : "git:config:set:core.autocrlf:false",
+            "encoding": "UTF-8",
+            "command": "git config core.autocrlf false"
+        },
+        {
+            "label" : "git:config:set:push.default:simple",
+            "encoding": "UTF-8",
+            "command": "git config push.default simple"
+        },
+        {
+            "label" : "git:config:set:credential.helper:wincred",
+            "encoding": "UTF-8",
+            "command": "git config credential.helper wincred"
+        },
+    //////////////////////////Git Command END/////////////////////////////////
+
+    ],
     "custom_env" : {
+        "git_branch" : ["--list", "--all", "--remotes"],
+        "git_log_format" : "--pretty=format:\"%h [%cd] %s %d [%an]\" --date=format:\"%Y/%m/%d %H:%M:%S\"",
+        "git_statsh_name" : "stash@{0}",
+        "git_log_number" : 10,
+        "git_config_key": ["user.name", "user.email", "core.ignorecase", "core.quotepath", "core.safecrlf", "core.autocrlf"],
         "log_file" : "./sfdc_tail.log",
         "data_dir" : "./data/",
         "soql_result" : "./sfdc_soql.log",
@@ -202,7 +517,8 @@
                         "/home/home.jsp",
                         "/_ui/common/apex/debug/ApexCSIPage",
                         "/setup/ui/listApexTraces.apexp?setupid=ApexDebugLogs",
-                        "/p/setup/custent/CustomObjectsPage?setupid=CustomObjects"
+                        "/p/setup/custent/CustomObjectsPage?setupid=CustomObjects",
+                        "/changemgmt/listOutboundChangeSet.apexp"
                     ],
         "base_metadata" : "ApexClass, ApexPage, ApexComponent, ApexTrigger, LightningComponentBundle, AuraDefinitionBundle, CustomObject",
         "apex_template" : ["DefaultApexClass", "ApexException", "ApexUnitTest", "InboundEmailService"],

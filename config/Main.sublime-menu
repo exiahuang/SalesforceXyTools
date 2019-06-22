@@ -379,7 +379,11 @@
             },
             {  
                 "caption":"Sfdx Settings – User" ,  
-                "command": "open_sfdx_setting"
+                // "command": "open_sfdx_setting"
+                "command": "open_file", "args":  
+                {  
+                    "file": "${packages}/User/sfdx.sublime-settings"  
+                }     
             },  
             {  
                 "caption":"Sfdx Settings – Default" ,  
