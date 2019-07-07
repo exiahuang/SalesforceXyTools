@@ -8,7 +8,7 @@
   
   <meta name="author" content="Exia.Huang">
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>Soql Creator - Cmder For Sublime</title>
+  <title>SalesforceXyTools For Sublime Support Git Command - Cmder For Sublime</title>
   <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
   <link rel="stylesheet" href="../css/theme.css" type="text/css" />
@@ -17,9 +17,9 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Soql Creator";
-    var mkdocs_page_input_path = "SalesforceXytoolsForSublime-013-Create-Soql.md";
-    var mkdocs_page_url = "/SalesforceXyTools/SalesforceXytoolsForSublime-013-Create-Soql/";
+    var mkdocs_page_name = "SalesforceXyTools For Sublime Support Git Command";
+    var mkdocs_page_input_path = "SalesforceXytoolsForSublime-Support-Git.md";
+    var mkdocs_page_url = "/SalesforceXyTools/SalesforceXytoolsForSublime-Support-Git/";
   </script>
   
   <script src="../js/jquery-2.1.1.min.js" defer></script>
@@ -123,21 +123,9 @@
     <a class="" href="../SalesforceXytoolsForSublime-012-PermissionSet-Builder/">PermissionSet Builder</a>
 	    </li>
           
-            <li class="toctree-l1 current">
+            <li class="toctree-l1">
 		
-    <a class="current" href="./">Soql Creator</a>
-    <ul class="subnav">
-            
-    <li class="toctree-l2"><a href="#topic">Topic</a></li>
-    
-
-    <li class="toctree-l2"><a href="#environment">Environment</a></li>
-    
-
-    <li class="toctree-l2"><a href="#create-soql">Create Soql</a></li>
-    
-
-    </ul>
+    <a class="" href="../SalesforceXytoolsForSublime-013-Create-Soql/">Soql Creator</a>
 	    </li>
           
             <li class="toctree-l1">
@@ -170,9 +158,18 @@
     <a class="" href="../SalesforceXytoolsForSublime-102-TestClass-Creater/">Salesforce test code creator</a>
 	    </li>
           
-            <li class="toctree-l1">
+            <li class="toctree-l1 current">
 		
-    <a class="" href="../SalesforceXytoolsForSublime-Support-Git/">SalesforceXyTools For Sublime Support Git Command</a>
+    <a class="current" href="./">SalesforceXyTools For Sublime Support Git Command</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#salesforcexytools-support-git-command">SalesforceXyTools Support Git Command</a></li>
+    
+
+    <li class="toctree-l2"><a href="#useage">Useage</a></li>
+    
+
+    </ul>
 	    </li>
           
             <li class="toctree-l1">
@@ -202,7 +199,7 @@
     
       
     
-    <li>Soql Creator</li>
+    <li>SalesforceXyTools For Sublime Support Git Command</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -212,45 +209,326 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="topic">Topic</h1>
-<ul>
-<li>Use <a href="http://salesforcexytools.com/categories/SalesforcexytoolsForSublime/">SalesforceXytoolsForSublime</a> To Create soql</li>
-</ul>
-<h1 id="environment">Environment</h1>
-<ul>
-<li>Make sure you can login your sfdc. Test it : SFDC-XY &gt; Login SFDC</li>
-</ul>
-<h1 id="create-soql">Create Soql</h1>
-<p><code>SFDC Code Creator &gt; Create Soql</code></p>
-<p><img alt="1540459992691" src="/images/xytools_images/1540459992691.png" /></p>
-<p>Select Soql Type</p>
-<p><img alt="1540460017305" src="/images/xytools_images/1540460017305.png" /></p>
-<p>result :</p>
-<pre><code class="sql">select 
-            Id,             //カスタムオブジェクト ID
-            OwnerId,                //所有者 ID
-            IsDeleted,              //削除
-            Name,               //ブログNo
-            RecordTypeId,               //レコードタイプ ID
-            CreatedDate,                //作成日
-            CreatedById,                //作成者 ID
-            LastModifiedDate,               //最終更新日
-            LastModifiedById,               //最終更新者 ID
-            SystemModstamp,             //System Modstamp
-            LastViewedDate,             //最終閲覧日
-            LastReferencedDate,             //最終参照日
-            comment__c,             //評価
-            comment_status__c,              //評価ステータス
-            content__c,             //内容
-            excerpt__c,             //概要
-            status__c,              //ステータス
-            title__c,               //タイトル
-            ReadOnlyTest__c,                //ReadOnlyTest
-            FormulaTest__c,             //数式テスト
-            Account__c              //取引先
-from Blog__c
-
-</code></pre>
+                <h1 id="salesforcexytools-support-git-command">SalesforceXyTools Support Git Command</h1>
+<p><img alt="github setting" src="http://salesforcexytools.com/mystatic/media/SalesforceXyTools/support-git-command.png" /></p>
+<table>
+<thead>
+<tr>
+<th>Lable</th>
+<th>Command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>git:version</td>
+<td>git --version</td>
+<td></td>
+</tr>
+<tr>
+<td>git:gui</td>
+<td>git gui</td>
+<td></td>
+</tr>
+<tr>
+<td>git:init</td>
+<td>git init</td>
+<td></td>
+</tr>
+<tr>
+<td>git:add</td>
+<td>git add ${input:git_add_file}</td>
+<td></td>
+</tr>
+<tr>
+<td>git:add:all</td>
+<td>git add --all</td>
+<td></td>
+</tr>
+<tr>
+<td>git:clone</td>
+<td>git clone ${input:git_url}</td>
+<td></td>
+</tr>
+<tr>
+<td>git:log:pretty</td>
+<td>git log ${git_log_format} --date-order</td>
+<td></td>
+</tr>
+<tr>
+<td>git:log:pretty:graph</td>
+<td>git log ${git_log_format} --date-order --graph</td>
+<td></td>
+</tr>
+<tr>
+<td>git:log:pretty:n</td>
+<td>git log -${input:git_log_number} ${git_log_format}</td>
+<td></td>
+</tr>
+<tr>
+<td>git:log:pretty:graph:n</td>
+<td>git log -${input:git_log_number} ${git_log_format} --graph</td>
+<td></td>
+</tr>
+<tr>
+<td>git:fetch:all</td>
+<td>git fetch --all</td>
+<td></td>
+</tr>
+<tr>
+<td>git:pull:all</td>
+<td>git pull --all</td>
+<td></td>
+</tr>
+<tr>
+<td>git:branch:list</td>
+<td>git branch ${select:git_branch}</td>
+<td></td>
+</tr>
+<tr>
+<td>git:branch:list_local</td>
+<td>git branch</td>
+<td></td>
+</tr>
+<tr>
+<td>git:checkout:branch_name</td>
+<td>git checkout ${input:git_branch_name}</td>
+<td></td>
+</tr>
+<tr>
+<td>git:checkout:new_branch_name</td>
+<td>git checkout -b ${input:git_branch_name}</td>
+<td></td>
+</tr>
+<tr>
+<td>git:branch:delete</td>
+<td>git branch --delete ${input:git_branch_name}</td>
+<td></td>
+</tr>
+<tr>
+<td>git:checkout:master</td>
+<td>git checkout master</td>
+<td></td>
+</tr>
+<tr>
+<td>git:tag</td>
+<td>git tag</td>
+<td></td>
+</tr>
+<tr>
+<td>git:status</td>
+<td>git status -s</td>
+<td></td>
+</tr>
+<tr>
+<td>git:log</td>
+<td>git log</td>
+<td></td>
+</tr>
+<tr>
+<td>git:log:stat</td>
+<td>git log --stat</td>
+<td></td>
+</tr>
+<tr>
+<td>git:log:search</td>
+<td>git log ${git_log_format} --grep "${input:keyword}"</td>
+<td></td>
+</tr>
+<tr>
+<td>git:log:tag</td>
+<td>git log ${input:tag} HEAD --pretty=format:%s</td>
+<td></td>
+</tr>
+<tr>
+<td>git:log:feature</td>
+<td>git log ${input:tag} HEAD --grep feature</td>
+<td></td>
+</tr>
+<tr>
+<td>git:log:follow</td>
+<td>git log --follow [file]</td>
+<td></td>
+</tr>
+<tr>
+<td>git:log:diff</td>
+<td>git log -p ${input:file}</td>
+<td></td>
+</tr>
+<tr>
+<td>git:log:5</td>
+<td>git log -5 --pretty --oneline</td>
+<td></td>
+</tr>
+<tr>
+<td>git:shortlog</td>
+<td>git shortlog -sn</td>
+<td></td>
+</tr>
+<tr>
+<td>git:blame</td>
+<td>git blame ${input:file}</td>
+<td></td>
+</tr>
+<tr>
+<td>git:diff</td>
+<td>git diff</td>
+<td></td>
+</tr>
+<tr>
+<td>git:diff:cached</td>
+<td>git diff --cached ${input:file}</td>
+<td></td>
+</tr>
+<tr>
+<td>git:diff:head</td>
+<td>git diff HEAD</td>
+<td></td>
+</tr>
+<tr>
+<td>git:diff:branch:name-only</td>
+<td>git diff ${input:branch1}...${input:branch2} --name-only</td>
+<td></td>
+</tr>
+<tr>
+<td>git:diff:branch</td>
+<td>git diff ${input:branch1}...${input:branch2}</td>
+<td></td>
+</tr>
+<tr>
+<td>git:diff:today</td>
+<td>git diff --shortstat "@{0 day ago}"</td>
+<td></td>
+</tr>
+<tr>
+<td>git:diff:file</td>
+<td>git diff -- "${file}"</td>
+<td></td>
+</tr>
+<tr>
+<td>git:show</td>
+<td>git show</td>
+<td></td>
+</tr>
+<tr>
+<td>git:show:commit</td>
+<td>git show ${input:commit_id}</td>
+<td></td>
+</tr>
+<tr>
+<td>git:show:commit:name-only</td>
+<td>git show --name-only ${input:commit_id}</td>
+<td></td>
+</tr>
+<tr>
+<td>git:show:commit:filename</td>
+<td>git show ${input:commit}:${input:file}</td>
+<td></td>
+</tr>
+<tr>
+<td>git:commit:diff</td>
+<td>git diff ${input:commit1} ${input:commit2} --stat</td>
+<td></td>
+</tr>
+<tr>
+<td>git:reflog</td>
+<td>git reflog</td>
+<td></td>
+</tr>
+<tr>
+<td>git:commit</td>
+<td>git commit -m "${input:git_commit_message}"</td>
+<td></td>
+</tr>
+<tr>
+<td>git:remote:add:origin</td>
+<td>git remote add origin ${input:git_remote_url}</td>
+<td></td>
+</tr>
+<tr>
+<td>git:remote:verbose</td>
+<td>git remote -v</td>
+<td></td>
+</tr>
+<tr>
+<td>git:push:origin_to_master</td>
+<td>git push -u origin ${input:git_master}</td>
+<td></td>
+</tr>
+<tr>
+<td>git:stash:save</td>
+<td>git stash save "${input:git_statsh_message}"</td>
+<td></td>
+</tr>
+<tr>
+<td>git:stash:show</td>
+<td>git stash show ${input:git_statsh_name}</td>
+<td></td>
+</tr>
+<tr>
+<td>git:stash:show:p</td>
+<td>git stash show ${input:git_statsh_name} -p</td>
+<td></td>
+</tr>
+<tr>
+<td>git:stash:list</td>
+<td>git stash list</td>
+<td></td>
+</tr>
+<tr>
+<td>git:stash:apply</td>
+<td>git stash apply ${input:git_statsh_name}</td>
+<td></td>
+</tr>
+<tr>
+<td>git:stash:drop</td>
+<td>git stash drop ${input:git_statsh_name}</td>
+<td></td>
+</tr>
+<tr>
+<td>git:reset</td>
+<td>git reset HEAD .</td>
+<td></td>
+</tr>
+<tr>
+<td>git:reset:file</td>
+<td>git reset ${input:git_reset_file_or_dir}</td>
+<td></td>
+</tr>
+<tr>
+<td>git:config:open</td>
+<td>"${execPath}" .git/config</td>
+<td></td>
+</tr>
+<tr>
+<td>git:config:set</td>
+<td>git config ${select:git_config_key} ${input:git_config_val}</td>
+<td></td>
+</tr>
+<tr>
+<td>git:config:set:core.quotepath:false</td>
+<td>git config core.quotepath false</td>
+<td></td>
+</tr>
+<tr>
+<td>git:config:set:core.autocrlf:false</td>
+<td>git config core.autocrlf false</td>
+<td></td>
+</tr>
+<tr>
+<td>git:config:set:push.default:simple</td>
+<td>git config push.default simple</td>
+<td></td>
+</tr>
+<tr>
+<td>git:config:set:credential.helper:wincred</td>
+<td>git config credential.helper wincred</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h1 id="useage">Useage</h1>
+<p><img alt="github setting" src="http://salesforcexytools.com/mystatic/media/SalesforceXyTools/XyTools-Support-Git.gif" /></p>
               
             </div>
           </div>
@@ -258,10 +536,10 @@ from Blog__c
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../SalesforceXytoolsForSublime-014-Build-Deploy-Module/" class="btn btn-neutral float-right" title="Save Your Sfdc Module and build a deploy module package">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../SalesforceXytoolsForSublime-Support-Sfdx-Develop/" class="btn btn-neutral float-right" title="SalesforceXyTools For Sublime Support SFDX develop">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../SalesforceXytoolsForSublime-012-PermissionSet-Builder/" class="btn btn-neutral" title="PermissionSet Builder"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../SalesforceXytoolsForSublime-102-TestClass-Creater/" class="btn btn-neutral" title="Salesforce test code creator"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -287,10 +565,10 @@ from Blog__c
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../SalesforceXytoolsForSublime-012-PermissionSet-Builder/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../SalesforceXytoolsForSublime-102-TestClass-Creater/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../SalesforceXytoolsForSublime-014-Build-Deploy-Module/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../SalesforceXytoolsForSublime-Support-Sfdx-Develop/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
