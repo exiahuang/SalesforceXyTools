@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Cmder For Sublime Help">
+  <meta name="author" content="Exia.Huang">
+  <link rel="shortcut icon" href="img/favicon.ico">
+  <title>Cmder for Sublime Text - Cmder For Sublime</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Cmder for Sublime Text";
+    var mkdocs_page_input_path = "index.md";
+    var mkdocs_page_url = "/Cmder/";
+  </script>
+  
+  <script src="js/jquery-2.1.1.min.js" defer></script>
+  <script src="js/modernizr-2.8.3.min.js" defer></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href="." class="icon icon-home"> Cmder For Sublime</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href=".">Cmder for Sublime Text</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#cmder-for-sublime-text">Cmder for Sublime Text</a></li>
+    
+
+    <li class="toctree-l2"><a href="#how-tu-run">How tu run</a></li>
+    
+
+    <li class="toctree-l2"><a href="#how-to-config">How to config</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#custom-config">custom config</a></li>
+        
+            <li><a class="toctree-l3" href="#predefined-variables">Predefined variables</a></li>
+        
+            <li><a class="toctree-l3" href="#customer-variables">Customer variables</a></li>
+        
+            <li><a class="toctree-l3" href="#input-variables">input variables:</a></li>
+        
+            <li><a class="toctree-l3" href="#select-variables">select variables:</a></li>
+        
+            <li><a class="toctree-l3" href="#support-system-env">support System env</a></li>
+        
+            <li><a class="toctree-l3" href="#other-command-params">other command params.</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l2"><a href="#more-example">More example</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#new-file">new File</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l2"><a href="#about-author">about author</a></li>
+    
+
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="cmder-docker/">Cmder for Docker</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="cmder-dotnet-tutorial/">Cmder for Dotnet</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="cmder-express/">Cmder For Express and heroku</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="cmder-hexo/">Cmder for Hexo Blog</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="cmder-vue/">Cmder for Vue</a>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href=".">Cmder For Sublime</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Cmder for Sublime Text</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="cmder-for-sublime-text">Cmder for Sublime Text</h1>
+<p>Cmder for Sublime Text run customer command, <code>Cmder for Sublime Text</code>  run any command. You can use it to run any os command, such as python, java, ruby, go, c, c++, github, docker, heroku, etc.</p>
+<h1 id="how-tu-run">How tu run</h1>
+<p>shortkey: <code>ctrl+alt+i</code></p>
+<h1 id="how-to-config">How to config</h1>
+<h2 id="custom-config">custom config</h2>
+<pre><code class="json">{
+    // ${workspaceFolder} - the path of the folder opened in Sublime
+    // ${workspaceFolderBasename} - the name of the folder opened in Sublime without any slashes (/)
+    // ${file} - the current opened file
+    // ${relativeFile} - the current opened file relative to workspaceFolder
+    // ${fileBasename} - the current opened file's basename
+    // ${fileBasenameNoExtension} - the current opened file's basename with no file extension
+    // ${fileDirname} - the current opened file's dirname
+    // ${fileExtname} - the current opened file's extension
+    // ${cwd} - the task runner's current working directory on startup
+    // ${selectedText} - the current selected text in the active file
+    // ${input:custom_string} - Custom String
+    // set default input value in &quot;custom_env&quot; object
+    &quot;tasks&quot; : [
+        {
+            &quot;label&quot; : &quot;echo:env&quot;,
+            &quot;command&quot;: &quot;echo JAVA_HOME:${env:JAVA_HOME}, USERPROFILE:${env:USERPROFILE}&quot;
+        },
+        {
+            &quot;label&quot; : &quot;java:version&quot;,
+            &quot;command&quot;: &quot;java -version&quot;
+        },
+        {
+            &quot;label&quot; : &quot;windows:new:file&quot;,
+            &quot;command&quot;: &quot;type nul &gt; \&quot;${input:workspaceFolder}/${input:file_name}\&quot;&quot;
+        },
+        {
+            &quot;label&quot; : &quot;linux:new:file&quot;,
+            &quot;command&quot;: &quot;touch \&quot;${input:workspaceFolder}/${input:file_name}\&quot;&quot;
+        },
+        {
+            &quot;label&quot; : &quot;python:run&quot;,
+            &quot;command&quot;: &quot;python ${file}&quot;
+        },
+        {
+            &quot;label&quot; : &quot;python:run&quot;,
+            &quot;os_termial&quot;: true,
+            &quot;command&quot;: &quot;python ${file}&quot;
+        },
+        {
+            &quot;label&quot; : &quot;node:run&quot;,
+            &quot;command&quot;: &quot;node ${file}&quot;
+        },
+        {
+            &quot;label&quot; : &quot;echo:test&quot;,
+            &quot;command&quot;: &quot;echo ${input:param1}, ${input:log_file}, ${select:LOGLEVEL}&quot;
+        }
+    ],
+    &quot;custom_env&quot; : {
+        &quot;log_file&quot; : &quot;./sfdc_tail.log&quot;,
+        &quot;LOGLEVEL&quot; : [&quot;trace&quot;, &quot;debug&quot;, &quot;info&quot;, &quot;warn&quot;, &quot;error&quot;, &quot;fatal&quot;]
+    }
+}
+</code></pre>
+
+<h2 id="predefined-variables">Predefined variables</h2>
+<ul>
+<li>${workspaceFolder} - the path of the folder opened in Sublime</li>
+<li>${workspaceFolderBasename} - the name of the folder opened in Sublime without any slashes (/)</li>
+<li>${file} - the current opened file</li>
+<li>${relativeFile} - the current opened file relative to workspaceFolder</li>
+<li>${fileBasename} - the current opened file's basename</li>
+<li>${fileBasenameNoExtension} - the current opened file's basename with no file extension</li>
+<li>${fileDirname} - the current opened file's dirname</li>
+<li>${fileExtname} - the current opened file's extension</li>
+<li>${cwd} - the task runner's current working directory on startup</li>
+<li>${selectedText} - the current selected text in the active file</li>
+</ul>
+<h2 id="customer-variables">Customer variables</h2>
+<h2 id="input-variables">input variables:</h2>
+<ul>
+<li><code>${input:variable_name}</code> - Custom Input String</li>
+</ul>
+<h2 id="select-variables">select variables:</h2>
+<ul>
+<li><code>${select:variable_name}</code> - Custom Input String</li>
+</ul>
+<p>example:</p>
+<pre><code class="json">{
+    &quot;tasks&quot; : [
+        {
+            &quot;label&quot; : &quot;echo:test&quot;,
+            &quot;command&quot;: &quot;echo ${input:param1}, ${input:param2}, ${select:param3}&quot;
+        }
+    ],
+    &quot;custom_env&quot; : {
+        &quot;param2&quot; : &quot;./default_value&quot;,
+        &quot;param3&quot; : [&quot;trace&quot;, &quot;debug&quot;, &quot;info&quot;, &quot;warn&quot;, &quot;error&quot;, &quot;fatal&quot;]
+    }
+}
+</code></pre>
+
+<p>we defined 3 variable.</p>
+<ul>
+<li><code>param1</code> is empty string.</li>
+<li><code>param2</code> is an input string</li>
+<li><code>param3</code> is a select list</li>
+</ul>
+<h2 id="support-system-env">support System env</h2>
+<p><code>${env:NAME_OF_SYS_ENV}</code></p>
+<p>such as <code>${env:USERPROFILE}</code>,  <code>${env:JAVA_HOME}</code></p>
+<p>example:</p>
+<pre><code class="json">{
+    &quot;tasks&quot; : [
+        {
+            &quot;label&quot; : &quot;echo:test&quot;,
+            &quot;command&quot;: &quot;echo ${env:USERPROFILE}&quot;
+        }
+    ],
+    &quot;custom_env&quot; : {
+    }
+}
+</code></pre>
+
+<h2 id="other-command-params">other command params.</h2>
+<ul>
+<li><code>encoding</code>: you can custom the <code>encoding</code></li>
+<li><code>os_termial</code>: run the command in os termail</li>
+</ul>
+<pre><code class="js">        {
+            &quot;label&quot; : &quot;node&quot;,
+            &quot;encoding&quot; : &quot;UTF-8&quot;,
+            &quot;command&quot;: &quot;node -v&quot;
+        },
+</code></pre>
+
+<h1 id="more-example">More example</h1>
+<h2 id="new-file">new File</h2>
+<pre><code class="js">    &quot;tasks&quot; : [
+        {
+            &quot;label&quot; : &quot;windows:new:file&quot;,
+            &quot;command&quot;: &quot;type nul &gt; \&quot;${input:workspaceFolder}/${input:file_name}\&quot;&quot;
+        },
+        {
+            &quot;label&quot; : &quot;linux:new:file&quot;,
+            &quot;command&quot;: &quot;touch \&quot;${input:workspaceFolder}/${input:file_name}\&quot;&quot;
+        },
+    ],
+    &quot;custom_env&quot; : {
+    }
+}
+</code></pre>
+
+<h1 id="about-author">about author</h1>
+<p><a href="https://github.com/exiahuang">Exia.huang</a></p>
+<p><a href="https://github.com/exiahuang/Cmder">Github</a></p>
+<p><a href="https://github.com/exiahuang/Cmder/wiki">Cmder Wiki</a></p>
+<p><a href="https://github.com/exiahuang/Cmder/issues">Cmder Issues</a></p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="cmder-docker/" class="btn btn-neutral float-right" title="Cmder for Docker">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+      
+        <span style="margin-left: 15px"><a href="cmder-docker/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '.';</script>
+    <script src="js/theme.js" defer></script>
+      <script src="search/main.js" defer></script>
+
+</body>
+</html>
+
+<!--
+MkDocs version : 1.0.4
+Build Date UTC : 2019-07-07 00:39:22
+-->

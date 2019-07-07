@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+     <loc>http://salesforcexytools.com/Cmder/</loc>
+     <lastmod>2019-07-07</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>http://salesforcexytools.com/Cmder/cmder-docker/</loc>
+     <lastmod>2019-07-07</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>http://salesforcexytools.com/Cmder/cmder-dotnet-tutorial/</loc>
+     <lastmod>2019-07-07</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>http://salesforcexytools.com/Cmder/cmder-express/</loc>
+     <lastmod>2019-07-07</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>http://salesforcexytools.com/Cmder/cmder-hexo/</loc>
+     <lastmod>2019-07-07</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>http://salesforcexytools.com/Cmder/cmder-vue/</loc>
+     <lastmod>2019-07-07</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+</urlset>

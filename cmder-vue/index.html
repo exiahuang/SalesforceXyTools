@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Exia.Huang">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Cmder for Vue - Cmder For Sublime</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Cmder for Vue";
+    var mkdocs_page_input_path = "cmder-vue.md";
+    var mkdocs_page_url = "/Cmder/cmder-vue/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Cmder For Sublime</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="..">Cmder for Sublime Text</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../cmder-docker/">Cmder for Docker</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../cmder-dotnet-tutorial/">Cmder for Dotnet</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../cmder-express/">Cmder For Express and heroku</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../cmder-hexo/">Cmder for Hexo Blog</a>
+	    </li>
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href="./">Cmder for Vue</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#step1-init-vue-project">step1. init vue project</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#install-vue-and-vue-cli">install vue and vue-cli</a></li>
+        
+            <li><a class="toctree-l3" href="#init-vue-project">init vue project</a></li>
+        
+            <li><a class="toctree-l3" href="#run-vue">run vue</a></li>
+        
+            <li><a class="toctree-l3" href="#build-vue">build vue</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l2"><a href="#step2-init-git">step2. init git</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#init-git">init git</a></li>
+        
+            <li><a class="toctree-l3" href="#check-git-statue">check git statue</a></li>
+        
+            <li><a class="toctree-l3" href="#add-to-respository">add to Respository</a></li>
+        
+            <li><a class="toctree-l3" href="#commit-to-respository">commit to Respository</a></li>
+        
+            <li><a class="toctree-l3" href="#add-remote-url">add remote url</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l2"><a href="#step3-source-version-up">step3. source version up</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#add-bootstrap">add bootstrap</a></li>
+        
+            <li><a class="toctree-l3" href="#change-src">change src</a></li>
+        
+            <li><a class="toctree-l3" href="#check-source-change">check source change</a></li>
+        
+            <li><a class="toctree-l3" href="#add-change-and-commit-to-respository">add change and commit to Respository</a></li>
+        
+            <li><a class="toctree-l3" href="#push-to-remote">push to Remote</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l2"><a href="#step4-release-to-product">step4. release to product</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#herokulogin">heroku:login</a></li>
+        
+            <li><a class="toctree-l3" href="#creates-a-new-app">creates a new app</a></li>
+        
+            <li><a class="toctree-l3" href="#git-init">git init</a></li>
+        
+            <li><a class="toctree-l3" href="#initialize-a-git-repository-in-a-new-or-existing-directory">Initialize a git repository in a new or existing directory</a></li>
+        
+            <li><a class="toctree-l3" href="#push-heroku-project-to-master">push heroku project to master</a></li>
+        
+            <li><a class="toctree-l3" href="#open-the-heroku-app-in-a-web-browser">open the heroku app in a web browser</a></li>
+        
+            <li><a class="toctree-l3" href="#tail-heroku-logs">tail heroku logs</a></li>
+        
+            <li><a class="toctree-l3" href="#herokulogout">heroku:logout</a></li>
+        
+        </ul>
+    
+
+    </ul>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Cmder For Sublime</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Cmder for Vue</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="step1-init-vue-project">step1. init vue project</h1>
+<h2 id="install-vue-and-vue-cli">install vue and vue-cli</h2>
+<p><code>vue:install</code></p>
+<pre><code class="shell">npm install vue vue-cli
+</code></pre>
+
+<h2 id="init-vue-project">init vue project</h2>
+<p><code>vue:init:webpack</code></p>
+<h2 id="run-vue">run vue</h2>
+<p><code>vue:run:dev</code></p>
+<h2 id="build-vue">build vue</h2>
+<p><code>vue:build</code></p>
+<h1 id="step2-init-git">step2. init git</h1>
+<p>use git to <code>Version control</code> your source.</p>
+<h2 id="init-git">init git</h2>
+<p><code>git:init</code></p>
+<pre><code>git add .
+</code></pre>
+
+<h2 id="check-git-statue">check git statue</h2>
+<p><code>git:state</code></p>
+<h2 id="add-to-respository">add to Respository</h2>
+<p><code>git:add</code></p>
+<pre><code>git add .
+</code></pre>
+
+<h2 id="commit-to-respository">commit to Respository</h2>
+<p><code>git:commit</code></p>
+<pre><code>git commit -m &quot;add vue project&quot;
+</code></pre>
+
+<h2 id="add-remote-url">add remote url</h2>
+<p><code>git:remote:add:origin</code> </p>
+<pre><code>git remote add origin ${input:git_remote_url}
+</code></pre>
+
+<h1 id="step3-source-version-up">step3. source version up</h1>
+<h2 id="add-bootstrap">add bootstrap</h2>
+<p><code>vue:install:bootstrap</code></p>
+<pre><code>npm install bootstrap bootstrap-vue vuetify --save
+</code></pre>
+
+<h2 id="change-src">change src</h2>
+<p>index.js</p>
+<pre><code class="js">import Vue from 'vue'
+import BootstrapVue from 'bootstrap-vue' // added
+import Router from 'vue-router'
+import HelloWorld from '@/components/HelloWorld'
+
+Vue.use(Router)
+
+import 'bootstrap/dist/css/bootstrap.css' // added
+import 'bootstrap-vue/dist/bootstrap-vue.css' // added
+
+export default new Router({
+  routes: [
+    {
+      path: '/',
+      name: 'HelloWorld',
+      component: HelloWorld
+    }
+  ]
+})
+</code></pre>
+
+<p>App.vue</p>
+<pre><code class="xml">&lt;template&gt;
+  &lt;div id=&quot;app&quot;&gt;
+    &lt;img src=&quot;./assets/logo.png&quot;&gt;
+    &lt;router-view/&gt;
+    &lt;button class=&quot;btn btn-primary&quot;&gt;test&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+export default {
+  name: 'App'
+}
+&lt;/script&gt;
+
+&lt;style&gt;
+#app {
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  margin-top: 60px;
+}
+&lt;/style&gt;
+</code></pre>
+
+<h2 id="check-source-change">check source change</h2>
+<p><code>git:status</code></p>
+<p>use <code>git:diff:file</code> to check the change of the file.</p>
+<h2 id="add-change-and-commit-to-respository">add change and commit to Respository</h2>
+<h2 id="push-to-remote">push to Remote</h2>
+<h1 id="step4-release-to-product">step4. release to product</h1>
+<p>release to heroku</p>
+<h2 id="herokulogin">heroku:login</h2>
+<h2 id="creates-a-new-app">creates a new app</h2>
+<p>heroku:create</p>
+<h2 id="git-init">git init</h2>
+<p>git:init</p>
+<pre><code class="bash">git init
+</code></pre>
+
+<h2 id="initialize-a-git-repository-in-a-new-or-existing-directory">Initialize a git repository in a new or existing directory</h2>
+<p>heroku:git:remote</p>
+<h2 id="push-heroku-project-to-master">push heroku project to master</h2>
+<p>heroku:git:push_heroku_to_master</p>
+<h2 id="open-the-heroku-app-in-a-web-browser">open the heroku app in a web browser</h2>
+<p>heroku:open</p>
+<h2 id="tail-heroku-logs">tail heroku logs</h2>
+<p>heroku:logs:tail</p>
+<h2 id="herokulogout">heroku:logout</h2>
+<p>heroku:logout</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="../cmder-hexo/" class="btn btn-neutral" title="Cmder for Hexo Blog"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../cmder-hexo/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+
+</body>
+</html>
