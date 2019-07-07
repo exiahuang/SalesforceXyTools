@@ -1,32 +1,112 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-     <loc>http://salesforcexytools.com/Cmder/</loc>
+     <loc>http://salesforcexytools.com/SalesforceXyTools/</loc>
      <lastmod>2019-07-07</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>http://salesforcexytools.com/Cmder/cmder-docker/</loc>
+     <loc>http://salesforcexytools.com/SalesforceXyTools/SalesforceXyTools-For-Chrome/</loc>
      <lastmod>2019-07-07</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>http://salesforcexytools.com/Cmder/cmder-dotnet-tutorial/</loc>
+     <loc>http://salesforcexytools.com/SalesforceXyTools/SalesforceXyTools-For-Sublime/</loc>
      <lastmod>2019-07-07</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>http://salesforcexytools.com/Cmder/cmder-express/</loc>
+     <loc>http://salesforcexytools.com/SalesforceXyTools/SalesforceXytoolsForSublime-001-Install/</loc>
      <lastmod>2019-07-07</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>http://salesforcexytools.com/Cmder/cmder-hexo/</loc>
+     <loc>http://salesforcexytools.com/SalesforceXyTools/SalesforceXytoolsForSublime-002-Config/</loc>
      <lastmod>2019-07-07</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>http://salesforcexytools.com/Cmder/cmder-vue/</loc>
+     <loc>http://salesforcexytools.com/SalesforceXyTools/SalesforceXytoolsForSublime-003-SFDC-Develop/</loc>
+     <lastmod>2019-07-07</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>http://salesforcexytools.com/SalesforceXyTools/SalesforceXytoolsForSublime-004-Sobject/</loc>
+     <lastmod>2019-07-07</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>http://salesforcexytools.com/SalesforceXyTools/SalesforceXytoolsForSublime-005-RunScript/</loc>
+     <lastmod>2019-07-07</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>http://salesforcexytools.com/SalesforceXyTools/SalesforceXytoolsForSublime-006-Dataloader/</loc>
+     <lastmod>2019-07-07</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>http://salesforcexytools.com/SalesforceXyTools/SalesforceXytoolsForSublime-007-Migration-Tool/</loc>
+     <lastmod>2019-07-07</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>http://salesforcexytools.com/SalesforceXyTools/SalesforceXytoolsForSublime-008-Export-Sobject-Schema-To-Excel/</loc>
+     <lastmod>2019-07-07</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>http://salesforcexytools.com/SalesforceXyTools/SalesforceXytoolsForSublime-009-DeployPackage-Builder/</loc>
+     <lastmod>2019-07-07</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>http://salesforcexytools.com/SalesforceXyTools/SalesforceXytoolsForSublime-010-Packagexml-Builder/</loc>
+     <lastmod>2019-07-07</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>http://salesforcexytools.com/SalesforceXyTools/SalesforceXytoolsForSublime-011-Apex-Coverage/</loc>
+     <lastmod>2019-07-07</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>http://salesforcexytools.com/SalesforceXyTools/SalesforceXytoolsForSublime-012-PermissionSet-Builder/</loc>
+     <lastmod>2019-07-07</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>http://salesforcexytools.com/SalesforceXyTools/SalesforceXytoolsForSublime-013-Create-Soql/</loc>
+     <lastmod>2019-07-07</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>http://salesforcexytools.com/SalesforceXyTools/SalesforceXytoolsForSublime-014-Build-Deploy-Module/</loc>
+     <lastmod>2019-07-07</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>http://salesforcexytools.com/SalesforceXyTools/SalesforceXytoolsForSublime-015-Search-SFDC-Metadata/</loc>
+     <lastmod>2019-07-07</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>http://salesforcexytools.com/SalesforceXyTools/SalesforceXytoolsForSublime-016-Copy-Lightning-component/</loc>
+     <lastmod>2019-07-07</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>http://salesforcexytools.com/SalesforceXyTools/SalesforceXytoolsForSublime-017-LightningWebComponent/</loc>
+     <lastmod>2019-07-07</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>http://salesforcexytools.com/SalesforceXyTools/SalesforceXytoolsForSublime-101-ApexCode-Creater/</loc>
+     <lastmod>2019-07-07</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>http://salesforcexytools.com/SalesforceXyTools/SalesforceXytoolsForSublime-102-TestClass-Creater/</loc>
      <lastmod>2019-07-07</lastmod>
      <changefreq>daily</changefreq>
     </url>

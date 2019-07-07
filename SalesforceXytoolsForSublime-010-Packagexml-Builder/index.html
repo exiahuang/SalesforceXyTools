@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Exia.Huang">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Salesforce package.xml Auto Builder - Cmder For Sublime</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Salesforce package.xml Auto Builder";
+    var mkdocs_page_input_path = "SalesforceXytoolsForSublime-010-Packagexml-Builder.md";
+    var mkdocs_page_url = "/SalesforceXyTools/SalesforceXytoolsForSublime-010-Packagexml-Builder/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Cmder For Sublime</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="..">SalesforceXytoolsForSublime Reference</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXyTools-For-Chrome/">SalesforceXyTools For Chrome</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXyTools-For-Sublime/">SalesforceXyToolsForSublime Rapid development tools for Salesforce</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-001-Install/">How to Install SalesforceXytoolsForSublime</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-002-Config/">How to Config SalesforceXytoolsForSublime</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-003-SFDC-Develop/">Use SalesforceXytoolsForSublime to develop SFDC</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-004-Sobject/">Export Sobject to Excel and Search Sobject</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-005-RunScript/">Run sfdc soql, apex script, tooling api</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-006-Dataloader/">Auto config salesforce ant-dataloader and Backup Sobject Data</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-007-Migration-Tool/">Auto config salesforce ant-migration-tools and Backup Metadata</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-008-Export-Sobject-Schema-To-Excel/">Export Sfdc Sobject Schema To Excel</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-009-DeployPackage-Builder/">Use SalesforceXytoolsForSublime Salesforce Deploy Package</a>
+	    </li>
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href="./">Salesforce package.xml Auto Builder</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#topic">Topic</a></li>
+    
+
+    <li class="toctree-l2"><a href="#build-packagexml-from-server">Build package.xml From Server</a></li>
+    
+
+    <li class="toctree-l2"><a href="#build-packagexml-from-open-files">Build package.xml From Open Files</a></li>
+    
+
+    <li class="toctree-l2"><a href="#summary">Summary</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#package-builder">Package Builder</a></li>
+        
+        </ul>
+    
+
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-011-Apex-Coverage/">How to export Apex Code Coverage</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-012-PermissionSet-Builder/">PermissionSet Builder</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-013-Create-Soql/">Soql Creator</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-014-Build-Deploy-Module/">Save Your Sfdc Module and build a deploy module package</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-015-Search-SFDC-Metadata/">Search sfdc metadata</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-016-Copy-Lightning-component/">Copy a Lightning Component</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-017-LightningWebComponent/">Lightning Web Components HelloWorld</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-101-ApexCode-Creater/">Auto Create Salesforce VisualForce Apex</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-102-TestClass-Creater/">Salesforce test code creator</a>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Cmder For Sublime</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Salesforce package.xml Auto Builder</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="topic">Topic</h1>
+<ul>
+<li>Use <a href="http://salesforcexytools.com/categories/SalesforcexytoolsForSublime/">SalesforceXytoolsForSublime</a> To Build package.xml</li>
+</ul>
+<blockquote>
+<p>There are 2 ways to build package.xml 
+1. Build From SFDC API.
+2. Use local file to build package.xml.</p>
+</blockquote>
+<h1 id="build-packagexml-from-server">Build package.xml From Server</h1>
+<blockquote>
+<p>Sublime-Menu :SFDC-XY &gt; Package Builder &gt; Build Package.xml From Server</p>
+</blockquote>
+<p><img alt="1539845253603" src="/images/xytools_images/1539845253603.png" /></p>
+<p>You can build package.xml like below.</p>
+<pre><code class="xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;Package xmlns=&quot;http://soap.sforce.com/2006/04/metadata&quot;&gt;
+
+    &lt;types&gt;
+        &lt;members&gt;*&lt;/members&gt;
+        &lt;name&gt;InstalledPackage&lt;/name&gt;
+    &lt;/types&gt;
+    &lt;types&gt;
+        &lt;members&gt;*&lt;/members&gt;
+        &lt;name&gt;CustomLabels&lt;/name&gt;
+    &lt;/types&gt;
+    &lt;types&gt;
+        &lt;members&gt;*&lt;/members&gt;
+        &lt;name&gt;StaticResource&lt;/name&gt;
+    &lt;/types&gt;
+   ............
+   ............
+   ............
+   ............
+   ............
+   ............
+   ............
+   ............
+    &lt;types&gt;
+        &lt;members&gt;*&lt;/members&gt;
+        &lt;name&gt;Settings&lt;/name&gt;
+    &lt;/types&gt;
+    &lt;version&gt;42.0&lt;/version&gt;
+&lt;/Package&gt;
+
+</code></pre>
+
+<h1 id="build-packagexml-from-open-files">Build package.xml From Open Files</h1>
+<p>Example, Open <code>Account.object</code>,<code>Blog.page</code>,<code>BlogController.cls</code>,<code>Blog__c.object</code> in Sublime</p>
+<p><img alt="1539846980157" src="/images/xytools_images/1539846980157.png" /></p>
+<blockquote>
+<p>Sublime-Menu : SFDC-XY &gt; Package Builder &gt; Build package.xml From Open Files</p>
+</blockquote>
+<p>You can build package.xml like below.</p>
+<pre><code class="xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;Package xmlns=&quot;http://soap.sforce.com/2006/04/metadata&quot;&gt;
+
+    &lt;types&gt;
+        &lt;members&gt;Blog&lt;/members&gt;
+        &lt;name&gt;ApexPage&lt;/name&gt;
+    &lt;/types&gt;
+    &lt;types&gt;
+        &lt;members&gt;BlogController&lt;/members&gt;
+        &lt;name&gt;ApexClass&lt;/name&gt;
+    &lt;/types&gt;
+    &lt;types&gt;
+        &lt;members&gt;Account&lt;/members&gt;
+        &lt;members&gt;Blog__c&lt;/members&gt;
+        &lt;name&gt;CustomObject&lt;/name&gt;
+    &lt;/types&gt;
+    &lt;version&gt;42.0&lt;/version&gt;
+&lt;/Package&gt;
+
+</code></pre>
+
+<h1 id="summary">Summary</h1>
+<h2 id="package-builder">Package Builder</h2>
+<h3 id="build-packagexml-from-server_1">Build Package.xml From Server</h3>
+<p><code>Package Builder &gt; Build Package.xml From Server</code>
+Export all package.xml from server</p>
+<h3 id="build-packagexml-from-server-from-open-files">Build Package.xml From Server From Open Files</h3>
+<pre><code>Package Builder &gt; Build Package.xml From Open Files
+</code></pre>
+
+<h3 id="build-the-deploy-package-from-open-files">Build The deploy package from open files</h3>
+<p><code>Package Builder &gt; Build Deploy Package From Open Files</code>
+This is only copy the open files to a dir, not deploy to server.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../SalesforceXytoolsForSublime-011-Apex-Coverage/" class="btn btn-neutral float-right" title="How to export Apex Code Coverage">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../SalesforceXytoolsForSublime-009-DeployPackage-Builder/" class="btn btn-neutral" title="Use SalesforceXytoolsForSublime Salesforce Deploy Package"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../SalesforceXytoolsForSublime-009-DeployPackage-Builder/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../SalesforceXytoolsForSublime-011-Apex-Coverage/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+
+</body>
+</html>

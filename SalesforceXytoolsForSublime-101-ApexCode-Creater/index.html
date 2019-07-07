@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Exia.Huang">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Auto Create Salesforce VisualForce Apex - Cmder For Sublime</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Auto Create Salesforce VisualForce Apex";
+    var mkdocs_page_input_path = "SalesforceXytoolsForSublime-101-ApexCode-Creater.md";
+    var mkdocs_page_url = "/SalesforceXyTools/SalesforceXytoolsForSublime-101-ApexCode-Creater/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Cmder For Sublime</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="..">SalesforceXytoolsForSublime Reference</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXyTools-For-Chrome/">SalesforceXyTools For Chrome</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXyTools-For-Sublime/">SalesforceXyToolsForSublime Rapid development tools for Salesforce</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-001-Install/">How to Install SalesforceXytoolsForSublime</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-002-Config/">How to Config SalesforceXytoolsForSublime</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-003-SFDC-Develop/">Use SalesforceXytoolsForSublime to develop SFDC</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-004-Sobject/">Export Sobject to Excel and Search Sobject</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-005-RunScript/">Run sfdc soql, apex script, tooling api</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-006-Dataloader/">Auto config salesforce ant-dataloader and Backup Sobject Data</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-007-Migration-Tool/">Auto config salesforce ant-migration-tools and Backup Metadata</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-008-Export-Sobject-Schema-To-Excel/">Export Sfdc Sobject Schema To Excel</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-009-DeployPackage-Builder/">Use SalesforceXytoolsForSublime Salesforce Deploy Package</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-010-Packagexml-Builder/">Salesforce package.xml Auto Builder</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-011-Apex-Coverage/">How to export Apex Code Coverage</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-012-PermissionSet-Builder/">PermissionSet Builder</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-013-Create-Soql/">Soql Creator</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-014-Build-Deploy-Module/">Save Your Sfdc Module and build a deploy module package</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-015-Search-SFDC-Metadata/">Search sfdc metadata</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-016-Copy-Lightning-component/">Copy a Lightning Component</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-017-LightningWebComponent/">Lightning Web Components HelloWorld</a>
+	    </li>
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href="./">Auto Create Salesforce VisualForce Apex</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#topic">Topic</a></li>
+    
+
+    <li class="toctree-l2"><a href="#environment">Environment</a></li>
+    
+
+    <li class="toctree-l2"><a href="#auto-create-vf-controller-dto-dao-code">Auto Create VF-Controller-DTO-DAO-Code</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#find-the-menu">Find the menu</a></li>
+        
+            <li><a class="toctree-l3" href="#choose-your-sobject">Choose your Sobject.</a></li>
+        
+            <li><a class="toctree-l3" href="#select-custom-fields-or-all-fields">Select Custom Fields Or All Fields.</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l2"><a href="#deploy-the-codes">Deploy the codes</a></li>
+    
+
+    <li class="toctree-l2"><a href="#run-it">Run it</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#detail-page">Detail Page.</a></li>
+        
+            <li><a class="toctree-l3" href="#record-list-page">Record List Page</a></li>
+        
+        </ul>
+    
+
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-102-TestClass-Creater/">Salesforce test code creator</a>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Cmder For Sublime</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Auto Create Salesforce VisualForce Apex</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="topic">Topic</h1>
+<ul>
+<li>
+<p>Use <a href="http://salesforcexytools.com/categories/SalesforcexytoolsForSublime/">SalesforceXytoolsForSublime</a> To Auto Create VisualForce・Apex Controller・DTO・DAO</p>
+</li>
+<li>
+<p>Auto Build Detail Page</p>
+<ul>
+<li>Record Input  Page</li>
+<li>Record Review Form</li>
+<li>Save the Record</li>
+</ul>
+</li>
+<li>Auto Build Record List Page<ul>
+<li>List All Records.</li>
+<li>Search Record</li>
+<li>Mass Edit Records</li>
+<li>Records Review Form </li>
+</ul>
+</li>
+</ul>
+<h1 id="environment">Environment</h1>
+<ul>
+<li>Make sure you can login your sfdc. Test it : SFDC-XY &gt; Login SFDC</li>
+</ul>
+<h1 id="auto-create-vf-controller-dto-dao-code">Auto Create VF-Controller-DTO-DAO-Code</h1>
+<blockquote>
+<p>Tips: It just create the code in the localhost. It will not deploy to your sfdc server.</p>
+</blockquote>
+<h2 id="find-the-menu">Find the menu</h2>
+<p>SFDC Code Creator &gt; Create VisualForce/Controller/DTO/DAO Code</p>
+<p><img alt="1540444254303" src="/images/xytools_images/1540444254303.png" /></p>
+<h2 id="choose-your-sobject">Choose your Sobject.</h2>
+<p>I will select <code>Blog__c</code>.</p>
+<p><img alt="1540444395082" src="/images/xytools_images/1540444395082.png" /></p>
+<p>About <code>Blog__c</code>:</p>
+<p><img alt="1540535859753" src="/images/xytools_images/1540535859753.png" /></p>
+<h2 id="select-custom-fields-or-all-fields">Select Custom Fields Or All Fields.</h2>
+<p>I will select <code>1.Custom fields Only(Exculde Validate)</code>.</p>
+<p><img alt="1540444454039" src="/images/xytools_images/1540444454039.png" /></p>
+<p>When It is done , It will show the popup like below.</p>
+<p>There are many source will be opened if you choose <code>ok</code>. </p>
+<p><img alt="1540444924569" src="/images/xytools_images/1540444924569.png" /></p>
+<p>You can find the source in <code>./src_sfdc_module/code-creator/src</code></p>
+<p><img alt="1540445085932" src="/images/xytools_images/1540445085932.png" /></p>
+<h1 id="deploy-the-codes">Deploy the codes</h1>
+<p>choose the <code>src</code>, then right click, <code>Sfdc-Xy &gt; Deploy Directory To SFDC</code></p>
+<p><img alt="1540445304166" src="/images/xytools_images/1540445304166.png" /></p>
+<blockquote>
+<p>Tips : If you build a complex page , maybe you can not deploy correctly. Fix the codes, then deploy them.</p>
+</blockquote>
+<h1 id="run-it">Run it</h1>
+<p>visit the visualforce page</p>
+<h2 id="detail-page">Detail Page.</h2>
+<ul>
+<li>Record Input  Page</li>
+<li>Record Review Form</li>
+<li>Save the Record</li>
+</ul>
+<p>Page URL :  https://{instance}.salesforce.com/apex/Blog</p>
+<h3 id="input-form">Input Form</h3>
+<p><img alt="1540536475265" src="/images/xytools_images/1540536475265.png" /></p>
+<h3 id="review-form">Review Form</h3>
+<p>Input something, then click <code>next</code>, then it will go to <code>Review Form</code></p>
+<p><img alt="1540536538782" src="/images/xytools_images/1540536538782.png" /></p>
+<p><img alt="1540536818611" src="/images/xytools_images/1540536818611.png" /></p>
+<p>click <code>save</code>, you can save the data.</p>
+<h2 id="record-list-page">Record List Page</h2>
+<ul>
+<li>List All Records.</li>
+<li>Search Record</li>
+<li>Mass Edit Records</li>
+<li>Records Review Form </li>
+</ul>
+<p>URL : https://{instance}.salesforce.com/apex/BlogList</p>
+<h3 id="list-all-records">List All Records</h3>
+<p><img alt="1540537365308" src="/images/xytools_images/1540537365308.png" /></p>
+<h3 id="search-record">Search Record</h3>
+<blockquote>
+<p>Tips: The Picklist will be changed to filter.</p>
+</blockquote>
+<p>Select the filter, and search the data.</p>
+<p><img alt="1540537722015" src="/images/xytools_images/1540537722015.png" /></p>
+<p><img alt="1540537883121" src="/images/xytools_images/1540537883121.png" /></p>
+<h3 id="mass-edit-records">Mass Edit Records</h3>
+<p>Edit records , and click <code>next</code></p>
+<p><img alt="1540538022704" src="/images/xytools_images/1540538022704.png" /></p>
+<h3 id="records-review-form">Records Review Form</h3>
+<p>Go to the review form, and click <code>save</code> button.</p>
+<p><img alt="1540538069994" src="/images/xytools_images/1540538069994.png" /></p>
+<p>Go back to the list page, check the result.</p>
+<p><img alt="1540538151435" src="/images/xytools_images/1540538151435.png" /></p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../SalesforceXytoolsForSublime-102-TestClass-Creater/" class="btn btn-neutral float-right" title="Salesforce test code creator">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../SalesforceXytoolsForSublime-017-LightningWebComponent/" class="btn btn-neutral" title="Lightning Web Components HelloWorld"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../SalesforceXytoolsForSublime-017-LightningWebComponent/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../SalesforceXytoolsForSublime-102-TestClass-Creater/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+
+</body>
+</html>

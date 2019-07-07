@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Exia.Huang">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Auto config salesforce ant-dataloader and Backup Sobject Data - Cmder For Sublime</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Auto config salesforce ant-dataloader and Backup Sobject Data";
+    var mkdocs_page_input_path = "SalesforceXytoolsForSublime-006-Dataloader.md";
+    var mkdocs_page_url = "/SalesforceXyTools/SalesforceXytoolsForSublime-006-Dataloader/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Cmder For Sublime</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="..">SalesforceXytoolsForSublime Reference</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXyTools-For-Chrome/">SalesforceXyTools For Chrome</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXyTools-For-Sublime/">SalesforceXyToolsForSublime Rapid development tools for Salesforce</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-001-Install/">How to Install SalesforceXytoolsForSublime</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-002-Config/">How to Config SalesforceXytoolsForSublime</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-003-SFDC-Develop/">Use SalesforceXytoolsForSublime to develop SFDC</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-004-Sobject/">Export Sobject to Excel and Search Sobject</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-005-RunScript/">Run sfdc soql, apex script, tooling api</a>
+	    </li>
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href="./">Auto config salesforce ant-dataloader and Backup Sobject Data</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#topic">Topic</a></li>
+    
+
+    <li class="toctree-l2"><a href="#environment">Environment</a></li>
+    
+
+    <li class="toctree-l2"><a href="#auto-config-dataloader">Auto Config Dataloader</a></li>
+    
+
+    <li class="toctree-l2"><a href="#run-antdataloader">Run AntDataloader</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#ant-command">Ant command</a></li>
+        
+            <li><a class="toctree-l3" href="#run-in-sublime">Run in sublime</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l2"><a href="#config-your-soql">config your soql</a></li>
+    
+
+    <li class="toctree-l2"><a href="#schedule-task-auto-backup-sfdc-sobject-data">Schedule Task , Auto Backup sfdc sobject data.</a></li>
+    
+
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-007-Migration-Tool/">Auto config salesforce ant-migration-tools and Backup Metadata</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-008-Export-Sobject-Schema-To-Excel/">Export Sfdc Sobject Schema To Excel</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-009-DeployPackage-Builder/">Use SalesforceXytoolsForSublime Salesforce Deploy Package</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-010-Packagexml-Builder/">Salesforce package.xml Auto Builder</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-011-Apex-Coverage/">How to export Apex Code Coverage</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-012-PermissionSet-Builder/">PermissionSet Builder</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-013-Create-Soql/">Soql Creator</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-014-Build-Deploy-Module/">Save Your Sfdc Module and build a deploy module package</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-015-Search-SFDC-Metadata/">Search sfdc metadata</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-016-Copy-Lightning-component/">Copy a Lightning Component</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-017-LightningWebComponent/">Lightning Web Components HelloWorld</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-101-ApexCode-Creater/">Auto Create Salesforce VisualForce Apex</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-102-TestClass-Creater/">Salesforce test code creator</a>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Cmder For Sublime</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Auto config salesforce ant-dataloader and Backup Sobject Data</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="topic">Topic</h1>
+<ul>
+<li>Use <a href="http://salesforcexytools.com/categories/SalesforcexytoolsForSublime/">SalesforceXytoolsForSublime</a> To Config Dataloader and backup sfdc sobject data.</li>
+</ul>
+<blockquote>
+<ol>
+<li>Auto config dataloader.</li>
+<li>Backup salesforce sobject data.</li>
+</ol>
+</blockquote>
+<h1 id="environment">Environment</h1>
+<ul>
+<li>Set up your <code>java</code> and <code>ant</code> environment.</li>
+<li>You must install <code>java</code> and <code>ant</code> before use <code>ant dataloader</code>.</li>
+<li>You not need to Install the <code>dataloader</code>.</li>
+<li>Make sure you can login your sfdc. Test it : SFDC-XY &gt; Login SFDC</li>
+</ul>
+<blockquote>
+<p>Tips : You not need to Install the dataloader, Salesforcexytools integrates with dataloader.</p>
+</blockquote>
+<h1 id="auto-config-dataloader">Auto Config Dataloader</h1>
+<p>Open Sublime-Menu : SFDC-XY &gt; Dataloader &gt; Build Ant Dataloader Configuration</p>
+<p><img alt="1539931429520" src="/images/xytools_images/1539931429520.png" /></p>
+<p>Select <code>Your Sobjects</code> and  Select <code>Start To Config</code>, example:</p>
+<p><img alt="1539931785518" src="/images/xytools_images/1539931785518.png" /></p>
+<p>You can find <strong>AntDataloader</strong> in <code>./sfdc-xy/AntDataloader</code> Folder.</p>
+<p><img alt="1539931980132" src="/images/xytools_images/1539931980132.png" /></p>
+<h1 id="run-antdataloader">Run AntDataloader</h1>
+<h2 id="ant-command">Ant command</h2>
+<pre><code>cd ./sfdc-xy/AntDataloader
+ant
+</code></pre>
+
+<p><img alt="1539932235973" src="/images/xytools_images/1539932235973.png" /></p>
+<h2 id="run-in-sublime">Run in sublime</h2>
+<p><code>Dataloader &gt; Run Ant Dataloader</code>
+The data will be export to <code>/sfdc-xy/AntDataloader/Export_YYYYMMDD_HHmm</code></p>
+<p><img alt="1539932182175" src="/images/xytools_images/1539932182175.png" /></p>
+<h1 id="config-your-soql">config your soql</h1>
+<p>Open <code>./sfdc-xy/AntDataloader/build.xml</code></p>
+<p>Add your <code>export</code> task, you can export sfdc sobject data easily.</p>
+<pre><code class="xml">    &lt;target name=&quot;start_export&quot;&gt;
+        &lt;!-- &lt;export file=&quot;{FILE_NAME}&quot; object=&quot;{SOBJECT_NAME}&quot; soql=&quot;{SOQL}&quot;/&gt; --&gt;
+        &lt;export file=&quot;Blog__c&quot; object=&quot;Blog__c&quot; soql=&quot;SELECT Id , Name , Title__c, Body__c FROM Blog__c&quot;/&gt;
+        &lt;export file=&quot;Log__c&quot; object=&quot;Log__c&quot; soql=&quot;SELECT Id , Name, Body__c FROM Log__c&quot;/&gt;
+    &lt;/target&gt;
+</code></pre>
+
+<blockquote>
+<p>Tips:  Config the <code>build.xml</code> and copy <code>Ant Dataloader</code> to anywhere, and add your schedule job to export sfdc data.</p>
+</blockquote>
+<h1 id="schedule-task-auto-backup-sfdc-sobject-data">Schedule Task , Auto Backup sfdc sobject data.</h1>
+<p>copy <code>./sfdc-xy/AntDataloader</code> To any folder. and schedule task.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../SalesforceXytoolsForSublime-007-Migration-Tool/" class="btn btn-neutral float-right" title="Auto config salesforce ant-migration-tools and Backup Metadata">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../SalesforceXytoolsForSublime-005-RunScript/" class="btn btn-neutral" title="Run sfdc soql, apex script, tooling api"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../SalesforceXytoolsForSublime-005-RunScript/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../SalesforceXytoolsForSublime-007-Migration-Tool/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+
+</body>
+</html>

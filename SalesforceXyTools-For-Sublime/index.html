@@ -1,0 +1,2320 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Exia.Huang">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>SalesforceXyToolsForSublime Rapid development tools for Salesforce - Cmder For Sublime</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "SalesforceXyToolsForSublime Rapid development tools for Salesforce";
+    var mkdocs_page_input_path = "SalesforceXyTools-For-Sublime.md";
+    var mkdocs_page_url = "/SalesforceXyTools/SalesforceXyTools-For-Sublime/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Cmder For Sublime</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="..">SalesforceXytoolsForSublime Reference</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXyTools-For-Chrome/">SalesforceXyTools For Chrome</a>
+	    </li>
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href="./">SalesforceXyToolsForSublime Rapid development tools for Salesforce</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#how-to-install-salesforcexytoolsforsublime">How to Install SalesforceXytoolsForSublime</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#salesforcexytoolsforsublime">SalesforceXytoolsForSublime</a></li>
+        
+            <li><a class="toctree-l3" href="#how-to-install">How to Install</a></li>
+        
+            <li><a class="toctree-l3" href="#suggestion">Suggestion</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l2"><a href="#how-to-config-salesforcexytoolsforsublime">How to Config SalesforceXytoolsForSublime</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#how-to-config">How to Config</a></li>
+        
+            <li><a class="toctree-l3" href="#start-to-develop-sfdc">Start to develop sfdc</a></li>
+        
+            <li><a class="toctree-l3" href="#modify-the-config-file">Modify the config file.</a></li>
+        
+            <li><a class="toctree-l3" href="#use-oauth2-to-access-sfdc">Use Oauth2 to access sfdc.</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l2"><a href="#use-salesforcexytoolsforsublime-to-develop-sfdc">Use SalesforceXytoolsForSublime to develop SFDC</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#topic">Topic</a></li>
+        
+            <li><a class="toctree-l3" href="#environment">Environment</a></li>
+        
+            <li><a class="toctree-l3" href="#start-develope">Start Develope</a></li>
+        
+            <li><a class="toctree-l3" href="#summary">Summary</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l2"><a href="#export-sobject-to-excel-and-search-sobject">Export Sobject to Excel and Search Sobject</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#topic_1">Topic</a></li>
+        
+            <li><a class="toctree-l3" href="#environment_1">Environment</a></li>
+        
+            <li><a class="toctree-l3" href="#sobject">Sobject</a></li>
+        
+            <li><a class="toctree-l3" href="#summary_1">summary</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l2"><a href="#run-sfdc-soql-apex-script-tooling-api">Run sfdc soql, apex script, tooling api</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#topic_2">Topic</a></li>
+        
+            <li><a class="toctree-l3" href="#environment_2">Environment</a></li>
+        
+            <li><a class="toctree-l3" href="#run-soql-query">Run Soql query</a></li>
+        
+            <li><a class="toctree-l3" href="#run-apex-script">Run Apex Script</a></li>
+        
+            <li><a class="toctree-l3" href="#run-tooling-query">Run Tooling query</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l2"><a href="#auto-config-salesforce-ant-dataloader-and-backup-sobject-data">Auto config salesforce ant-dataloader and Backup Sobject Data</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#topic_3">Topic</a></li>
+        
+            <li><a class="toctree-l3" href="#environment_3">Environment</a></li>
+        
+            <li><a class="toctree-l3" href="#auto-config-dataloader">Auto Config Dataloader</a></li>
+        
+            <li><a class="toctree-l3" href="#run-antdataloader">Run AntDataloader</a></li>
+        
+            <li><a class="toctree-l3" href="#config-your-soql">config your soql</a></li>
+        
+            <li><a class="toctree-l3" href="#schedule-task-auto-backup-sfdc-sobject-data">Schedule Task , Auto Backup sfdc sobject data.</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l2"><a href="#auto-config-salesforce-ant-migration-tools-and-backup-metadata">Auto config salesforce ant-migration-tools and Backup Metadata</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#topic_4">Topic</a></li>
+        
+            <li><a class="toctree-l3" href="#environment_4">Environment</a></li>
+        
+            <li><a class="toctree-l3" href="#auto-config-ant-migration-tools">Auto Config ant-migration-tools</a></li>
+        
+            <li><a class="toctree-l3" href="#backup-all-metadata">Backup all Metadata</a></li>
+        
+            <li><a class="toctree-l3" href="#schedule-task-auto-backup-sfdc-metadata">Schedule Task , Auto Backup sfdc metadata.</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l2"><a href="#export-sfdc-sobject-schema-to-excel">Export Sfdc Sobject Schema To Excel</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#topic_5">Topic</a></li>
+        
+            <li><a class="toctree-l3" href="#environment_5">Environment</a></li>
+        
+            <li><a class="toctree-l3" href="#sobject-schema-to-excel">Sobject Schema To Excel</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l2"><a href="#use-salesforcexytoolsforsublime-salesforce-deploy-package">Use SalesforceXytoolsForSublime Salesforce Deploy Package</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#topic_6">Topic</a></li>
+        
+            <li><a class="toctree-l3" href="#example">Example</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l2"><a href="#salesforce-packagexml-auto-builder">Salesforce package.xml Auto Builder</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#topic_7">Topic</a></li>
+        
+            <li><a class="toctree-l3" href="#build-packagexml-from-server">Build package.xml From Server</a></li>
+        
+            <li><a class="toctree-l3" href="#build-packagexml-from-open-files">Build package.xml From Open Files</a></li>
+        
+            <li><a class="toctree-l3" href="#summary_2">Summary</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l2"><a href="#how-to-export-apex-code-coverage">How to export Apex Code Coverage</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#topic_8">Topic</a></li>
+        
+            <li><a class="toctree-l3" href="#environment_6">Environment</a></li>
+        
+            <li><a class="toctree-l3" href="#sobject_2">Sobject</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l2"><a href="#permissionset-builder">PermissionSet Builder</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#topic_9">Topic</a></li>
+        
+            <li><a class="toctree-l3" href="#environment_7">Environment</a></li>
+        
+            <li><a class="toctree-l3" href="#create-permissionxml">Create Permission.xml</a></li>
+        
+            <li><a class="toctree-l3" href="#deploy-permissionxml">Deploy permission.xml</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l2"><a href="#soql-creator">Soql Creator</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#topic_10">Topic</a></li>
+        
+            <li><a class="toctree-l3" href="#environment_8">Environment</a></li>
+        
+            <li><a class="toctree-l3" href="#create-soql">Create Soql</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l2"><a href="#save-your-sfdc-module-and-build-a-deploy-module-package">Save Your Sfdc Module and build a deploy module package</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#topic_11">Topic</a></li>
+        
+            <li><a class="toctree-l3" href="#environment_9">Environment</a></li>
+        
+            <li><a class="toctree-l3" href="#save-a-module">Save a module</a></li>
+        
+            <li><a class="toctree-l3" href="#deploy-your-module">Deploy your module</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l2"><a href="#search-sfdc-metadata">Search sfdc metadata</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#topic_12">Topic</a></li>
+        
+            <li><a class="toctree-l3" href="#environment_10">Environment</a></li>
+        
+            <li><a class="toctree-l3" href="#search-metadata">Search Metadata</a></li>
+        
+            <li><a class="toctree-l3" href="#support-metadata-type">Support Metadata Type</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l2"><a href="#copy-a-lightning-component">Copy a Lightning Component</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#topic_13">Topic</a></li>
+        
+            <li><a class="toctree-l3" href="#environment_11">Environment</a></li>
+        
+            <li><a class="toctree-l3" href="#copy-lightning-component">Copy Lightning Component</a></li>
+        
+            <li><a class="toctree-l3" href="#deploy-the-component">Deploy The component</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l2"><a href="#lightning-web-components-helloworld">Lightning Web Components HelloWorld</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#topic_14">Topic</a></li>
+        
+            <li><a class="toctree-l3" href="#config-salesforcexytools">Config Salesforcexytools</a></li>
+        
+            <li><a class="toctree-l3" href="#create-a-hello-world-lightning-web-component">Create a Hello World Lightning Web Component</a></li>
+        
+            <li><a class="toctree-l3" href="#add-component-to-app-in-lightning-experience">Add Component to App in Lightning Experience</a></li>
+        
+            <li><a class="toctree-l3" href="#resources">Resources</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l2"><a href="#auto-create-salesforce-visualforce-apex">Auto Create Salesforce VisualForce Apex</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#topic_15">Topic</a></li>
+        
+            <li><a class="toctree-l3" href="#environment_12">Environment</a></li>
+        
+            <li><a class="toctree-l3" href="#auto-create-vf-controller-dto-dao-code">Auto Create VF-Controller-DTO-DAO-Code</a></li>
+        
+            <li><a class="toctree-l3" href="#deploy-the-codes">Deploy the codes</a></li>
+        
+            <li><a class="toctree-l3" href="#run-it">Run it</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l2"><a href="#salesforce-test-code-creator">Salesforce test code creator</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#topic_16">Topic</a></li>
+        
+            <li><a class="toctree-l3" href="#environment_13">Environment</a></li>
+        
+            <li><a class="toctree-l3" href="#write-a-test-class">Write a test class</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l2"><a href="#salesforcexytoolsforsublime-reference">SalesforceXytoolsForSublime Reference</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#salesforcexytoolsforsublime_1">SalesforceXytoolsForSublime</a></li>
+        
+            <li><a class="toctree-l3" href="#basic-on-opensource">Basic on OpenSource</a></li>
+        
+            <li><a class="toctree-l3" href="#salesforcexytoolsforsublime-reference_1">SalesforceXyToolsForSublime Reference</a></li>
+        
+            <li><a class="toctree-l3" href="#document-reference">Document Reference</a></li>
+        
+            <li><a class="toctree-l3" href="#download-pdf">Download PDF</a></li>
+        
+            <li><a class="toctree-l3" href="#about-author-exiahuang">About Author : Exia.Huang</a></li>
+        
+            <li><a class="toctree-l3" href="#other-tools-for-salesforce">Other tools for salesforce</a></li>
+        
+        </ul>
+    
+
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-001-Install/">How to Install SalesforceXytoolsForSublime</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-002-Config/">How to Config SalesforceXytoolsForSublime</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-003-SFDC-Develop/">Use SalesforceXytoolsForSublime to develop SFDC</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-004-Sobject/">Export Sobject to Excel and Search Sobject</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-005-RunScript/">Run sfdc soql, apex script, tooling api</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-006-Dataloader/">Auto config salesforce ant-dataloader and Backup Sobject Data</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-007-Migration-Tool/">Auto config salesforce ant-migration-tools and Backup Metadata</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-008-Export-Sobject-Schema-To-Excel/">Export Sfdc Sobject Schema To Excel</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-009-DeployPackage-Builder/">Use SalesforceXytoolsForSublime Salesforce Deploy Package</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-010-Packagexml-Builder/">Salesforce package.xml Auto Builder</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-011-Apex-Coverage/">How to export Apex Code Coverage</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-012-PermissionSet-Builder/">PermissionSet Builder</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-013-Create-Soql/">Soql Creator</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-014-Build-Deploy-Module/">Save Your Sfdc Module and build a deploy module package</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-015-Search-SFDC-Metadata/">Search sfdc metadata</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-016-Copy-Lightning-component/">Copy a Lightning Component</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-017-LightningWebComponent/">Lightning Web Components HelloWorld</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-101-ApexCode-Creater/">Auto Create Salesforce VisualForce Apex</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-102-TestClass-Creater/">Salesforce test code creator</a>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Cmder For Sublime</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>SalesforceXyToolsForSublime Rapid development tools for Salesforce</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <div class="toc">
+<ul>
+<li><a href="#how-to-install-salesforcexytoolsforsublime">How to Install SalesforceXytoolsForSublime</a><ul>
+<li><a href="#salesforcexytoolsforsublime">SalesforceXytoolsForSublime</a></li>
+<li><a href="#how-to-install">How to Install</a><ul>
+<li><a href="#prerequisites">Prerequisites</a></li>
+<li><a href="#use-package-control-to-install">Use Package Control to Install</a></li>
+</ul>
+</li>
+<li><a href="#suggestion">Suggestion</a><ul>
+<li><a href="#install-java">Install java</a></li>
+<li><a href="#installing-apache-ant">Installing Apache Ant</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#how-to-config-salesforcexytoolsforsublime">How to Config SalesforceXytoolsForSublime</a><ul>
+<li><a href="#how-to-config">How to Config</a><ul>
+<li><a href="#new-project">New Project</a></li>
+<li><a href="#config-project">Config Project</a></li>
+<li><a href="#proxy-config">Proxy Config</a></li>
+</ul>
+</li>
+<li><a href="#start-to-develop-sfdc">Start to develop sfdc</a><ul>
+<li><a href="#login-test">Login Test</a></li>
+<li><a href="#retrieve-metadata">Retrieve Metadata</a></li>
+</ul>
+</li>
+<li><a href="#modify-the-config-file">Modify the config file.</a><ul>
+<li><a href="#config-your-login-browser">Config your login Browser</a></li>
+</ul>
+</li>
+<li><a href="#use-oauth2-to-access-sfdc">Use Oauth2 to access sfdc.</a></li>
+</ul>
+</li>
+<li><a href="#use-salesforcexytoolsforsublime-to-develop-sfdc">Use SalesforceXytoolsForSublime to develop SFDC</a><ul>
+<li><a href="#topic">Topic</a></li>
+<li><a href="#environment">Environment</a></li>
+<li><a href="#start-develope">Start Develope</a><ul>
+<li><a href="#create-apexclass">Create ApexClass</a><ul>
+<li><a href="#step1-new-apexclass">Step1. New ApexClass</a></li>
+<li><a href="#step2-select-apex-template">Step2. Select Apex template</a></li>
+</ul>
+</li>
+<li><a href="#update-apexclass">Update ApexClass</a></li>
+<li><a href="#refresh-from-server">Refresh From Server</a></li>
+<li><a href="#delete">Delete</a></li>
+<li><a href="#diff-between-localhost-and-server">Diff between localhost and server</a><ul>
+<li><a href="#config-your-winmerge">Config your Winmerge</a></li>
+<li><a href="#diff-source">Diff source</a></li>
+</ul>
+</li>
+<li><a href="#find-your-source-in-sfdc">Find your source in sfdc</a></li>
+<li><a href="#deploy-to-sfdc">Deploy To SFDC</a></li>
+<li><a href="#deploy-the-folder">Deploy the folder</a></li>
+<li><a href="#run-test-class">Run Test Class</a></li>
+</ul>
+</li>
+<li><a href="#summary">Summary</a><ul>
+<li><a href="#project">Project</a><ul>
+<li><a href="#new-project_1">New Project</a></li>
+<li><a href="#switch-project">Switch Project</a></li>
+<li><a href="#retrieve-source">Retrieve Source</a></li>
+<li><a href="#retrieve-source-zip">Retrieve Source zip</a></li>
+<li><a href="#reload-metadata-cache">Reload Metadata Cache</a></li>
+</ul>
+</li>
+<li><a href="#metadata">Metadata</a><ul>
+<li><a href="#create-apexclass-apextrigger-apexpage-apexcomponent">Create ApexClass, ApexTrigger, ApexPage, ApexComponent</a></li>
+<li><a href="#refresh-source">Refresh Source</a></li>
+<li><a href="#diff-with-server">Diff with Server</a></li>
+<li><a href="#save-to-server">Save To Server</a></li>
+<li><a href="#deploy-to-server">Deploy To Server</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#export-sobject-to-excel-and-search-sobject">Export Sobject to Excel and Search Sobject</a><ul>
+<li><a href="#topic_1">Topic</a></li>
+<li><a href="#environment_1">Environment</a></li>
+<li><a href="#sobject">Sobject</a><ul>
+<li><a href="#open-sobject-manager-page">Open SObject Manager Page</a></li>
+<li><a href="#view-sobject-data-in-browser">View SObject Data In Browser</a></li>
+<li><a href="#export-sobject-schema-to-excel">Export Sobject Schema To Excel</a></li>
+<li><a href="#export-sobject-list-to-txt">Export SObject List To Txt</a></li>
+<li><a href="#export-sobject-data-to-txt">Export SObject Data To Txt</a></li>
+</ul>
+</li>
+<li><a href="#summary_1">summary</a><ul>
+<li><a href="#sobject_1">SObject</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#run-sfdc-soql-apex-script-tooling-api">Run sfdc soql, apex script, tooling api</a><ul>
+<li><a href="#topic_2">Topic</a></li>
+<li><a href="#environment_2">Environment</a></li>
+<li><a href="#run-soql-query">Run Soql query</a></li>
+<li><a href="#run-apex-script">Run Apex Script</a></li>
+<li><a href="#run-tooling-query">Run Tooling query</a></li>
+</ul>
+</li>
+<li><a href="#auto-config-salesforce-ant-dataloader-and-backup-sobject-data">Auto config salesforce ant-dataloader and Backup Sobject Data</a><ul>
+<li><a href="#topic_3">Topic</a></li>
+<li><a href="#environment_3">Environment</a></li>
+<li><a href="#auto-config-dataloader">Auto Config Dataloader</a></li>
+<li><a href="#run-antdataloader">Run AntDataloader</a><ul>
+<li><a href="#ant-command">Ant command</a></li>
+<li><a href="#run-in-sublime">Run in sublime</a></li>
+</ul>
+</li>
+<li><a href="#config-your-soql">config your soql</a></li>
+<li><a href="#schedule-task-auto-backup-sfdc-sobject-data">Schedule Task , Auto Backup sfdc sobject data.</a></li>
+</ul>
+</li>
+<li><a href="#auto-config-salesforce-ant-migration-tools-and-backup-metadata">Auto config salesforce ant-migration-tools and Backup Metadata</a><ul>
+<li><a href="#topic_4">Topic</a></li>
+<li><a href="#environment_4">Environment</a></li>
+<li><a href="#auto-config-ant-migration-tools">Auto Config ant-migration-tools</a></li>
+<li><a href="#backup-all-metadata">Backup all Metadata</a></li>
+<li><a href="#schedule-task-auto-backup-sfdc-metadata">Schedule Task , Auto Backup sfdc metadata.</a><ul>
+<li><a href="#windows">windows</a></li>
+<li><a href="#unix-cron">Unix cron</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#export-sfdc-sobject-schema-to-excel">Export Sfdc Sobject Schema To Excel</a><ul>
+<li><a href="#topic_5">Topic</a></li>
+<li><a href="#environment_5">Environment</a></li>
+<li><a href="#sobject-schema-to-excel">Sobject Schema To Excel</a></li>
+</ul>
+</li>
+<li><a href="#use-salesforcexytoolsforsublime-salesforce-deploy-package">Use SalesforceXytoolsForSublime Salesforce Deploy Package</a><ul>
+<li><a href="#topic_6">Topic</a></li>
+<li><a href="#example">Example</a></li>
+</ul>
+</li>
+<li><a href="#salesforce-packagexml-auto-builder">Salesforce package.xml Auto Builder</a><ul>
+<li><a href="#topic_7">Topic</a></li>
+<li><a href="#build-packagexml-from-server">Build package.xml From Server</a></li>
+<li><a href="#build-packagexml-from-open-files">Build package.xml From Open Files</a></li>
+<li><a href="#summary_2">Summary</a><ul>
+<li><a href="#package-builder">Package Builder</a><ul>
+<li><a href="#build-packagexml-from-server_1">Build Package.xml From Server</a></li>
+<li><a href="#build-packagexml-from-server-from-open-files">Build Package.xml From Server From Open Files</a></li>
+<li><a href="#build-the-deploy-package-from-open-files">Build The deploy package from open files</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#how-to-export-apex-code-coverage">How to export Apex Code Coverage</a><ul>
+<li><a href="#topic_8">Topic</a></li>
+<li><a href="#environment_6">Environment</a></li>
+<li><a href="#sobject_2">Sobject</a><ul>
+<li><a href="#open-sobject-manager-page_1">Open SObject Manager Page</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#permissionset-builder">PermissionSet Builder</a><ul>
+<li><a href="#topic_9">Topic</a></li>
+<li><a href="#environment_7">Environment</a></li>
+<li><a href="#create-permissionxml">Create Permission.xml</a><ul>
+<li><a href="#open-sobject-manager-page_2">Open SObject Manager Page</a></li>
+</ul>
+</li>
+<li><a href="#deploy-permissionxml">Deploy permission.xml</a></li>
+</ul>
+</li>
+<li><a href="#soql-creator">Soql Creator</a><ul>
+<li><a href="#topic_10">Topic</a></li>
+<li><a href="#environment_8">Environment</a></li>
+<li><a href="#create-soql">Create Soql</a></li>
+</ul>
+</li>
+<li><a href="#save-your-sfdc-module-and-build-a-deploy-module-package">Save Your Sfdc Module and build a deploy module package</a><ul>
+<li><a href="#topic_11">Topic</a></li>
+<li><a href="#environment_9">Environment</a></li>
+<li><a href="#save-a-module">Save a module</a></li>
+<li><a href="#deploy-your-module">Deploy your module</a><ul>
+<li><a href="#fix-your-target-sfdc-info">fix your target sfdc info</a></li>
+<li><a href="#windows_1">windows</a></li>
+<li><a href="#linuxmac">Linux/Mac</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#search-sfdc-metadata">Search sfdc metadata</a><ul>
+<li><a href="#topic_12">Topic</a></li>
+<li><a href="#environment_10">Environment</a></li>
+<li><a href="#search-metadata">Search Metadata</a></li>
+<li><a href="#support-metadata-type">Support Metadata Type</a></li>
+</ul>
+</li>
+<li><a href="#copy-a-lightning-component">Copy a Lightning Component</a><ul>
+<li><a href="#topic_13">Topic</a></li>
+<li><a href="#environment_11">Environment</a></li>
+<li><a href="#copy-lightning-component">Copy Lightning Component</a></li>
+<li><a href="#deploy-the-component">Deploy The component</a></li>
+</ul>
+</li>
+<li><a href="#lightning-web-components-helloworld">Lightning Web Components HelloWorld</a><ul>
+<li><a href="#topic_14">Topic</a></li>
+<li><a href="#config-salesforcexytools">Config Salesforcexytools</a></li>
+<li><a href="#create-a-hello-world-lightning-web-component">Create a Hello World Lightning Web Component</a><ul>
+<li><a href="#create-a-lightning-web-component">create a Lightning web component.</a></li>
+<li><a href="#deploy-a-lightning-web-component">Deploy a Lightning web component</a></li>
+</ul>
+</li>
+<li><a href="#add-component-to-app-in-lightning-experience">Add Component to App in Lightning Experience</a></li>
+<li><a href="#resources">Resources</a></li>
+</ul>
+</li>
+<li><a href="#auto-create-salesforce-visualforce-apex">Auto Create Salesforce VisualForce Apex</a><ul>
+<li><a href="#topic_15">Topic</a></li>
+<li><a href="#environment_12">Environment</a></li>
+<li><a href="#auto-create-vf-controller-dto-dao-code">Auto Create VF-Controller-DTO-DAO-Code</a><ul>
+<li><a href="#find-the-menu">Find the menu</a></li>
+<li><a href="#choose-your-sobject">Choose your Sobject.</a></li>
+<li><a href="#select-custom-fields-or-all-fields">Select Custom Fields Or All Fields.</a></li>
+</ul>
+</li>
+<li><a href="#deploy-the-codes">Deploy the codes</a></li>
+<li><a href="#run-it">Run it</a><ul>
+<li><a href="#detail-page">Detail Page.</a><ul>
+<li><a href="#input-form">Input Form</a></li>
+<li><a href="#review-form">Review Form</a></li>
+</ul>
+</li>
+<li><a href="#record-list-page">Record List Page</a><ul>
+<li><a href="#list-all-records">List All Records</a></li>
+<li><a href="#search-record">Search Record</a></li>
+<li><a href="#mass-edit-records">Mass Edit Records</a></li>
+<li><a href="#records-review-form">Records Review Form</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#salesforce-test-code-creator">Salesforce test code creator</a><ul>
+<li><a href="#topic_16">Topic</a></li>
+<li><a href="#environment_13">Environment</a></li>
+<li><a href="#write-a-test-class">Write a test class</a><ul>
+<li><a href="#auto-create-testcode">Auto Create TestCode</a></li>
+<li><a href="#insert-test-data-from-soql">Insert test data from Soql</a></li>
+<li><a href="#insert-random-test-data">Insert random test data</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#salesforcexytoolsforsublime-reference">SalesforceXytoolsForSublime Reference</a><ul>
+<li><a href="#salesforcexytoolsforsublime_1">SalesforceXytoolsForSublime</a></li>
+<li><a href="#basic-on-opensource">Basic on OpenSource</a></li>
+<li><a href="#salesforcexytoolsforsublime-reference_1">SalesforceXyToolsForSublime Reference</a></li>
+<li><a href="#document-reference">Document Reference</a></li>
+<li><a href="#download-pdf">Download PDF</a></li>
+<li><a href="#about-author-exiahuang">About Author : Exia.Huang</a></li>
+<li><a href="#other-tools-for-salesforce">Other tools for salesforce</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div style="page-break-before:always"></div>
+
+<h1 id="how-to-install-salesforcexytoolsforsublime">How to Install SalesforceXytoolsForSublime</h1>
+<h2 id="salesforcexytoolsforsublime">SalesforceXytoolsForSublime</h2>
+<p><a href="http://salesforcexytools.com/categories/SalesforcexytoolsForSublime/">SalesforceXytoolsForSublime</a> is Rapid development tools for Salesforce Development.</p>
+<ul>
+<li>
+<p>Create Salesforce Project, Retrieve Metadata, Search Metadata</p>
+</li>
+<li>
+<p>Create ApexClass, ApexTrigger, ApexComponent, Refresh, Diff with Server(Support winmerge diff), Save to Server, Deploy to Server</p>
+</li>
+<li>
+<p>SObject Viewer, SObject Description, Export SOjbect Fields to Excel</p>
+</li>
+<li>
+<p>Run SOQL Query, Tooling Query, Apex Script.</p>
+</li>
+<li>
+<p>Code Creator : Auto Create Apex Test Class Code, Auto Create Test Data For Apex Test Class.</p>
+</li>
+<li>
+<p>SFDC Dataviewer, SFDC Online Dataviewer.</p>
+</li>
+<li>
+<p>Atuo Login SFDC (two login type: oauth2 , password config).</p>
+</li>
+<li>
+<p>Quick local sfdc file from sublime.</p>
+</li>
+<li>
+<p>Quick Search SObject Data/SObject Setting/ApexClass/Trigger/VisualForce Page/VisualForce Components/Email Template/Static Resource and open on browser Quickly</p>
+</li>
+<li>
+<p>Package.xml Builder.</p>
+</li>
+<li>
+<p>Build Release Package.</p>
+</li>
+<li>
+<p>Integrate Sfdc Dataloader, Config DataLoader and Run (<strong>Need Ant and Java Environment</strong>)</p>
+</li>
+</ul>
+<p><strong>Set your schedule, backup your sfdc data.</strong></p>
+<ul>
+<li>
+<p>Integrate Sfdc Migration Tool (<strong>Need Ant and Java Environment</strong>)</p>
+</li>
+<li>
+<p>Auto Backup all metadata script(<strong>Set your schedule, backup your sfdc metadata.</strong>).</p>
+</li>
+</ul>
+<h2 id="how-to-install">How to Install</h2>
+<h3 id="prerequisites">Prerequisites</h3>
+<ul>
+<li>Sublime Text 3 <a href="http://www.sublimetext.com/3">http://www.sublimetext.com/3</a></li>
+<li>Sublime Text Package Control <a href="https://packagecontrol.io/installation">https://packagecontrol.io/installation</a></li>
+</ul>
+<h3 id="use-package-control-to-install">Use Package Control to Install</h3>
+<ol>
+<li>Open Sublime Text 3</li>
+<li>
+<p>Run <code>Package Control: Install Package</code> command</p>
+</li>
+<li>
+<ul>
+<li><a href="http://docs.sublimetext.info/en/latest/extensibility/command_palette.html">Running commands from Sublime Text</a>
+     <a href="http://salesforcexytools.com/images/salesforcexytools-for-sublime/install1.jpg"><img alt="SalesforceXyToolsForSublimeHelp" src="http://salesforcexytools.com/images/salesforcexytools-for-sublime/install1.jpg" /></a></li>
+</ul>
+</li>
+<li>Search for <code>SalesforceXyTools</code>
+   <a href="http://salesforcexytools.com/images/salesforcexytools-for-sublime/install2.jpg"><img alt="SalesforceXyToolsForSublimeHelp" src="http://salesforcexytools.com/images/salesforcexytools-for-sublime/install2.jpg" /></a></li>
+<li>Hit <code>Enter</code>, That is all.
+   <a href="http://salesforcexytools.com/images/salesforcexytools-for-sublime/install3.jpg"><img alt="SalesforceXyToolsForSublimeHelp" src="http://salesforcexytools.com/images/salesforcexytools-for-sublime/install3.jpg" /></a></li>
+</ol>
+<h2 id="suggestion">Suggestion</h2>
+<p>If you want to use <code>ant-dataloader</code> or <code>ant-migration tools</code>, I suggest you to install <code>java</code> and <code>ant</code></p>
+<h3 id="install-java">Install java</h3>
+<p>just install it...</p>
+<p>Please set your <code>JAVA_HOME</code></p>
+<h3 id="installing-apache-ant">Installing Apache Ant</h3>
+<p><a href="https://ant.apache.org/manual/install.html">Installing Apache Ant</a></p>
+<p>To get up and running with the binary distribution of Ant quickly, follow these steps:</p>
+<ol>
+<li>Make sure you have a Java environment installed. See <a href="https://ant.apache.org/manual/install.html#sysrequirements">System Requirements</a> for details.</li>
+<li>Download Ant. See <a href="https://ant.apache.org/manual/install.html#getBinary">Binary Distribution</a> for details.</li>
+<li>Uncompress the downloaded file into a directory.</li>
+<li>Set environmental variables: <code>JAVA_HOME</code> to your Java environment, <code>ANT_HOME</code> to the directory you uncompressed Ant to, and add ${ANT_HOME}/bin (Unix) or %ANT_HOME%/bin (Windows) to your <code>PATH</code>. See <a href="https://ant.apache.org/manual/install.html#setup">Setup</a> for details.</li>
+<li>Optionally, from the <code>ANT_HOME</code> directory run ant -f fetch.xml -Ddest=system to get the library dependencies of most of the Ant tasks that require them. If you don't do this, many of the dependent Ant tasks will not be available. See <a href="https://ant.apache.org/manual/install.html#optionalTasks">Optional Tasks</a> for details and other options for the -Ddest parameter.</li>
+<li>Optionally, add any desired Antlibs. See <a href="https://ant.apache.org/antlibs/proper.html">Ant Libraries</a> for a list.
+<div style="page-break-before:always"></div></li>
+</ol>
+<h1 id="how-to-config-salesforcexytoolsforsublime">How to Config SalesforceXytoolsForSublime</h1>
+<h2 id="how-to-config">How to Config</h2>
+<p><a href="http://salesforcexytools.com/categories/SalesforcexytoolsForSublime/">SalesforceXytoolsForSublime</a></p>
+<h3 id="new-project">New Project</h3>
+<p><img alt="1539934585052" src="/images/xytools_images/1539934585052.png" /></p>
+<p><img alt="1539934552300" src="/images/xytools_images/1539934552300.png" /></p>
+<h3 id="config-project">Config Project</h3>
+<p>Project Setting &gt; Project Config Wizard</p>
+<p><img alt="1539934605982" src="/images/xytools_images/1539934605982.png" /></p>
+<ul>
+<li>Select Sandbox Or Product</li>
+<li>Input your username</li>
+<li>Input your password</li>
+<li>Input your security_token. If you haven't security_token, let it blank</li>
+<li>Select your API Version</li>
+</ul>
+<p><img alt="1539934624694" src="/images/xytools_images/1539934624694.png" /></p>
+<h3 id="proxy-config">Proxy Config</h3>
+<p>Project Setting &gt; Proxy Config Wizard
+<img alt="1539934831888" src="/images/xytools_images/1539934831888.png" /></p>
+<h2 id="start-to-develop-sfdc">Start to develop sfdc</h2>
+<h3 id="login-test">Login Test</h3>
+<p>SFDC &gt; Login SFDC</p>
+<h3 id="retrieve-metadata">Retrieve Metadata</h3>
+<p><img alt="1539934961510" src="/images/xytools_images/1539934961510.png" /></p>
+<p>Select metadata to retrieve</p>
+<p><img alt="1540365204093" src="/images/xytools_images/1540365204093.png" /></p>
+<p>And Click <code>Start To Retrive</code></p>
+<h2 id="modify-the-config-file">Modify the config file.</h2>
+<p>You also can modify the config file in <code>/.xyconfig/xyconfig.json</code>.
+You can use <code>Project Settings &gt; Open Project Config File</code>.
+Each project has a config file.</p>
+<pre><code>{
+    &quot;username&quot;: &quot;input your username&quot;,
+    &quot;password&quot;: &quot;input your password&quot;,
+    &quot;security_token&quot;: &quot;&quot;,
+    &quot;is_sandbox&quot;: true,
+    &quot;api_version&quot;: 40.0,
+    &quot;src_dir&quot;: &quot;src&quot;,
+    &quot;authentication&quot;: &quot;password&quot;, 
+    &quot;jar_home&quot;: &quot;C:\\Users\\exia\\salesforce-project\\jar&quot;, 
+    &quot;use_os_terminal&quot;: false, 
+    &quot;auto_save_to_server&quot;: false,
+    &quot;app&quot; : {
+        &quot;winmerge&quot;: &quot;C:\\Program Files (x86)\\WinMerge\\WinMergeU.exe&quot;, 
+        &quot;notepad&quot;: &quot;C:\\Program Files (x86)\\Notepad++\\notepad++.exe {file_name}&quot;,
+        &quot;Bash&quot; : &quot;cmd /k cd /d {file_dir}&quot;
+    },
+    &quot;default_browser&quot;: &quot;chrome&quot;, 
+    &quot;browsers&quot;: {
+        &quot;chrome&quot;: &quot;C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe&quot;, 
+        &quot;IE&quot;: &quot;C:\\Program Files\\Internet Explorer\\iexplore.exe&quot;
+    }, 
+    &quot;debug_levels&quot;: {
+        &quot;Apex_Code&quot;: &quot;DEBUG&quot;, 
+        &quot;Callout&quot;: &quot;INFO&quot;, 
+        &quot;Workflow&quot;: &quot;INFO&quot;, 
+        &quot;Apex_Profiling&quot;: &quot;INFO&quot;, 
+        &quot;Validation&quot;: &quot;INFO&quot;, 
+        &quot;DB&quot;: &quot;Info&quot;, 
+        &quot;System&quot;: &quot;DEBUG&quot;
+    },
+    &quot;proxy&quot;: {
+        &quot;use_proxy&quot; : false,
+        &quot;proxyhost&quot; : &quot;127.0.0.1&quot;,
+        &quot;proxyport&quot; : &quot;8888&quot;,
+        &quot;proxyuser&quot; : &quot;proxyuser&quot;,
+        &quot;proxypassword&quot; : &quot;proxypassword&quot;
+    }
+}
+</code></pre>
+
+<h3 id="config-your-login-browser">Config your login Browser</h3>
+<p>Add your <code>browsers</code> setting as below.
+You can use <code>Project Settings &gt; Switch Broswer</code> to set your default browser.</p>
+<pre><code class="json">// Add your browser which you like!
+// examle:
+// &quot;firefox&quot;:&quot;Path of firefox!&quot;,
+&quot;browsers&quot;:
+{
+    &quot;chrome&quot;: &quot;C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe&quot;,
+    &quot;IE&quot;: &quot;C:\\Program Files\\Internet Explorer\\iexplore.exe&quot;,
+    &quot;Firefox&quot;: &quot;C:\\Program Files\\Firefox.exe&quot;
+},
+</code></pre>
+
+<h2 id="use-oauth2-to-access-sfdc">Use Oauth2 to access sfdc.</h2>
+<p>If you want to use oauth2 to access salesforce, please click
+<code>Project Settings &gt; Change Authentication Type</code> to set your authentication type.
+<div style="page-break-before:always"></div></p>
+<h1 id="use-salesforcexytoolsforsublime-to-develop-sfdc">Use SalesforceXytoolsForSublime to develop SFDC</h1>
+<h2 id="topic">Topic</h2>
+<ul>
+<li>Use <a href="http://salesforcexytools.com/categories/SalesforcexytoolsForSublime/">SalesforceXytoolsForSublime</a> to develope sfdc</li>
+</ul>
+<blockquote>
+<ol>
+<li>create/update/delete/refresh local file : ApexClass, ApexTrigger, ApexPage, ApexComponent</li>
+<li>Diff between localhost and server</li>
+<li>Open metadata in sfdc</li>
+<li>Deploy  : ApexClass, ApexTrigger, ApexPage, ApexComponent, Lightning</li>
+<li>Run Test Class</li>
+</ol>
+</blockquote>
+<h2 id="environment">Environment</h2>
+<ul>
+<li>Make sure you can login your sfdc. Test it : SFDC-XY &gt; Login SFDC</li>
+</ul>
+<h2 id="start-develope">Start Develope</h2>
+<h3 id="create-apexclass">Create ApexClass</h3>
+<p>This is an example of batch apexclass.</p>
+<h4 id="step1-new-apexclass">Step1. New ApexClass</h4>
+<p>Metadata &gt; New ApexClass</p>
+<p><img alt="1540364550961" src="/images/xytools_images/1540364550961.png" /></p>
+<blockquote>
+<p>Tips : Create ApexClass, ApexTrigger, ApexPage, ApexComponent in the same way</p>
+</blockquote>
+<h4 id="step2-select-apex-template">Step2. Select Apex template</h4>
+<p><img alt="1540365063496" src="/images/xytools_images/1540365063496.png" /></p>
+<blockquote>
+<p>Tips: search batch</p>
+</blockquote>
+<p><img alt="1540365114644" src="/images/xytools_images/1540365114644.png" /></p>
+<p>Input your batch name</p>
+<pre><code class="java">global class SampleBatch1 implements Database.Batchable&lt;sObject&gt; {
+
+    String query;
+
+    global SampleBatch1() {
+
+    }
+
+    global Database.QueryLocator start(Database.BatchableContext BC) {
+        return Database.getQueryLocator(query);
+    }
+
+    global void execute(Database.BatchableContext BC, List&lt;sObject&gt; scope) {
+
+    }
+
+    global void finish(Database.BatchableContext BC) {
+
+    }
+
+}
+</code></pre>
+
+<h3 id="update-apexclass">Update ApexClass</h3>
+<p>Change your apexclass, </p>
+<p>Right click, <code>SFDC-XY Metadata</code> &gt; <code>Save To Server</code> </p>
+<p><img alt="1540365460463" src="/images/xytools_images/1540365460463.png" /></p>
+<h3 id="refresh-from-server">Refresh From Server</h3>
+<p>Right click, <code>SFDC-XY Metadata</code> &gt; <code>Refresh From Server</code> </p>
+<p><img alt="1540366564885" src="/images/xytools_images/1540366564885.png" /></p>
+<h3 id="delete">Delete</h3>
+<p>Right click, <code>SFDC-XY Metadata</code> &gt; <code>Delete this metadata(Danger)</code> </p>
+<p><img alt="1540366621242" src="/images/xytools_images/1540366621242.png" /></p>
+<p>It will pop up a dialog like this.</p>
+<p><img alt="1540366789444" src="/images/xytools_images/1540366789444.png" /></p>
+<h3 id="diff-between-localhost-and-server">Diff between localhost and server</h3>
+<h4 id="config-your-winmerge">Config your Winmerge</h4>
+<p><code>Project Setting</code> &gt; <code>Open Project Config file</code></p>
+<p><img alt="1540366215462" src="/images/xytools_images/1540366215462.png" /></p>
+<p>set your <code>winmerge</code> like below.</p>
+<pre><code class="json">.......
+    &quot;app&quot;: {
+        &quot;Bash&quot;: &quot;cmd /k cd /d {file_dir}&quot;, 
+        &quot;winmerge&quot;: &quot;C:\\Program Files (x86)\\WinMerge\\WinMergeU.exe&quot;, 
+        &quot;notepad&quot;: &quot;C:\\Program Files (x86)\\Notepad++\\notepad++.exe {file_name}&quot;
+    }, 
+.......
+</code></pre>
+
+<h4 id="diff-source">Diff source</h4>
+<p>Right click, <code>SFDC-XY Metadata</code> &gt; <code>Diff with Server</code> </p>
+<p><img alt="1540365783795" src="/images/xytools_images/1540365783795.png" /></p>
+<p><img alt="1540366115227" src="/images/xytools_images/1540366115227.png" /></p>
+<p>if you do not set <code>winmerge</code>, it will use simple diff.</p>
+<p><img alt="1540366430051" src="/images/xytools_images/1540366430051.png" /></p>
+<h3 id="find-your-source-in-sfdc">Find your source in sfdc</h3>
+<p>Right click, <code>SFDC-XY Metadata</code> &gt; <code>Save To Server</code> </p>
+<p>It will go to sfdc source page.</p>
+<p><img alt="1540365563010" src="/images/xytools_images/1540365563010.png" /></p>
+<h3 id="deploy-to-sfdc">Deploy To SFDC</h3>
+<blockquote>
+<p>There are some different between <strong>Deploy</strong> and <strong>save</strong>.</p>
+</blockquote>
+<p>Right click, <code>SFDC-XY Metadata</code> &gt; <code>Deploy To Server(Ant Migration Tool)</code> </p>
+<p><img alt="1540432504706" src="/images/xytools_images/1540432504706.png" /></p>
+<p>There 4 ways to deploy to sfdc server.  If you select <strong>check only</strong> , it never actually saves to the server.</p>
+<ul>
+<li>
+<p>Deploy Open Files To Server:</p>
+</li>
+<li>
+<p>Deploy Open Files To Server(check only):</p>
+</li>
+<li>
+<p>Deploy Current File To Server : <code>xxx.cls</code></p>
+</li>
+<li>
+<p>Deploy Current File To Server : <code>xxx.cls</code>(check only)</p>
+</li>
+</ul>
+<p><img alt="1540432580625" src="/images/xytools_images/1540432580625.png" /></p>
+<h3 id="deploy-the-folder">Deploy the folder</h3>
+<p>choose your folder or source in sublime folders, then right click.</p>
+<p>Find the menu : <code>Sfdc-Xy &gt; Deploy Directory To SFDC</code></p>
+<p><img alt="1540445304166" src="/images/xytools_images/1540445304166.png" /></p>
+<h3 id="run-test-class">Run Test Class</h3>
+<p>Right click, <code>SFDC-XY Run</code> &gt; <code>Run Test Class</code> </p>
+<p><img alt="1540442455878" src="/images/xytools_images/1540442455878.png" /></p>
+<h2 id="summary">Summary</h2>
+<h3 id="project">Project</h3>
+<h4 id="new-project_1">New Project</h4>
+<p><code>Project &gt; New Project</code>
+Input your project directory, and create your sfdc project</p>
+<h4 id="switch-project">Switch Project</h4>
+<p><code>Project &gt; Switch Project</code></p>
+<h4 id="retrieve-source">Retrieve Source</h4>
+<p><code>Project &gt; Retrieve Source</code>
+Select metatdata type, and click <code>Start To Retrieve</code> to retrieve source.
+The old source <code>src</code> directory will be remove to <code>src_backup</code></p>
+<h4 id="retrieve-source-zip">Retrieve Source zip</h4>
+<p><code>Project &gt; Retrieve Source.zip</code>
+Input your project directory, and retrieve zip.</p>
+<h4 id="reload-metadata-cache">Reload Metadata Cache</h4>
+<p><code>Project &gt; Reload Metadata Cache</code>
+Not need to Reload Metadata Cache.</p>
+<h3 id="metadata">Metadata</h3>
+<h4 id="create-apexclass-apextrigger-apexpage-apexcomponent">Create ApexClass, ApexTrigger, ApexPage, ApexComponent</h4>
+<p><code>Metadata &gt; New ApexClass</code>
+<code>Metadata &gt; New ApexTrigger</code>
+<code>Metadata &gt; New ApexPage</code>
+<code>Metadata &gt; New ApexComponent</code></p>
+<h4 id="refresh-source">Refresh Source</h4>
+<p><code>Metadata &gt; Refresh From Server</code></p>
+<h4 id="diff-with-server">Diff with Server</h4>
+<p><code>Metadata &gt; Diff with Server</code>
+If you want to use <code>winmerge</code> to check the different between local and server,
+Please config <code>/.xyconfig/xyconfig.json</code>, set <code>winmerge</code>.
+If you set <code>winmerge</code> blank, it will diff in sublime.</p>
+<blockquote>
+<p>Tips: You must use <code>\\</code> if you use Windows, such as <code>"C:\\Program Files (x86)\\WinMerge\\WinMergeU.exe"</code></p>
+</blockquote>
+<h4 id="save-to-server">Save To Server</h4>
+<p><code>Metadata &gt; Save To Server</code></p>
+<h4 id="deploy-to-server">Deploy To Server</h4>
+<p>Please use Migration Tools to deploy sources.
+<code>Migration Tool &gt; Ant Migration Tool</code>
+<div style="page-break-before:always"></div></p>
+<h1 id="export-sobject-to-excel-and-search-sobject">Export Sobject to Excel and Search Sobject</h1>
+<h2 id="topic_1">Topic</h2>
+<ul>
+<li>Use <a href="http://salesforcexytools.com/categories/SalesforcexytoolsForSublime/">SalesforceXytoolsForSublime</a> To Build Salesforce Deploy Package</li>
+</ul>
+<blockquote>
+<ol>
+<li>Search sobject and view data</li>
+<li>Export Sobject Schema To Excel.</li>
+</ol>
+</blockquote>
+<h2 id="environment_1">Environment</h2>
+<ul>
+<li>Make sure you can login your sfdc. Test it : SFDC-XY &gt; Login SFDC</li>
+</ul>
+<h2 id="sobject">Sobject</h2>
+<h3 id="open-sobject-manager-page">Open SObject Manager Page</h3>
+<p><code>SObject &gt; Search Sobject(Browser)</code></p>
+<p><img alt="1540435396263" src="/images/xytools_images/1540435396263.png" /></p>
+<p>Search the sobject, then it will open the sobject manager page in browser.</p>
+<p><img alt="1540435427892" src="/images/xytools_images/1540435427892.png" /></p>
+<p><img alt="1540435595332" src="/images/xytools_images/1540435595332.png" /></p>
+<h3 id="view-sobject-data-in-browser">View SObject Data In Browser</h3>
+<p><code>SObject &gt; Open Sobject Data View(Browser)</code> </p>
+<p><img alt="1540435631881" src="/images/xytools_images/1540435631881.png" /></p>
+<p>Search the sobject, then it will open the data manager page in browser.</p>
+<p><img alt="1540435726045" src="/images/xytools_images/1540435726045.png" /></p>
+<h3 id="export-sobject-schema-to-excel">Export Sobject Schema To Excel</h3>
+<p><code>Sobject &gt; Export Sobject Schema To Excel</code></p>
+<p><img alt="1539935245815" src="/images/xytools_images/1539935245815.png" /></p>
+<p>Example,</p>
+<p><img alt="1539935461910" src="/images/xytools_images/1539935461910.png" /></p>
+<h3 id="export-sobject-list-to-txt">Export SObject List To Txt</h3>
+<p><code>Sobject &gt; Show Sobject List</code></p>
+<p><img alt="1540435947703" src="/images/xytools_images/1540435947703.png" /></p>
+<h3 id="export-sobject-data-to-txt">Export SObject Data To Txt</h3>
+<p><code>Sobject &gt; Export Sobject Data</code></p>
+<p><img alt="1540436013078" src="/images/xytools_images/1540436013078.png" /></p>
+<p><img alt="1540436160738" src="/images/xytools_images/1540436160738.png" /></p>
+<h2 id="summary_1">summary</h2>
+<h3 id="sobject_1">SObject</h3>
+<p><code>SObject &gt; Search Sobject(Browser)</code>
+<code>SObject &gt; Open Sobject Data View(Browser)</code> 
+<code>Sobject &gt; Export Sobject Schema To Excel</code>
+<code>Sobject &gt; Show Sobject List</code>
+<code>Sobject &gt; Export Sobject Data</code>
+<div style="page-break-before:always"></div></p>
+<h1 id="run-sfdc-soql-apex-script-tooling-api">Run sfdc soql, apex script, tooling api</h1>
+<h2 id="topic_2">Topic</h2>
+<ul>
+<li>Use <a href="http://salesforcexytools.com/categories/SalesforcexytoolsForSublime/">SalesforceXytoolsForSublime</a> </li>
+</ul>
+<blockquote>
+<ol>
+<li>Run soql query</li>
+<li>Run apex script</li>
+<li>Run tooling query
+</li>
+</ol>
+</blockquote>
+<h2 id="environment_2">Environment</h2>
+<ul>
+<li>Make sure you can login your sfdc. Test it : SFDC-XY &gt; Login SFDC</li>
+</ul>
+<h2 id="run-soql-query">Run Soql query</h2>
+<p><strong>First, Select your soql</strong></p>
+<p>Then right click, <code>SFDC-XY Run &gt; SOQL Query</code></p>
+<p><img alt="1540440544578" src="/images/xytools_images/1540440544578.png" /></p>
+<p>result :</p>
+<p><img alt="1540440661762" src="/images/xytools_images/1540440661762.png" /></p>
+<h2 id="run-apex-script">Run Apex Script</h2>
+<p>select your apex script, </p>
+<p>right click, <code>SFDC-XY Run &gt; Run Apex Script</code></p>
+<p><img alt="1540441049661" src="/images/xytools_images/1540441049661.png" /></p>
+<h2 id="run-tooling-query">Run Tooling query</h2>
+<p>select your tooling query, </p>
+<p>right click, <code>SFDC-XY Run &gt; Tooling Query</code></p>
+<p><img alt="1540441306919" src="/images/xytools_images/1540441306919.png" />
+<div style="page-break-before:always"></div></p>
+<h1 id="auto-config-salesforce-ant-dataloader-and-backup-sobject-data">Auto config salesforce ant-dataloader and Backup Sobject Data</h1>
+<h2 id="topic_3">Topic</h2>
+<ul>
+<li>Use <a href="http://salesforcexytools.com/categories/SalesforcexytoolsForSublime/">SalesforceXytoolsForSublime</a> To Config Dataloader and backup sfdc sobject data.</li>
+</ul>
+<blockquote>
+<ol>
+<li>Auto config dataloader.</li>
+<li>Backup salesforce sobject data.</li>
+</ol>
+</blockquote>
+<h2 id="environment_3">Environment</h2>
+<ul>
+<li>Set up your <code>java</code> and <code>ant</code> environment.</li>
+<li>You must install <code>java</code> and <code>ant</code> before use <code>ant dataloader</code>.</li>
+<li>You not need to Install the <code>dataloader</code>.</li>
+<li>Make sure you can login your sfdc. Test it : SFDC-XY &gt; Login SFDC</li>
+</ul>
+<blockquote>
+<p>Tips : You not need to Install the dataloader, Salesforcexytools integrates with dataloader.</p>
+</blockquote>
+<h2 id="auto-config-dataloader">Auto Config Dataloader</h2>
+<p>Open Sublime-Menu : SFDC-XY &gt; Dataloader &gt; Build Ant Dataloader Configuration</p>
+<p><img alt="1539931429520" src="/images/xytools_images/1539931429520.png" /></p>
+<p>Select <code>Your Sobjects</code> and  Select <code>Start To Config</code>, example:</p>
+<p><img alt="1539931785518" src="/images/xytools_images/1539931785518.png" /></p>
+<p>You can find <strong>AntDataloader</strong> in <code>./sfdc-xy/AntDataloader</code> Folder.</p>
+<p><img alt="1539931980132" src="/images/xytools_images/1539931980132.png" /></p>
+<h2 id="run-antdataloader">Run AntDataloader</h2>
+<h3 id="ant-command">Ant command</h3>
+<pre><code>cd ./sfdc-xy/AntDataloader
+ant
+</code></pre>
+
+<p><img alt="1539932235973" src="/images/xytools_images/1539932235973.png" /></p>
+<h3 id="run-in-sublime">Run in sublime</h3>
+<p><code>Dataloader &gt; Run Ant Dataloader</code>
+The data will be export to <code>/sfdc-xy/AntDataloader/Export_YYYYMMDD_HHmm</code></p>
+<p><img alt="1539932182175" src="/images/xytools_images/1539932182175.png" /></p>
+<h2 id="config-your-soql">config your soql</h2>
+<p>Open <code>./sfdc-xy/AntDataloader/build.xml</code></p>
+<p>Add your <code>export</code> task, you can export sfdc sobject data easily.</p>
+<pre><code class="xml">    &lt;target name=&quot;start_export&quot;&gt;
+        &lt;!-- &lt;export file=&quot;{FILE_NAME}&quot; object=&quot;{SOBJECT_NAME}&quot; soql=&quot;{SOQL}&quot;/&gt; --&gt;
+        &lt;export file=&quot;Blog__c&quot; object=&quot;Blog__c&quot; soql=&quot;SELECT Id , Name , Title__c, Body__c FROM Blog__c&quot;/&gt;
+        &lt;export file=&quot;Log__c&quot; object=&quot;Log__c&quot; soql=&quot;SELECT Id , Name, Body__c FROM Log__c&quot;/&gt;
+    &lt;/target&gt;
+</code></pre>
+
+<blockquote>
+<p>Tips:  Config the <code>build.xml</code> and copy <code>Ant Dataloader</code> to anywhere, and add your schedule job to export sfdc data.</p>
+</blockquote>
+<h2 id="schedule-task-auto-backup-sfdc-sobject-data">Schedule Task , Auto Backup sfdc sobject data.</h2>
+<p>copy <code>./sfdc-xy/AntDataloader</code> To any folder. and schedule task.
+<div style="page-break-before:always"></div></p>
+<h1 id="auto-config-salesforce-ant-migration-tools-and-backup-metadata">Auto config salesforce ant-migration-tools and Backup Metadata</h1>
+<h2 id="topic_4">Topic</h2>
+<ul>
+<li>Use <a href="http://salesforcexytools.com/categories/SalesforcexytoolsForSublime/">SalesforceXytoolsForSublime</a> To Config ant-migration-tools and backup metadata.</li>
+</ul>
+<blockquote>
+<ol>
+<li>Auto config ant-migration-tools.</li>
+<li>Backup all salesforce metadata in one click. You do not need to config package.xml !</li>
+</ol>
+</blockquote>
+<h2 id="environment_4">Environment</h2>
+<ul>
+<li>Set up your <code>java</code> and <code>ant</code> environment.</li>
+<li>You must install <code>java</code> and <code>ant</code> before use <code>ant dataloader</code>.</li>
+<li>You not need to Install the <code>dataloader</code>.</li>
+<li>Make sure you can login your sfdc. Test it : SFDC-XY &gt; Login SFDC</li>
+</ul>
+<h2 id="auto-config-ant-migration-tools">Auto Config ant-migration-tools</h2>
+<blockquote>
+<p>Sublime-Menu :SFDC-XY &gt; Migration Tool &gt; Ant Migration Tool</p>
+</blockquote>
+<p><img alt="1539848350521" src="/images/xytools_images/1539848350521.png" /></p>
+<p>Select <code>Config Ant Metadata Tool</code></p>
+<p><img alt="1540431779525" src="/images/xytools_images/1540431779525.png" /></p>
+<h2 id="backup-all-metadata">Backup all Metadata</h2>
+<blockquote>
+<p>Sublime-Menu :SFDC-XY &gt; Migration Tool &gt; Ant Migration Tool</p>
+<p>Select <code>Backup All Metadata</code></p>
+</blockquote>
+<p><img alt="1540431839856" src="/images/xytools_images/1540431839856.png" /></p>
+<p>It will take some time to backup all sfdc metadata. It will backup to the <code>sfdc-xy\MetadataBackupTools\backup-metadata\</code></p>
+<p><img alt="1540432165067" src="/images/xytools_images/1540432165067.png" /></p>
+<blockquote>
+<p>Tips : It is base on <a href="https://developer.salesforce.com/docs/atlas.en-us.216.0.daas.meta/daas/meta_development.htm">Ant Migration Tool </a>.</p>
+</blockquote>
+<h2 id="schedule-task-auto-backup-sfdc-metadata">Schedule Task , Auto Backup sfdc metadata.</h2>
+<p>You can find ant-migration-tools in <code>./sfdc-xy/MetadataBackupTools</code> Folder.</p>
+<p>You don't need to config <code>package.xml</code>.</p>
+<p>Just copy <code>MetadataBackupTools</code> and config your <strong>system tasks</strong></p>
+<p><img alt="1539848747628" src="/images/xytools_images/1539848747628.png" /></p>
+<h3 id="windows">windows</h3>
+<p>In <strong>windows</strong>, you can set task like this.</p>
+<p><img alt="1539849119939" src="/images/xytools_images/1539849119939.png" /></p>
+<p><img alt="1539849440133" src="/images/xytools_images/1539849440133.png" /></p>
+<h3 id="unix-cron">Unix cron</h3>
+<p>You can set your cron job in unix/ linux/ mac
+<div style="page-break-before:always"></div></p>
+<h1 id="export-sfdc-sobject-schema-to-excel">Export Sfdc Sobject Schema To Excel</h1>
+<h2 id="topic_5">Topic</h2>
+<ul>
+<li>Use <a href="http://salesforcexytools.com/categories/SalesforcexytoolsForSublime/">SalesforceXytoolsForSublime</a> To Config Dataloader and backup sfdc sobject data.</li>
+</ul>
+<blockquote>
+<ol>
+<li>Export Sfdc Sobject Schema To Excel.</li>
+</ol>
+</blockquote>
+<h2 id="environment_5">Environment</h2>
+<ul>
+<li>Make sure you can login your sfdc. Test it : SFDC-XY &gt; Login SFDC</li>
+</ul>
+<h2 id="sobject-schema-to-excel">Sobject Schema To Excel</h2>
+<p>Open Sublime-Menu : SFDC-XY &gt; Sobject &gt; Export Sobject Schema To Excel</p>
+<p><img alt="1539935245815" src="/images/xytools_images/1539935245815.png" /></p>
+<p>Example,</p>
+<p><img alt="1539935461910" src="/images/xytools_images/1539935461910.png" />
+<div style="page-break-before:always"></div></p>
+<h1 id="use-salesforcexytoolsforsublime-salesforce-deploy-package">Use SalesforceXytoolsForSublime Salesforce Deploy Package</h1>
+<h2 id="topic_6">Topic</h2>
+<ul>
+<li>Use <a href="http://salesforcexytools.com/categories/SalesforcexytoolsForSublime/">SalesforceXytoolsForSublime</a> To Build Salesforce Deploy Package</li>
+</ul>
+<h2 id="example">Example</h2>
+<p>Example, Open <code>Account.object</code>,<code>Blog.page</code>,<code>BlogController.cls</code>,<code>Blog__c.object</code> in Sublime</p>
+<p><img alt="1539846980157" src="/images/xytools_images/1539846980157.png" /></p>
+<blockquote>
+<p>Sublime-Menu : SFDC-XY &gt; Package Builder &gt; Build Deploy package From Open Files</p>
+<p>Input your save path</p>
+</blockquote>
+<p>You can build package.xml like below.</p>
+<pre><code>src
+  │  package.xml
+  │
+  ├─classes
+  │      BlogController.cls
+  │      BlogController.cls-meta.xml
+  │
+  ├─objects
+  │      Account.object
+  │      Blog__c.object
+  │
+  └─pages
+          Blog.page
+          Blog.page-meta.xml
+</code></pre>
+
+<p>about package.xml</p>
+<pre><code class="xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;Package xmlns=&quot;http://soap.sforce.com/2006/04/metadata&quot;&gt;
+
+    &lt;types&gt;
+        &lt;members&gt;Blog&lt;/members&gt;
+        &lt;name&gt;ApexPage&lt;/name&gt;
+    &lt;/types&gt;
+    &lt;types&gt;
+        &lt;members&gt;BlogController&lt;/members&gt;
+        &lt;name&gt;ApexClass&lt;/name&gt;
+    &lt;/types&gt;
+    &lt;types&gt;
+        &lt;members&gt;Account&lt;/members&gt;
+        &lt;members&gt;Blog__c&lt;/members&gt;
+        &lt;name&gt;CustomObject&lt;/name&gt;
+    &lt;/types&gt;
+    &lt;version&gt;42.0&lt;/version&gt;
+&lt;/Package&gt;
+
+</code></pre>
+
+<div style="page-break-before:always"></div>
+
+<h1 id="salesforce-packagexml-auto-builder">Salesforce package.xml Auto Builder</h1>
+<h2 id="topic_7">Topic</h2>
+<ul>
+<li>Use <a href="http://salesforcexytools.com/categories/SalesforcexytoolsForSublime/">SalesforceXytoolsForSublime</a> To Build package.xml</li>
+</ul>
+<blockquote>
+<p>There are 2 ways to build package.xml 
+1. Build From SFDC API.
+2. Use local file to build package.xml.</p>
+</blockquote>
+<h2 id="build-packagexml-from-server">Build package.xml From Server</h2>
+<blockquote>
+<p>Sublime-Menu :SFDC-XY &gt; Package Builder &gt; Build Package.xml From Server</p>
+</blockquote>
+<p><img alt="1539845253603" src="/images/xytools_images/1539845253603.png" /></p>
+<p>You can build package.xml like below.</p>
+<pre><code class="xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;Package xmlns=&quot;http://soap.sforce.com/2006/04/metadata&quot;&gt;
+
+    &lt;types&gt;
+        &lt;members&gt;*&lt;/members&gt;
+        &lt;name&gt;InstalledPackage&lt;/name&gt;
+    &lt;/types&gt;
+    &lt;types&gt;
+        &lt;members&gt;*&lt;/members&gt;
+        &lt;name&gt;CustomLabels&lt;/name&gt;
+    &lt;/types&gt;
+    &lt;types&gt;
+        &lt;members&gt;*&lt;/members&gt;
+        &lt;name&gt;StaticResource&lt;/name&gt;
+    &lt;/types&gt;
+   ............
+   ............
+   ............
+   ............
+   ............
+   ............
+   ............
+   ............
+    &lt;types&gt;
+        &lt;members&gt;*&lt;/members&gt;
+        &lt;name&gt;Settings&lt;/name&gt;
+    &lt;/types&gt;
+    &lt;version&gt;42.0&lt;/version&gt;
+&lt;/Package&gt;
+
+</code></pre>
+
+<h2 id="build-packagexml-from-open-files">Build package.xml From Open Files</h2>
+<p>Example, Open <code>Account.object</code>,<code>Blog.page</code>,<code>BlogController.cls</code>,<code>Blog__c.object</code> in Sublime</p>
+<p><img alt="1539846980157" src="/images/xytools_images/1539846980157.png" /></p>
+<blockquote>
+<p>Sublime-Menu : SFDC-XY &gt; Package Builder &gt; Build package.xml From Open Files</p>
+</blockquote>
+<p>You can build package.xml like below.</p>
+<pre><code class="xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;Package xmlns=&quot;http://soap.sforce.com/2006/04/metadata&quot;&gt;
+
+    &lt;types&gt;
+        &lt;members&gt;Blog&lt;/members&gt;
+        &lt;name&gt;ApexPage&lt;/name&gt;
+    &lt;/types&gt;
+    &lt;types&gt;
+        &lt;members&gt;BlogController&lt;/members&gt;
+        &lt;name&gt;ApexClass&lt;/name&gt;
+    &lt;/types&gt;
+    &lt;types&gt;
+        &lt;members&gt;Account&lt;/members&gt;
+        &lt;members&gt;Blog__c&lt;/members&gt;
+        &lt;name&gt;CustomObject&lt;/name&gt;
+    &lt;/types&gt;
+    &lt;version&gt;42.0&lt;/version&gt;
+&lt;/Package&gt;
+
+</code></pre>
+
+<h2 id="summary_2">Summary</h2>
+<h3 id="package-builder">Package Builder</h3>
+<h4 id="build-packagexml-from-server_1">Build Package.xml From Server</h4>
+<p><code>Package Builder &gt; Build Package.xml From Server</code>
+Export all package.xml from server</p>
+<h4 id="build-packagexml-from-server-from-open-files">Build Package.xml From Server From Open Files</h4>
+<pre><code>Package Builder &gt; Build Package.xml From Open Files
+</code></pre>
+
+<h4 id="build-the-deploy-package-from-open-files">Build The deploy package from open files</h4>
+<p><code>Package Builder &gt; Build Deploy Package From Open Files</code>
+This is only copy the open files to a dir, not deploy to server.
+<div style="page-break-before:always"></div></p>
+<h1 id="how-to-export-apex-code-coverage">How to export Apex Code Coverage</h1>
+<h2 id="topic_8">Topic</h2>
+<ul>
+<li>Use <a href="http://salesforcexytools.com/categories/SalesforcexytoolsForSublime/">SalesforceXytoolsForSublime</a> To Export <code>Apex Code Coverage</code></li>
+</ul>
+<blockquote>
+<ol>
+<li>Export <code>Apex Code Coverage</code>
+</li>
+</ol>
+</blockquote>
+<h2 id="environment_6">Environment</h2>
+<ul>
+<li>Make sure you can login your sfdc. Test it : SFDC-XY &gt; Login SFDC</li>
+</ul>
+<h2 id="sobject_2">Sobject</h2>
+<h3 id="open-sobject-manager-page_1">Open SObject Manager Page</h3>
+<p><code>ApexTest &gt; Show Apex Code Coverage</code></p>
+<p><img alt="1540443192921" src="/images/xytools_images/1540443192921.png" /></p>
+<p>Result</p>
+<p><img alt="1540443323472" src="/images/xytools_images/1540443323472.png" />
+<div style="page-break-before:always"></div></p>
+<h1 id="permissionset-builder">PermissionSet Builder</h1>
+<h2 id="topic_9">Topic</h2>
+<ul>
+<li>Use <a href="http://salesforcexytools.com/categories/SalesforcexytoolsForSublime/">SalesforceXytoolsForSublime</a> To Build fieldPermission and objectPermission</li>
+</ul>
+<blockquote>
+<ol>
+<li>Build permissionset file
+</li>
+</ol>
+</blockquote>
+<h2 id="environment_7">Environment</h2>
+<ul>
+<li>Make sure you can login your sfdc. Test it : SFDC-XY &gt; Login SFDC</li>
+</ul>
+<h2 id="create-permissionxml">Create Permission.xml</h2>
+<h3 id="open-sobject-manager-page_2">Open SObject Manager Page</h3>
+<p><code>Permission Builder&gt; Build Profile FieldPermissions</code></p>
+<p><img alt="1540457828769" src="/images/xytools_images/1540457828769.png" /></p>
+<p>Select your field</p>
+<p><img alt="1540457987197" src="/images/xytools_images/1540457987197.png" /></p>
+<p>The Permissionset file :</p>
+<pre><code class="xml">&lt;?xml version=&quot;1.0&quot; ?&gt;
+&lt;PermissionSet xmlns=&quot;http://soap.sforce.com/2006/04/metadata&quot;&gt;
+  &lt;fieldPermissions&gt;
+    &lt;editable&gt;true&lt;/editable&gt;
+    &lt;field&gt;Blog__c.comment__c&lt;/field&gt;
+    &lt;readable&gt;true&lt;/readable&gt;
+  &lt;/fieldPermissions&gt;
+  &lt;objectPermissions&gt;
+    &lt;allowCreate&gt;true&lt;/allowCreate&gt;
+    &lt;allowDelete&gt;true&lt;/allowDelete&gt;
+    &lt;allowEdit&gt;true&lt;/allowEdit&gt;
+    &lt;allowRead&gt;true&lt;/allowRead&gt;
+    &lt;modifyAllRecords&gt;true&lt;/modifyAllRecords&gt;
+    &lt;object&gt;Blog__c&lt;/object&gt;
+    &lt;viewAllRecords&gt;true&lt;/viewAllRecords&gt;
+  &lt;/objectPermissions&gt;
+  &lt;hasActivationRequired&gt;false&lt;/hasActivationRequired&gt;
+  &lt;label&gt;AllPermission&lt;/label&gt;
+  &lt;license&gt;Salesforce&lt;/license&gt;
+&lt;/PermissionSet&gt;
+</code></pre>
+
+<h2 id="deploy-permissionxml">Deploy permission.xml</h2>
+<p>right click , deploy it.
+<div style="page-break-before:always"></div></p>
+<h1 id="soql-creator">Soql Creator</h1>
+<h2 id="topic_10">Topic</h2>
+<ul>
+<li>Use <a href="http://salesforcexytools.com/categories/SalesforcexytoolsForSublime/">SalesforceXytoolsForSublime</a> To Create soql</li>
+</ul>
+<h2 id="environment_8">Environment</h2>
+<ul>
+<li>Make sure you can login your sfdc. Test it : SFDC-XY &gt; Login SFDC</li>
+</ul>
+<h2 id="create-soql">Create Soql</h2>
+<p><code>SFDC Code Creator &gt; Create Soql</code></p>
+<p><img alt="1540459992691" src="/images/xytools_images/1540459992691.png" /></p>
+<p>Select Soql Type</p>
+<p><img alt="1540460017305" src="/images/xytools_images/1540460017305.png" /></p>
+<p>result :</p>
+<pre><code class="sql">select 
+            Id,             //ã‚«ã‚¹ã‚¿ãƒ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ ID
+            OwnerId,                //æ‰€æœ‰è€?ID
+            IsDeleted,              //å‰Šé™¤
+            Name,               //ãƒ–ãƒ­ã‚°No
+            RecordTypeId,               //ãƒ¬ã‚³ãƒ¼ãƒ‰ã‚¿ã‚¤ãƒ?ID
+            CreatedDate,                //ä½œæˆæ—?
+            CreatedById,                //ä½œæˆè€?ID
+            LastModifiedDate,               //æœ€çµ‚æ›´æ–°æ—¥
+            LastModifiedById,               //æœ€çµ‚æ›´æ–°è€?ID
+            SystemModstamp,             //System Modstamp
+            LastViewedDate,             //æœ€çµ‚é–²è¦§æ—¥
+            LastReferencedDate,             //æœ€çµ‚å‚ç…§æ—¥
+            comment__c,             //è©•ä¾¡
+            comment_status__c,              //è©•ä¾¡ã‚¹ãƒ†ãƒ¼ã‚¿ã‚?
+            content__c,             //å†…å®¹
+            excerpt__c,             //æ¦‚è¦
+            status__c,              //ã‚¹ãƒ†ãƒ¼ã‚¿ã‚?
+            title__c,               //ã‚¿ã‚¤ãƒˆãƒ«
+            ReadOnlyTest__c,                //ReadOnlyTest
+            FormulaTest__c,             //æ•°å¼ãƒ†ã‚¹ãƒ?
+            Account__c              //å–å¼•å…?
+from Blog__c
+
+</code></pre>
+
+<div style="page-break-before:always"></div>
+
+<h1 id="save-your-sfdc-module-and-build-a-deploy-module-package">Save Your Sfdc Module and build a deploy module package</h1>
+<h2 id="topic_11">Topic</h2>
+<ul>
+<li>Use <a href="http://salesforcexytools.com/categories/SalesforcexytoolsForSublime/">SalesforceXytoolsForSublime</a> To Save your sfdc module</li>
+<li>deploy module package</li>
+</ul>
+<h2 id="environment_9">Environment</h2>
+<ul>
+<li>Make sure you can login your sfdc. Test it : SFDC-XY &gt; Login SFDC</li>
+</ul>
+<h2 id="save-a-module">Save a module</h2>
+<p>Open the source.</p>
+<p><img alt="1540519797063" src="/images/xytools_images/1540519797063.png" /></p>
+<p>Right Click , <code>SFDC-XY Toolbox&gt; Save Module(From Open Files)</code></p>
+<p><img alt="1540519843822" src="/images/xytools_images/1540519843822.png" /></p>
+<p>Input your save path</p>
+<p><img alt="1540519944813" src="/images/xytools_images/1540519944813.png" /></p>
+<p>Check your module</p>
+<p><img alt="1540521537775" src="/images/xytools_images/1540521537775.png" /></p>
+<h2 id="deploy-your-module">Deploy your module</h2>
+<h3 id="fix-your-target-sfdc-info">fix your target sfdc info</h3>
+<p>open <code>build.properties</code></p>
+<pre><code class="properties">sf.username = {username}
+sf.password = {password}
+##sf.sessionId = &lt;Insert your Salesforce session id here.  Use this or username/password above.  Cannot use both&gt;
+##sf.pkgName = &lt;Insert comma separated package names to be retrieved&gt;
+##sf.zipFile = &lt;Insert path of the zipfile to be retrieved&gt;
+##sf.metadataType = &lt;Insert metadata type name for which listMetadata or bulkRetrieve operations are to be performed&gt;
+
+## Use 'https://login.salesforce.com' for production or developer edition (the default if not specified).
+## Use 'https://test.salesforce.com for sandbox.
+sf.serverurl = {serverurl}
+sf.maxPoll = 500
+sf.pollWaitMillis = 10000
+## If your network requires an HTTP proxy, see http://ant.apache.org/manual/proxy.html for configuration.
+##
+</code></pre>
+
+<h3 id="windows_1">windows</h3>
+<p>only check your code:  click <code>deployCodeCheckOnly.bat</code> only!</p>
+<p>deploy your code:  click <code>deployCodeRunLocalTests.bat</code> only!</p>
+<h3 id="linuxmac">Linux/Mac</h3>
+<p>only check your code</p>
+<pre><code>ant deployCodeCheckOnly
+</code></pre>
+
+<p>deploy your code</p>
+<pre><code>ant deployCodeRunLocalTests
+</code></pre>
+
+<div style="page-break-before:always"></div>
+
+<h1 id="search-sfdc-metadata">Search sfdc metadata</h1>
+<h2 id="topic_12">Topic</h2>
+<ul>
+<li>Use <a href="http://salesforcexytools.com/categories/SalesforcexytoolsForSublime/">SalesforceXytoolsForSublime</a> To Search Metadata</li>
+</ul>
+<h2 id="environment_10">Environment</h2>
+<ul>
+<li>Make sure you can login your sfdc. Test it : SFDC-XY &gt; Login SFDC</li>
+</ul>
+<h2 id="search-metadata">Search Metadata</h2>
+<p><code>SFDC-XY &gt; Search Metadata</code></p>
+<p><img alt="1540532540638" src="/images/xytools_images/1540532540638.png" /></p>
+<p>Select metadata type.</p>
+<p><img alt="1540532580583" src="/images/xytools_images/1540532580583.png" /></p>
+<p>For example, Select <code>Profile</code>,  You can find the list of metadata.</p>
+<p>Selcet <code>Admin.profile</code>, It will jump to sfdc Admin profile page.</p>
+<p><img alt="1540532640276" src="/images/xytools_images/1540532640276.png" /></p>
+<p><img alt="1540532907894" src="/images/xytools_images/1540532907894.png" /></p>
+<h2 id="support-metadata-type">Support Metadata Type</h2>
+<p><div style="page-break-before:always"></div></p>
+<h1 id="copy-a-lightning-component">Copy a Lightning Component</h1>
+<h2 id="topic_13">Topic</h2>
+<ul>
+<li>Use <a href="http://salesforcexytools.com/categories/SalesforcexytoolsForSublime/">SalesforceXytoolsForSublime</a> To Copy a Lightning Component</li>
+</ul>
+<h2 id="environment_11">Environment</h2>
+<ul>
+<li>Make sure you can login your sfdc. Test it : SFDC-XY &gt; Login SFDC</li>
+</ul>
+<h2 id="copy-lightning-component">Copy Lightning Component</h2>
+<p>Select your Lightning component.</p>
+<p><img alt="1540539008255" src="/images/xytools_images/1540539008255.png" /></p>
+<p>Right Click, <code>SFDC-Xy &gt; Copy Lightning Component</code>. </p>
+<p><img alt="1540539047383" src="/images/xytools_images/1540539047383.png" /></p>
+<p>Input your new component name.</p>
+<p><img alt="1540539148418" src="/images/xytools_images/1540539148418.png" /></p>
+<p>Check the new component.
+<img alt="1540539896624" src="/images/xytools_images/1540539896624.png" /></p>
+<h2 id="deploy-the-component">Deploy The component</h2>
+<p>choose your folder or source in sublime folders, then right click.</p>
+<p>Find the menu : <code>Sfdc-Xy &gt; Deploy Directory To SFDC</code></p>
+<p><img alt="1540445304166" src="/images/xytools_images/1540445304166.png" />
+<div style="page-break-before:always"></div></p>
+<h1 id="lightning-web-components-helloworld">Lightning Web Components HelloWorld</h1>
+<h2 id="topic_14">Topic</h2>
+<p>In this project, youâ€™ll:</p>
+<ul>
+<li>Install Sublime and <a href="http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-001-Install.html">Salesforcexytools</a>.</li>
+<li>Set up your <code>java</code> and <code>ant</code> environment.</li>
+<li><a href="http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-007-Migration-Tool.html">Auto config salesforce ant-migration-tools</a></li>
+<li>Create and deploy a Lightning web component.</li>
+</ul>
+<h2 id="config-salesforcexytools">Config Salesforcexytools</h2>
+<p><a href="http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-002-Config.html">How to Config Salesforcexytools</a>.</p>
+<p>Please set your api <code>45.0</code></p>
+<p><img alt="1545965650321" src="/images/xytools_images/1545965650321.png" /></p>
+<h2 id="create-a-hello-world-lightning-web-component">Create a Hello World Lightning Web Component</h2>
+<h3 id="create-a-lightning-web-component">create a Lightning web component.</h3>
+<p>The Source is From <a href="https://trailhead.salesforce.com/ja/content/learn/projects/quick-start-lightning-web-components/create-a-hello-world-lightning-web-component">Create a Hello World Lightning Web Component</a></p>
+<p>Create source in sublime, like below:</p>
+<p><img alt="1545964554803" src="/images/xytools_images/1545964554803.png" /></p>
+<p><code>helloWorld.html</code></p>
+<pre><code class="html">&lt;template&gt;
+    &lt;lightning-card title=&quot;HelloWorld&quot; icon-name=&quot;custom:custom14&quot;&gt;
+        &lt;div class=&quot;slds-m-around_medium&quot;&gt;
+            &lt;p&gt;Hello, {greeting}!&lt;/p&gt;
+            &lt;lightning-input label=&quot;Name&quot; value={greeting} onchange={changeHandler}&gt;&lt;/lightning-input&gt;
+        &lt;/div&gt;
+    &lt;/lightning-card&gt;
+&lt;/template&gt;
+</code></pre>
+
+<p><code>helloWorld.js</code></p>
+<pre><code class="javascript">import { LightningElement, track } from 'lwc';
+export default class HelloWorld extends LightningElement {
+    @track greeting = 'World';
+    changeHandler(event) {
+        this.greeting = event.target.value;
+    }
+}
+</code></pre>
+
+<p><code>helloWorld.js-meta.xml</code></p>
+<pre><code class="xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;LightningComponentBundle xmlns=&quot;http://soap.sforce.com/2006/04/metadata&quot; fqn=&quot;helloWorld&quot;&gt;
+  &lt;apiVersion&gt;45.0&lt;/apiVersion&gt;
+  &lt;isExposed&gt;true&lt;/isExposed&gt;
+  &lt;targets&gt;
+    &lt;target&gt;lightning__AppPage&lt;/target&gt;
+    &lt;target&gt;lightning__RecordPage&lt;/target&gt;
+    &lt;target&gt;lightning__HomePage&lt;/target&gt;
+  &lt;/targets&gt;
+&lt;/LightningComponentBundle&gt;
+</code></pre>
+
+<h3 id="deploy-a-lightning-web-component">Deploy a Lightning web component</h3>
+<p>Right Click -&gt; Deploy Directory To Server</p>
+<p><img alt="1545965045120" src="/images/xytools_images/1545965045120.png" /></p>
+<p>Select Deploy Direcotry</p>
+<p><img alt="1545965073324" src="/images/xytools_images/1545965073324.png" /></p>
+<p>Click <code>Yes!</code></p>
+<p><img alt="1545965134397" src="/images/xytools_images/1545965134397.png" /></p>
+<p>Check the log </p>
+<p><img alt="1545965313466" src="/images/xytools_images/1545965313466.png" /></p>
+<h2 id="add-component-to-app-in-lightning-experience">Add Component to App in Lightning Experience</h2>
+<p>Please read <a href="https://trailhead.salesforce.com/ja/content/learn/projects/quick-start-lightning-web-components/create-a-hello-world-lightning-web-component">Create a Hello World Lightning Web Component</a></p>
+<h2 id="resources">Resources</h2>
+<p><a href="https://developer.salesforce.com/blogs/2018/12/introducing-lightning-web-components.html">Introducing Lightning Web Components</a></p>
+<p><a href="https://trailhead.salesforce.com/ja/content/learn/projects/quick-start-lightning-web-components">Quick Start: Lightning Web Components</a>
+<div style="page-break-before:always"></div></p>
+<h1 id="auto-create-salesforce-visualforce-apex">Auto Create Salesforce VisualForce Apex</h1>
+<h2 id="topic_15">Topic</h2>
+<ul>
+<li>
+<p>Use <a href="http://salesforcexytools.com/categories/SalesforcexytoolsForSublime/">SalesforceXytoolsForSublime</a> To Auto Create VisualForceãƒ»Apex Controllerãƒ»DTOãƒ»DAO</p>
+</li>
+<li>
+<p>Auto Build Detail Page</p>
+<ul>
+<li>Record Input  Page</li>
+<li>Record Review Form</li>
+<li>Save the Record</li>
+</ul>
+</li>
+<li>Auto Build Record List Page<ul>
+<li>List All Records.</li>
+<li>Search Record</li>
+<li>Mass Edit Records</li>
+<li>Records Review Form </li>
+</ul>
+</li>
+</ul>
+<h2 id="environment_12">Environment</h2>
+<ul>
+<li>Make sure you can login your sfdc. Test it : SFDC-XY &gt; Login SFDC</li>
+</ul>
+<h2 id="auto-create-vf-controller-dto-dao-code">Auto Create VF-Controller-DTO-DAO-Code</h2>
+<blockquote>
+<p>Tips: It just create the code in the localhost. It will not deploy to your sfdc server.</p>
+</blockquote>
+<h3 id="find-the-menu">Find the menu</h3>
+<p>SFDC Code Creator &gt; Create VisualForce/Controller/DTO/DAO Code</p>
+<p><img alt="1540444254303" src="/images/xytools_images/1540444254303.png" /></p>
+<h3 id="choose-your-sobject">Choose your Sobject.</h3>
+<p>I will select <code>Blog__c</code>.</p>
+<p><img alt="1540444395082" src="/images/xytools_images/1540444395082.png" /></p>
+<p>About <code>Blog__c</code>:</p>
+<p><img alt="1540535859753" src="/images/xytools_images/1540535859753.png" /></p>
+<h3 id="select-custom-fields-or-all-fields">Select Custom Fields Or All Fields.</h3>
+<p>I will select <code>1.Custom fields Only(Exculde Validate)</code>.</p>
+<p><img alt="1540444454039" src="/images/xytools_images/1540444454039.png" /></p>
+<p>When It is done , It will show the popup like below.</p>
+<p>There are many source will be opened if you choose <code>ok</code>. </p>
+<p><img alt="1540444924569" src="/images/xytools_images/1540444924569.png" /></p>
+<p>You can find the source in <code>./src_sfdc_module/code-creator/src</code></p>
+<p><img alt="1540445085932" src="/images/xytools_images/1540445085932.png" /></p>
+<h2 id="deploy-the-codes">Deploy the codes</h2>
+<p>choose the <code>src</code>, then right click, <code>Sfdc-Xy &gt; Deploy Directory To SFDC</code></p>
+<p><img alt="1540445304166" src="/images/xytools_images/1540445304166.png" /></p>
+<blockquote>
+<p>Tips : If you build a complex page , maybe you can not deploy correctly. Fix the codes, then deploy them.</p>
+</blockquote>
+<h2 id="run-it">Run it</h2>
+<p>visit the visualforce page</p>
+<h3 id="detail-page">Detail Page.</h3>
+<ul>
+<li>Record Input  Page</li>
+<li>Record Review Form</li>
+<li>Save the Record</li>
+</ul>
+<p>Page URL :  https://{instance}.salesforce.com/apex/Blog</p>
+<h4 id="input-form">Input Form</h4>
+<p><img alt="1540536475265" src="/images/xytools_images/1540536475265.png" /></p>
+<h4 id="review-form">Review Form</h4>
+<p>Input something, then click <code>next</code>, then it will go to <code>Review Form</code></p>
+<p><img alt="1540536538782" src="/images/xytools_images/1540536538782.png" /></p>
+<p><img alt="1540536818611" src="/images/xytools_images/1540536818611.png" /></p>
+<p>click <code>save</code>, you can save the data.</p>
+<h3 id="record-list-page">Record List Page</h3>
+<ul>
+<li>List All Records.</li>
+<li>Search Record</li>
+<li>Mass Edit Records</li>
+<li>Records Review Form </li>
+</ul>
+<p>URL : https://{instance}.salesforce.com/apex/BlogList</p>
+<h4 id="list-all-records">List All Records</h4>
+<p><img alt="1540537365308" src="/images/xytools_images/1540537365308.png" /></p>
+<h4 id="search-record">Search Record</h4>
+<blockquote>
+<p>Tips: The Picklist will be changed to filter.</p>
+</blockquote>
+<p>Select the filter, and search the data.</p>
+<p><img alt="1540537722015" src="/images/xytools_images/1540537722015.png" /></p>
+<p><img alt="1540537883121" src="/images/xytools_images/1540537883121.png" /></p>
+<h4 id="mass-edit-records">Mass Edit Records</h4>
+<p>Edit records , and click <code>next</code></p>
+<p><img alt="1540538022704" src="/images/xytools_images/1540538022704.png" /></p>
+<h4 id="records-review-form">Records Review Form</h4>
+<p>Go to the review form, and click <code>save</code> button.</p>
+<p><img alt="1540538069994" src="/images/xytools_images/1540538069994.png" /></p>
+<p>Go back to the list page, check the result.</p>
+<p><img alt="1540538151435" src="/images/xytools_images/1540538151435.png" />
+<div style="page-break-before:always"></div></p>
+<h1 id="salesforce-test-code-creator">Salesforce test code creator</h1>
+<h2 id="topic_16">Topic</h2>
+<ul>
+<li>Use <a href="http://salesforcexytools.com/categories/SalesforcexytoolsForSublime/">SalesforceXytoolsForSublime</a> To write a test class.</li>
+</ul>
+<blockquote>
+<ol>
+<li>Auto Create test class.</li>
+<li>Soql to apex code.
+</li>
+</ol>
+</blockquote>
+<h2 id="environment_13">Environment</h2>
+<ul>
+<li>Make sure you can login your sfdc. Test it : SFDC-XY &gt; Login SFDC</li>
+</ul>
+<h2 id="write-a-test-class">Write a test class</h2>
+<h3 id="auto-create-testcode">Auto Create TestCode</h3>
+<blockquote>
+<p>Tips: It just create the code in the localhost. It will not deploy to your sfdc server.</p>
+</blockquote>
+<p>Open the apex code, Right click. </p>
+<p>sample code:</p>
+<pre><code class="java">/**
+* @author huangxy
+*/
+public with sharing class BlogController extends SfdcXyController {
+
+        // DTO Bean
+        public BlogDto blogDto {get;set;}
+
+        public BlogController() {
+            search();
+        }
+
+        private void search(){
+            String id = ApexPages.currentPage().getParameters().get('id');
+            if(String.isBlank(id)){
+                this.blogDto = new BlogDto();
+            }else{
+                this.blogDto = new BlogDto(BlogDao.getBlogById(id));
+            }
+        }
+
+        /**
+         * upsert Dto
+         */
+        public PageReference doSave() {
+            Boolean result;
+
+            Savepoint sp = Database.setSavepoint();
+            try {
+                upsert blogDto.getSobject();
+                result = true;
+            } catch(DMLException e) {
+                Database.rollback(sp);
+                System.debug('saveDto DMLException:' + e.getMessage());
+                result = false;
+            } catch(Exception e) {
+                Database.rollback(sp);
+                System.debug('saveDto Exception:' + e.getMessage());
+                result = false;
+            }
+            return null;
+        }
+
+        /**
+         * Go Next
+         */
+        public override PageReference doNext() {
+            Boolean result = doCheck();
+            setNextMode(result);
+            return null;
+        }
+
+        /**
+         * Go Back
+         */
+        public override PageReference doBack() {
+            Boolean result = true; 
+            setBackMode(result);
+            return null;
+        }
+
+        /**
+         * do Check
+         */
+        public override Boolean doCheck() {
+            Boolean result = true;
+
+            return result;
+        }
+}
+
+</code></pre>
+
+<p>Right click, <code>SFDC-XY Code Creator &gt;Create test code</code></p>
+<p><img alt="1540449212136" src="/images/xytools_images/1540449212136.png" /></p>
+<p>It will be create a test class like this:</p>
+<pre><code class="java">/**
+* @author huangxy
+*/
+@isTest
+private class BlogControllerTest {
+
+    /**
+     * This is a test method for BlogController
+     */
+    static testMethod void test_BlogController() {
+
+        // PageReference pageRef = Page.Blog;
+        // Test.setCurrentPage(pageRef);
+        // pageRef.getParameters().put('param1', 'param1');
+
+        Test.startTest();
+
+        BlogController blogController = new BlogController();
+
+
+        Test.stopTest();
+
+        // Check
+        // System.assert(ApexPages.hasMessages());
+        // for(ApexPages.Message msg : ApexPages.getMessages()) {
+        //     System.assertEquals('Upload file is NULL', msg.getSummary());
+        //     System.assertEquals(ApexPages.Severity.ERROR, msg.getSeverity());
+        // }
+    }
+
+
+    /**
+     * This is a test method for doSave
+     */
+    static testMethod void test_doSave() {
+
+        // PageReference pageRef = Page.Blog;
+        // Test.setCurrentPage(pageRef);
+        // pageRef.getParameters().put('param1', 'param1');
+
+        Test.startTest();
+
+        BlogController blogController = new BlogController();
+        PageReference resultDoSave = blogController.doSave();
+
+
+        Test.stopTest();
+
+        // Check
+        // System.assert(ApexPages.hasMessages());
+        // for(ApexPages.Message msg : ApexPages.getMessages()) {
+        //     System.assertEquals('Upload file is NULL', msg.getSummary());
+        //     System.assertEquals(ApexPages.Severity.ERROR, msg.getSeverity());
+        // }
+    }
+
+
+    /**
+     * This is a test method for doNext
+     */
+    static testMethod void test_doNext() {
+
+        // PageReference pageRef = Page.Blog;
+        // Test.setCurrentPage(pageRef);
+        // pageRef.getParameters().put('param1', 'param1');
+
+        Test.startTest();
+
+        BlogController blogController = new BlogController();
+        PageReference resultDoNext = blogController.doNext();
+
+
+        Test.stopTest();
+
+        // Check
+        // System.assert(ApexPages.hasMessages());
+        // for(ApexPages.Message msg : ApexPages.getMessages()) {
+        //     System.assertEquals('Upload file is NULL', msg.getSummary());
+        //     System.assertEquals(ApexPages.Severity.ERROR, msg.getSeverity());
+        // }
+    }
+
+
+    /**
+     * This is a test method for doBack
+     */
+    static testMethod void test_doBack() {
+
+        // PageReference pageRef = Page.Blog;
+        // Test.setCurrentPage(pageRef);
+        // pageRef.getParameters().put('param1', 'param1');
+
+        Test.startTest();
+
+        BlogController blogController = new BlogController();
+        PageReference resultDoBack = blogController.doBack();
+
+
+        Test.stopTest();
+
+        // Check
+        // System.assert(ApexPages.hasMessages());
+        // for(ApexPages.Message msg : ApexPages.getMessages()) {
+        //     System.assertEquals('Upload file is NULL', msg.getSummary());
+        //     System.assertEquals(ApexPages.Severity.ERROR, msg.getSeverity());
+        // }
+    }
+
+
+    /**
+     * This is a test method for doCheck
+     */
+    static testMethod void test_doCheck() {
+
+        // PageReference pageRef = Page.Blog;
+        // Test.setCurrentPage(pageRef);
+        // pageRef.getParameters().put('param1', 'param1');
+
+        Test.startTest();
+
+        BlogController blogController = new BlogController();
+        Boolean resultDoCheck = blogController.doCheck();
+
+
+        Test.stopTest();
+
+        // Check
+        // System.assert(ApexPages.hasMessages());
+        // for(ApexPages.Message msg : ApexPages.getMessages()) {
+        //     System.assertEquals('Upload file is NULL', msg.getSummary());
+        //     System.assertEquals(ApexPages.Severity.ERROR, msg.getSeverity());
+        // }
+    }
+
+
+    /**
+     * This is a test method for all
+     */
+    static testMethod void test_all() {
+
+        // PageReference pageRef = Page.Blog;
+        // Test.setCurrentPage(pageRef);
+        // pageRef.getParameters().put('param1', 'param1');
+
+        Test.startTest();
+
+        //  test BlogController
+        BlogController blogController = new BlogController();
+
+        //  test doSave
+        PageReference resultDoSave = blogController.doSave();
+
+        //  test doNext
+        PageReference resultDoNext = blogController.doNext();
+
+        //  test doBack
+        PageReference resultDoBack = blogController.doBack();
+
+        //  test doCheck
+        Boolean resultDoCheck = blogController.doCheck();
+
+
+
+        Test.stopTest();
+
+        // Check
+        // System.assert(ApexPages.hasMessages());
+        // for(ApexPages.Message msg : ApexPages.getMessages()) {
+        //     System.assertEquals('Upload file is NULL', msg.getSummary());
+        //     System.assertEquals(ApexPages.Severity.ERROR, msg.getSeverity());
+        // }
+    }
+
+
+}
+
+</code></pre>
+
+<h3 id="insert-test-data-from-soql">Insert test data from Soql</h3>
+<p>Insert Test Data(From SOQL)</p>
+<p>Input a soql query string.</p>
+<pre><code class="sql">select id,name,comment__c,content__c from Blog__c limit 2
+</code></pre>
+
+<p><img alt="1540449792963" src="/images/xytools_images/1540449792963.png" /></p>
+<p>Right click, <code>SFDC-XY Code Creator &gt; Insert Test Data(From Soql)</code></p>
+<p><img alt="1540449870938" src="/images/xytools_images/1540449870938.png" /></p>
+<p>The sql will be change to apex code like below.</p>
+<p>```java
+        List<Blog__c> blogList = new List<Blog__c>();
+        Blog<strong>c blog0 = new Blog</strong>c();
+        // blog0.id = 'a006F00002pzN2TQAU';    // ã‚«ã‚¹ã‚¿ãƒ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ ID
+        blog0.name = 'ID-0013';   // ãƒ–ãƒ­ã‚°No
+        // blog0.comment<strong>c = '';    // è©•ä¾¡
+        blog0.content</strong>c = 'test æ‰¿èªãƒ—ãƒ­ã‚»ã‚¹ãƒ†ã‚¹ãƒ?;   // å†…å®¹
+        blogList.add(blog0);</p>
+<pre><code>    Blog__c blog1 = new Blog__c();
+    // blog1.id = 'a006F00002k90XhQAI';    // ã‚«ã‚¹ã‚¿ãƒ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ ID
+    blog1.name = 'ID-0000';   // ãƒ–ãƒ­ã‚°No
+    blog1.comment__c = '11';   // è©•ä¾¡
+    blog1.content__c = 'AHVI0uh0';   // å†…å®¹
+    blogList.add(blog1);
+
+    upsert blogList;
+</code></pre>
+<p>```</p>
+<h3 id="insert-random-test-data">Insert random test data</h3>
+<p>Right click, <code>SFDC-XY Code Creator &gt; Insert Test Data(All Field)</code> or</p>
+<p><code>SFDC-XY Code Creator &gt; Insert Test Data(Needed Field)</code></p>
+<p><img alt="1540457409043" src="/images/xytools_images/1540457409043.png" /></p>
+<p>Select your sobject, It will create code like below.</p>
+<pre><code class="java">List&lt;Blog__c&gt; blogList = new List&lt;Blog__c&gt;();
+for(Integer i=0; i&lt;5; i++){
+    Blog__c blog = new Blog__c();
+    blog.RecordTypeId = recordtypeidList[i].id;    //ãƒ¬ã‚³ãƒ¼ãƒ‰ã‚¿ã‚¤ãƒ?ID
+    blog.comment__c = '3VG5bF0' + string.valueof(i) ;    //è©•ä¾¡
+    blog.comment_status__c = 'approve';    //è©•ä¾¡ã‚¹ãƒ†ãƒ¼ã‚¿ã‚?
+    blog.content__c = '6p8psSh' + string.valueof(i) ;    //å†…å®¹
+    blog.excerpt__c = 'YLpQQAw' + string.valueof(i) ;    //æ¦‚è¦
+    blog.status__c = 'Draft';    //ã‚¹ãƒ†ãƒ¼ã‚¿ã‚?
+    blog.title__c = 'ot9xvaa' + string.valueof(i) ;    //ã‚¿ã‚¤ãƒˆãƒ«
+    blog.ReadOnlyTest__c = 'ld9IPfB' + string.valueof(i) ;    //ReadOnlyTest
+    blog.Account__c = accountList[i].id;    //å–å¼•å…?
+    blogList.add(blog);
+}
+insert blogList;
+
+
+</code></pre>
+
+<div style="page-break-before:always"></div>
+
+<h1 id="salesforcexytoolsforsublime-reference">SalesforceXytoolsForSublime Reference</h1>
+<h2 id="salesforcexytoolsforsublime_1">SalesforceXytoolsForSublime</h2>
+<p><a href="http://salesforcexytools.com/categories/SalesforcexytoolsForSublime/">SalesforceXytoolsForSublime</a> is Rapid development tools for Salesforce Development.</p>
+<ul>
+<li>
+<p>Create Salesforce Project, Retrieve Metadata, Search Metadata</p>
+</li>
+<li>
+<p>Create ApexClass, ApexTrigger, ApexComponent, Refresh, Diff with Server(Support winmerge diff), Save to Server, Deploy to Server</p>
+</li>
+<li>
+<p>SObject Viewer, SObject Description, Export SOjbect Fields to Excel</p>
+</li>
+<li>
+<p>Run SOQL Query, Tooling Query, Apex Script.</p>
+</li>
+<li>
+<p>Code Creator : Auto Create Apex Test Class Code, Auto Create Test Data For Apex Test Class.</p>
+</li>
+<li>
+<p>SFDC Dataviewer, SFDC Online Dataviewer.</p>
+</li>
+<li>
+<p>Atuo Login SFDC (two login type: oauth2 , password config).</p>
+</li>
+<li>
+<p>Quick local sfdc file from sublime.</p>
+</li>
+<li>
+<p>Quick Search SObject Data/SObject Setting/ApexClass/Trigger/VisualForce Page/VisualForce Components/Email Template/Static Resource and open on browser Quickly</p>
+</li>
+<li>
+<p>Package.xml Builder.</p>
+</li>
+<li>
+<p>Build Release Package.</p>
+</li>
+<li>
+<p>Integrate Sfdc Dataloader, Config DataLoader and Run (<strong>Need Ant and Java Environment</strong>)</p>
+</li>
+</ul>
+<p><strong>Set your schedule, backup your sfdc data.</strong></p>
+<ul>
+<li>
+<p>Integrate Sfdc Migration Tool (<strong>Need Ant and Java Environment</strong>)</p>
+</li>
+<li>
+<p>Auto Backup all metadata script(<strong>Set your schedule, backup your sfdc metadata.</strong>).</p>
+</li>
+</ul>
+<h2 id="basic-on-opensource">Basic on OpenSource</h2>
+<p>SalesforceXyToolsForSublime is based on python and open source below.</p>
+<ol>
+<li><a href="https://github.com/jmcnamara/XlsxWriter">xlsxwriter (License: BSD)</a></li>
+<li><a href="https://pypi.python.org/pypi/simple-salesforce/0.72.2">Simple-Salesforce (License: Apache 2.0)</a></li>
+<li><a href="https://pypi.python.org/pypi/requests/2.12.3">requests (License: Apache 2.0)</a></li>
+</ol>
+<h2 id="salesforcexytoolsforsublime-reference_1">SalesforceXyToolsForSublime Reference</h2>
+<ul>
+<li><a href="http://salesforcexytools.com/categories/SalesforcexytoolsForSublime/">SalesforceXyToolsForSublime Guide</a></li>
+<li><a href="http://salesforcexytools.com/Salesforce/SalesforceXyTools-For-Sublime.html">SalesforceXyToolsForSublime-Rapid-development-tools-for-Salesforce</a></li>
+<li><a href="https://github.com/exiahuang/SalesforceXyTools">Source of SalesforceForSublime</a></li>
+<li><a href="https://github.com/exiahuang/SalesforceXyTools/issues">Issues of SalesforceXyToolsForSublime</a></li>
+<li><a href="https://packagecontrol.io/packages/SalesforceXyTools">Sublime Package Control</a></li>
+</ul>
+<h2 id="document-reference">Document Reference</h2>
+<ul>
+<li><a href="http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-001-Install.html">How to Install SalesforceXytoolsForSublime</a></li>
+<li><a href="http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-002-Config.html">How to Config SalesforceXytoolsForSublime</a></li>
+<li><a href="http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-003-SFDC-Develop.html">Use SalesforceXytoolsForSublime to develop SFDC</a></li>
+<li><a href="http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-004-Sobject.html">Export Sobject to Excel and Search Sobject</a></li>
+<li><a href="http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-005-RunScript.html">Run sfdc soql, apex script, tooling api</a></li>
+<li><a href="http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-006-Dataloader.html">Auto config salesforce ant-dataloader and Backup Sobject Data</a></li>
+<li><a href="http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-007-Migration-Tool.html">Auto config salesforce ant-migration-tools and Backup Metadata</a></li>
+<li><a href="http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-008-Export-Sobject-Schema-To-Excel.html">Export Sfdc Sobject Schema To Excel</a></li>
+<li><a href="http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-009-DeployPackage-Builder.html">Use SalesforceXytoolsForSublime Salesforce Deploy Package</a></li>
+<li><a href="http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-010-Packagexml-Builder.html">Salesforce package.xml Auto Builder</a></li>
+<li><a href="http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-011-Apex-Coverage.html">How to export Apex Code Coverage</a></li>
+<li><a href="http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-012-PermissionSet-Builder.html">PermissionSet Builder</a></li>
+<li><a href="http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-013-Create-Soql.html">Soql Creator</a></li>
+<li><a href="http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-014-Build-Deploy-Module.html">Save Your Sfdc Module and build a deploy module package</a></li>
+<li><a href="http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-015-Search-SFDC-Metadata.html">Search sfdc metadata</a></li>
+<li><a href="http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-016-Copy-Lightning-component.html">Copy a Lightning Component</a></li>
+<li><a href="http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-017-LightningWebComponent.html">Lightning Web Component</a></li>
+<li><a href="http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-101-ApexCode-Creater.html">Auto Create Salesforce VisualForce Apex</a></li>
+<li><a href="http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-102-TestClass-Creater.html">Salesforce test code creator</a></li>
+<li><a href="http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-901-Reference.html">SalesforceXytoolsForSublime Reference</a></li>
+</ul>
+<h2 id="download-pdf">Download PDF</h2>
+<ul>
+<li><a href="http://salesforcexytools.com/pdf/SalesforceXyToolsForSublime-Rapid-development-tools-for-Salesforce.pdf">SalesforceXyToolsForSublime-Rapid-development-tools-for-Salesforce.pdf</a></li>
+</ul>
+<h2 id="about-author-exiahuang">About Author : Exia.Huang</h2>
+<ul>
+<li><a href="http://salesforcexytools.com">SalesforceXyTools HP</a></li>
+<li><a href="https://github.com/exiahuang">Github</a></li>
+<li><a href="https://twitter.com/ExiaSfdc">Twitter</a></li>
+<li><a href="https://www.facebook.com/profile.php?id=100015890262852">Facebook</a></li>
+<li><a href="https://qiita.com/exiasfdc">Qiita</a></li>
+<li><a href="https://exiasfdc.hatenablog.com/">Hatenaã¯ã¦ãªãƒ–ãƒ­ã‚°</a></li>
+</ul>
+<h2 id="other-tools-for-salesforce">Other tools for salesforce</h2>
+<ul>
+<li>
+<p><a href="https://github.com/exiahuang/SalesforceXyToolsCore">SalesforceXyToolsCore</a> is base on Python. 
+The core of SalesforceXyTools For Sublime. Soap, Metadata, Rest API For Salesforce.</p>
+</li>
+<li>
+<p><a href="http://salesforcexytools.com/Salesforce/SalesforceXyTools-For-Chrome.html">SalesforceXyTools For Chrome</a></p>
+</li>
+<li>
+<p><a href="https://chrome.google.com/webstore/detail/salesforcexytools/ehklfkbacogbanjgekccnbfdgjechlmf">Install SalesforceXyTools For Chrome From Web Store</a></p>
+</li>
+</ul>
+<blockquote>
+<p>SalesforceXyTools for Chrome is a developer tools for Salesforce,SFDC,Force.com. Login SFDC By 1 click. Quickly Search Metadata Sobject,Apex,Trigger,Page,Component,EmailTemplate,SataticResource, etc. Auto Create Soql, Run Soql, Soql History. Run Apex Script. Quick Search SFDC Document.
+<div style="page-break-before:always"></div></p>
+</blockquote>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../SalesforceXytoolsForSublime-001-Install/" class="btn btn-neutral float-right" title="How to Install SalesforceXytoolsForSublime">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../SalesforceXyTools-For-Chrome/" class="btn btn-neutral" title="SalesforceXyTools For Chrome"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../SalesforceXyTools-For-Chrome/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../SalesforceXytoolsForSublime-001-Install/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+
+</body>
+</html>

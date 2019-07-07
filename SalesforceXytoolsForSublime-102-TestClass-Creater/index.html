@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Exia.Huang">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Salesforce test code creator - Cmder For Sublime</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Salesforce test code creator";
+    var mkdocs_page_input_path = "SalesforceXytoolsForSublime-102-TestClass-Creater.md";
+    var mkdocs_page_url = "/SalesforceXyTools/SalesforceXytoolsForSublime-102-TestClass-Creater/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Cmder For Sublime</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="..">SalesforceXytoolsForSublime Reference</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXyTools-For-Chrome/">SalesforceXyTools For Chrome</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXyTools-For-Sublime/">SalesforceXyToolsForSublime Rapid development tools for Salesforce</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-001-Install/">How to Install SalesforceXytoolsForSublime</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-002-Config/">How to Config SalesforceXytoolsForSublime</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-003-SFDC-Develop/">Use SalesforceXytoolsForSublime to develop SFDC</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-004-Sobject/">Export Sobject to Excel and Search Sobject</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-005-RunScript/">Run sfdc soql, apex script, tooling api</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-006-Dataloader/">Auto config salesforce ant-dataloader and Backup Sobject Data</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-007-Migration-Tool/">Auto config salesforce ant-migration-tools and Backup Metadata</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-008-Export-Sobject-Schema-To-Excel/">Export Sfdc Sobject Schema To Excel</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-009-DeployPackage-Builder/">Use SalesforceXytoolsForSublime Salesforce Deploy Package</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-010-Packagexml-Builder/">Salesforce package.xml Auto Builder</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-011-Apex-Coverage/">How to export Apex Code Coverage</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-012-PermissionSet-Builder/">PermissionSet Builder</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-013-Create-Soql/">Soql Creator</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-014-Build-Deploy-Module/">Save Your Sfdc Module and build a deploy module package</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-015-Search-SFDC-Metadata/">Search sfdc metadata</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-016-Copy-Lightning-component/">Copy a Lightning Component</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-017-LightningWebComponent/">Lightning Web Components HelloWorld</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-101-ApexCode-Creater/">Auto Create Salesforce VisualForce Apex</a>
+	    </li>
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href="./">Salesforce test code creator</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#topic">Topic</a></li>
+    
+
+    <li class="toctree-l2"><a href="#environment">Environment</a></li>
+    
+
+    <li class="toctree-l2"><a href="#write-a-test-class">Write a test class</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#auto-create-testcode">Auto Create TestCode</a></li>
+        
+            <li><a class="toctree-l3" href="#insert-test-data-from-soql">Insert test data from Soql</a></li>
+        
+            <li><a class="toctree-l3" href="#insert-random-test-data">Insert random test data</a></li>
+        
+        </ul>
+    
+
+    </ul>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Cmder For Sublime</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Salesforce test code creator</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="topic">Topic</h1>
+<ul>
+<li>Use <a href="http://salesforcexytools.com/categories/SalesforcexytoolsForSublime/">SalesforceXytoolsForSublime</a> To write a test class.</li>
+</ul>
+<blockquote>
+<ol>
+<li>Auto Create test class.</li>
+<li>Soql to apex code.
+</li>
+</ol>
+</blockquote>
+<h1 id="environment">Environment</h1>
+<ul>
+<li>Make sure you can login your sfdc. Test it : SFDC-XY &gt; Login SFDC</li>
+</ul>
+<h1 id="write-a-test-class">Write a test class</h1>
+<h2 id="auto-create-testcode">Auto Create TestCode</h2>
+<blockquote>
+<p>Tips: It just create the code in the localhost. It will not deploy to your sfdc server.</p>
+</blockquote>
+<p>Open the apex code, Right click. </p>
+<p>sample code:</p>
+<pre><code class="java">/**
+* @author huangxy
+*/
+public with sharing class BlogController extends SfdcXyController {
+
+        // DTO Bean
+        public BlogDto blogDto {get;set;}
+
+        public BlogController() {
+            search();
+        }
+
+        private void search(){
+            String id = ApexPages.currentPage().getParameters().get('id');
+            if(String.isBlank(id)){
+                this.blogDto = new BlogDto();
+            }else{
+                this.blogDto = new BlogDto(BlogDao.getBlogById(id));
+            }
+        }
+
+        /**
+         * upsert Dto
+         */
+        public PageReference doSave() {
+            Boolean result;
+
+            Savepoint sp = Database.setSavepoint();
+            try {
+                upsert blogDto.getSobject();
+                result = true;
+            } catch(DMLException e) {
+                Database.rollback(sp);
+                System.debug('saveDto DMLException:' + e.getMessage());
+                result = false;
+            } catch(Exception e) {
+                Database.rollback(sp);
+                System.debug('saveDto Exception:' + e.getMessage());
+                result = false;
+            }
+            return null;
+        }
+
+        /**
+         * Go Next
+         */
+        public override PageReference doNext() {
+            Boolean result = doCheck();
+            setNextMode(result);
+            return null;
+        }
+
+        /**
+         * Go Back
+         */
+        public override PageReference doBack() {
+            Boolean result = true; 
+            setBackMode(result);
+            return null;
+        }
+
+        /**
+         * do Check
+         */
+        public override Boolean doCheck() {
+            Boolean result = true;
+
+            return result;
+        }
+}
+
+</code></pre>
+
+<p>Right click, <code>SFDC-XY Code Creator &gt;Create test code</code></p>
+<p><img alt="1540449212136" src="/images/xytools_images/1540449212136.png" /></p>
+<p>It will be create a test class like this:</p>
+<pre><code class="java">/**
+* @author huangxy
+*/
+@isTest
+private class BlogControllerTest {
+
+    /**
+     * This is a test method for BlogController
+     */
+    static testMethod void test_BlogController() {
+
+        // PageReference pageRef = Page.Blog;
+        // Test.setCurrentPage(pageRef);
+        // pageRef.getParameters().put('param1', 'param1');
+
+        Test.startTest();
+
+        BlogController blogController = new BlogController();
+
+
+        Test.stopTest();
+
+        // Check
+        // System.assert(ApexPages.hasMessages());
+        // for(ApexPages.Message msg : ApexPages.getMessages()) {
+        //     System.assertEquals('Upload file is NULL', msg.getSummary());
+        //     System.assertEquals(ApexPages.Severity.ERROR, msg.getSeverity());
+        // }
+    }
+
+
+    /**
+     * This is a test method for doSave
+     */
+    static testMethod void test_doSave() {
+
+        // PageReference pageRef = Page.Blog;
+        // Test.setCurrentPage(pageRef);
+        // pageRef.getParameters().put('param1', 'param1');
+
+        Test.startTest();
+
+        BlogController blogController = new BlogController();
+        PageReference resultDoSave = blogController.doSave();
+
+
+        Test.stopTest();
+
+        // Check
+        // System.assert(ApexPages.hasMessages());
+        // for(ApexPages.Message msg : ApexPages.getMessages()) {
+        //     System.assertEquals('Upload file is NULL', msg.getSummary());
+        //     System.assertEquals(ApexPages.Severity.ERROR, msg.getSeverity());
+        // }
+    }
+
+
+    /**
+     * This is a test method for doNext
+     */
+    static testMethod void test_doNext() {
+
+        // PageReference pageRef = Page.Blog;
+        // Test.setCurrentPage(pageRef);
+        // pageRef.getParameters().put('param1', 'param1');
+
+        Test.startTest();
+
+        BlogController blogController = new BlogController();
+        PageReference resultDoNext = blogController.doNext();
+
+
+        Test.stopTest();
+
+        // Check
+        // System.assert(ApexPages.hasMessages());
+        // for(ApexPages.Message msg : ApexPages.getMessages()) {
+        //     System.assertEquals('Upload file is NULL', msg.getSummary());
+        //     System.assertEquals(ApexPages.Severity.ERROR, msg.getSeverity());
+        // }
+    }
+
+
+    /**
+     * This is a test method for doBack
+     */
+    static testMethod void test_doBack() {
+
+        // PageReference pageRef = Page.Blog;
+        // Test.setCurrentPage(pageRef);
+        // pageRef.getParameters().put('param1', 'param1');
+
+        Test.startTest();
+
+        BlogController blogController = new BlogController();
+        PageReference resultDoBack = blogController.doBack();
+
+
+        Test.stopTest();
+
+        // Check
+        // System.assert(ApexPages.hasMessages());
+        // for(ApexPages.Message msg : ApexPages.getMessages()) {
+        //     System.assertEquals('Upload file is NULL', msg.getSummary());
+        //     System.assertEquals(ApexPages.Severity.ERROR, msg.getSeverity());
+        // }
+    }
+
+
+    /**
+     * This is a test method for doCheck
+     */
+    static testMethod void test_doCheck() {
+
+        // PageReference pageRef = Page.Blog;
+        // Test.setCurrentPage(pageRef);
+        // pageRef.getParameters().put('param1', 'param1');
+
+        Test.startTest();
+
+        BlogController blogController = new BlogController();
+        Boolean resultDoCheck = blogController.doCheck();
+
+
+        Test.stopTest();
+
+        // Check
+        // System.assert(ApexPages.hasMessages());
+        // for(ApexPages.Message msg : ApexPages.getMessages()) {
+        //     System.assertEquals('Upload file is NULL', msg.getSummary());
+        //     System.assertEquals(ApexPages.Severity.ERROR, msg.getSeverity());
+        // }
+    }
+
+
+    /**
+     * This is a test method for all
+     */
+    static testMethod void test_all() {
+
+        // PageReference pageRef = Page.Blog;
+        // Test.setCurrentPage(pageRef);
+        // pageRef.getParameters().put('param1', 'param1');
+
+        Test.startTest();
+
+        //  test BlogController
+        BlogController blogController = new BlogController();
+
+        //  test doSave
+        PageReference resultDoSave = blogController.doSave();
+
+        //  test doNext
+        PageReference resultDoNext = blogController.doNext();
+
+        //  test doBack
+        PageReference resultDoBack = blogController.doBack();
+
+        //  test doCheck
+        Boolean resultDoCheck = blogController.doCheck();
+
+
+
+        Test.stopTest();
+
+        // Check
+        // System.assert(ApexPages.hasMessages());
+        // for(ApexPages.Message msg : ApexPages.getMessages()) {
+        //     System.assertEquals('Upload file is NULL', msg.getSummary());
+        //     System.assertEquals(ApexPages.Severity.ERROR, msg.getSeverity());
+        // }
+    }
+
+
+}
+
+</code></pre>
+
+<h2 id="insert-test-data-from-soql">Insert test data from Soql</h2>
+<p>Insert Test Data(From SOQL)</p>
+<p>Input a soql query string.</p>
+<pre><code class="sql">select id,name,comment__c,content__c from Blog__c limit 2
+</code></pre>
+
+<p><img alt="1540449792963" src="/images/xytools_images/1540449792963.png" /></p>
+<p>Right click, <code>SFDC-XY Code Creator &gt; Insert Test Data(From Soql)</code></p>
+<p><img alt="1540449870938" src="/images/xytools_images/1540449870938.png" /></p>
+<p>The sql will be change to apex code like below.</p>
+<p>```java
+        List<Blog__c> blogList = new List<Blog__c>();
+        Blog<strong>c blog0 = new Blog</strong>c();
+        // blog0.id = 'a006F00002pzN2TQAU';    // カスタムオブジェクト ID
+        blog0.name = 'ID-0013';   // ブログNo
+        // blog0.comment<strong>c = '';    // 評価
+        blog0.content</strong>c = 'test 承認プロセステスト';   // 内容
+        blogList.add(blog0);</p>
+<pre><code>    Blog__c blog1 = new Blog__c();
+    // blog1.id = 'a006F00002k90XhQAI';    // カスタムオブジェクト ID
+    blog1.name = 'ID-0000';   // ブログNo
+    blog1.comment__c = '11';   // 評価
+    blog1.content__c = 'AHVI0uh0';   // 内容
+    blogList.add(blog1);
+
+    upsert blogList;
+</code></pre>
+<p>```</p>
+<h2 id="insert-random-test-data">Insert random test data</h2>
+<p>Right click, <code>SFDC-XY Code Creator &gt; Insert Test Data(All Field)</code> or</p>
+<p><code>SFDC-XY Code Creator &gt; Insert Test Data(Needed Field)</code></p>
+<p><img alt="1540457409043" src="/images/xytools_images/1540457409043.png" /></p>
+<p>Select your sobject, It will create code like below.</p>
+<pre><code class="java">List&lt;Blog__c&gt; blogList = new List&lt;Blog__c&gt;();
+for(Integer i=0; i&lt;5; i++){
+    Blog__c blog = new Blog__c();
+    blog.RecordTypeId = recordtypeidList[i].id;    //レコードタイプ ID
+    blog.comment__c = '3VG5bF0' + string.valueof(i) ;    //評価
+    blog.comment_status__c = 'approve';    //評価ステータス
+    blog.content__c = '6p8psSh' + string.valueof(i) ;    //内容
+    blog.excerpt__c = 'YLpQQAw' + string.valueof(i) ;    //概要
+    blog.status__c = 'Draft';    //ステータス
+    blog.title__c = 'ot9xvaa' + string.valueof(i) ;    //タイトル
+    blog.ReadOnlyTest__c = 'ld9IPfB' + string.valueof(i) ;    //ReadOnlyTest
+    blog.Account__c = accountList[i].id;    //取引先
+    blogList.add(blog);
+}
+insert blogList;
+
+
+</code></pre>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="../SalesforceXytoolsForSublime-101-ApexCode-Creater/" class="btn btn-neutral" title="Auto Create Salesforce VisualForce Apex"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../SalesforceXytoolsForSublime-101-ApexCode-Creater/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+
+</body>
+</html>

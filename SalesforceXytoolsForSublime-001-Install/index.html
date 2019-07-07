@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Exia.Huang">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>How to Install SalesforceXytoolsForSublime - Cmder For Sublime</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "How to Install SalesforceXytoolsForSublime";
+    var mkdocs_page_input_path = "SalesforceXytoolsForSublime-001-Install.md";
+    var mkdocs_page_url = "/SalesforceXyTools/SalesforceXytoolsForSublime-001-Install/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Cmder For Sublime</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="..">SalesforceXytoolsForSublime Reference</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXyTools-For-Chrome/">SalesforceXyTools For Chrome</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXyTools-For-Sublime/">SalesforceXyToolsForSublime Rapid development tools for Salesforce</a>
+	    </li>
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href="./">How to Install SalesforceXytoolsForSublime</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#salesforcexytoolsforsublime">SalesforceXytoolsForSublime</a></li>
+    
+
+    <li class="toctree-l2"><a href="#how-to-install">How to Install</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#prerequisites">Prerequisites</a></li>
+        
+            <li><a class="toctree-l3" href="#use-package-control-to-install">Use Package Control to Install</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l2"><a href="#suggestion">Suggestion</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#install-java">Install java</a></li>
+        
+            <li><a class="toctree-l3" href="#installing-apache-ant">Installing Apache Ant</a></li>
+        
+        </ul>
+    
+
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-002-Config/">How to Config SalesforceXytoolsForSublime</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-003-SFDC-Develop/">Use SalesforceXytoolsForSublime to develop SFDC</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-004-Sobject/">Export Sobject to Excel and Search Sobject</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-005-RunScript/">Run sfdc soql, apex script, tooling api</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-006-Dataloader/">Auto config salesforce ant-dataloader and Backup Sobject Data</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-007-Migration-Tool/">Auto config salesforce ant-migration-tools and Backup Metadata</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-008-Export-Sobject-Schema-To-Excel/">Export Sfdc Sobject Schema To Excel</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-009-DeployPackage-Builder/">Use SalesforceXytoolsForSublime Salesforce Deploy Package</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-010-Packagexml-Builder/">Salesforce package.xml Auto Builder</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-011-Apex-Coverage/">How to export Apex Code Coverage</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-012-PermissionSet-Builder/">PermissionSet Builder</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-013-Create-Soql/">Soql Creator</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-014-Build-Deploy-Module/">Save Your Sfdc Module and build a deploy module package</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-015-Search-SFDC-Metadata/">Search sfdc metadata</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-016-Copy-Lightning-component/">Copy a Lightning Component</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-017-LightningWebComponent/">Lightning Web Components HelloWorld</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-101-ApexCode-Creater/">Auto Create Salesforce VisualForce Apex</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-102-TestClass-Creater/">Salesforce test code creator</a>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Cmder For Sublime</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>How to Install SalesforceXytoolsForSublime</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="salesforcexytoolsforsublime">SalesforceXytoolsForSublime</h1>
+<p><a href="http://salesforcexytools.com/categories/SalesforcexytoolsForSublime/">SalesforceXytoolsForSublime</a> is Rapid development tools for Salesforce Development.</p>
+<ul>
+<li>
+<p>Create Salesforce Project, Retrieve Metadata, Search Metadata</p>
+</li>
+<li>
+<p>Create ApexClass, ApexTrigger, ApexComponent, Refresh, Diff with Server(Support winmerge diff), Save to Server, Deploy to Server</p>
+</li>
+<li>
+<p>SObject Viewer, SObject Description, Export SOjbect Fields to Excel</p>
+</li>
+<li>
+<p>Run SOQL Query, Tooling Query, Apex Script.</p>
+</li>
+<li>
+<p>Code Creator : Auto Create Apex Test Class Code, Auto Create Test Data For Apex Test Class.</p>
+</li>
+<li>
+<p>SFDC Dataviewer, SFDC Online Dataviewer.</p>
+</li>
+<li>
+<p>Atuo Login SFDC (two login type: oauth2 , password config).</p>
+</li>
+<li>
+<p>Quick local sfdc file from sublime.</p>
+</li>
+<li>
+<p>Quick Search SObject Data/SObject Setting/ApexClass/Trigger/VisualForce Page/VisualForce Components/Email Template/Static Resource and open on browser Quickly</p>
+</li>
+<li>
+<p>Package.xml Builder.</p>
+</li>
+<li>
+<p>Build Release Package.</p>
+</li>
+<li>
+<p>Integrate Sfdc Dataloader, Config DataLoader and Run (<strong>Need Ant and Java Environment</strong>)</p>
+</li>
+</ul>
+<p><strong>Set your schedule, backup your sfdc data.</strong></p>
+<ul>
+<li>
+<p>Integrate Sfdc Migration Tool (<strong>Need Ant and Java Environment</strong>)</p>
+</li>
+<li>
+<p>Auto Backup all metadata script(<strong>Set your schedule, backup your sfdc metadata.</strong>).</p>
+</li>
+</ul>
+<h1 id="how-to-install">How to Install</h1>
+<h2 id="prerequisites">Prerequisites</h2>
+<ul>
+<li>Sublime Text 3 <a href="http://www.sublimetext.com/3">http://www.sublimetext.com/3</a></li>
+<li>Sublime Text Package Control <a href="https://packagecontrol.io/installation">https://packagecontrol.io/installation</a></li>
+</ul>
+<h2 id="use-package-control-to-install">Use Package Control to Install</h2>
+<ol>
+<li>Open Sublime Text 3</li>
+<li>
+<p>Run <code>Package Control: Install Package</code> command</p>
+</li>
+<li>
+<ul>
+<li><a href="http://docs.sublimetext.info/en/latest/extensibility/command_palette.html">Running commands from Sublime Text</a>
+     <a href="http://salesforcexytools.com/images/salesforcexytools-for-sublime/install1.jpg"><img alt="SalesforceXyToolsForSublimeHelp" src="http://salesforcexytools.com/images/salesforcexytools-for-sublime/install1.jpg" /></a></li>
+</ul>
+</li>
+<li>Search for <code>SalesforceXyTools</code>
+   <a href="http://salesforcexytools.com/images/salesforcexytools-for-sublime/install2.jpg"><img alt="SalesforceXyToolsForSublimeHelp" src="http://salesforcexytools.com/images/salesforcexytools-for-sublime/install2.jpg" /></a></li>
+<li>Hit <code>Enter</code>, That is all.
+   <a href="http://salesforcexytools.com/images/salesforcexytools-for-sublime/install3.jpg"><img alt="SalesforceXyToolsForSublimeHelp" src="http://salesforcexytools.com/images/salesforcexytools-for-sublime/install3.jpg" /></a></li>
+</ol>
+<h1 id="suggestion">Suggestion</h1>
+<p>If you want to use <code>ant-dataloader</code> or <code>ant-migration tools</code>, I suggest you to install <code>java</code> and <code>ant</code></p>
+<h2 id="install-java">Install java</h2>
+<p>just install it...</p>
+<p>Please set your <code>JAVA_HOME</code></p>
+<h2 id="installing-apache-ant">Installing Apache Ant</h2>
+<p><a href="https://ant.apache.org/manual/install.html">Installing Apache Ant</a></p>
+<p>To get up and running with the binary distribution of Ant quickly, follow these steps:</p>
+<ol>
+<li>Make sure you have a Java environment installed. See <a href="https://ant.apache.org/manual/install.html#sysrequirements">System Requirements</a> for details.</li>
+<li>Download Ant. See <a href="https://ant.apache.org/manual/install.html#getBinary">Binary Distribution</a> for details.</li>
+<li>Uncompress the downloaded file into a directory.</li>
+<li>Set environmental variables: <code>JAVA_HOME</code> to your Java environment, <code>ANT_HOME</code> to the directory you uncompressed Ant to, and add ${ANT_HOME}/bin (Unix) or %ANT_HOME%/bin (Windows) to your <code>PATH</code>. See <a href="https://ant.apache.org/manual/install.html#setup">Setup</a> for details.</li>
+<li>Optionally, from the <code>ANT_HOME</code> directory run ant -f fetch.xml -Ddest=system to get the library dependencies of most of the Ant tasks that require them. If you don't do this, many of the dependent Ant tasks will not be available. See <a href="https://ant.apache.org/manual/install.html#optionalTasks">Optional Tasks</a> for details and other options for the -Ddest parameter.</li>
+<li>Optionally, add any desired Antlibs. See <a href="https://ant.apache.org/antlibs/proper.html">Ant Libraries</a> for a list.</li>
+</ol>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../SalesforceXytoolsForSublime-002-Config/" class="btn btn-neutral float-right" title="How to Config SalesforceXytoolsForSublime">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../SalesforceXyTools-For-Sublime/" class="btn btn-neutral" title="SalesforceXyToolsForSublime Rapid development tools for Salesforce"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../SalesforceXyTools-For-Sublime/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../SalesforceXytoolsForSublime-002-Config/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+
+</body>
+</html>

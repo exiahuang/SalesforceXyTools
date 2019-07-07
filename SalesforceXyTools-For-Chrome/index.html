@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Exia.Huang">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>SalesforceXyTools For Chrome - Cmder For Sublime</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "SalesforceXyTools For Chrome";
+    var mkdocs_page_input_path = "SalesforceXyTools-For-Chrome.md";
+    var mkdocs_page_url = "/SalesforceXyTools/SalesforceXyTools-For-Chrome/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Cmder For Sublime</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="..">SalesforceXytoolsForSublime Reference</a>
+	    </li>
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href="./">SalesforceXyTools For Chrome</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#what-is-salesforcexytools-for-chrome">What is SalesforceXyTools for Chrome ?</a></li>
+    
+
+    <li class="toctree-l2"><a href="#install-salesforcexytools-for-chrome">Install SalesforceXyTools For Chrome</a></li>
+    
+
+    <li class="toctree-l2"><a href="#introduce">Introduce</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#search-metadata">search metadata</a></li>
+        
+            <li><a class="toctree-l3" href="#search-document">search document</a></li>
+        
+            <li><a class="toctree-l3" href="#quickly-access-sfdc-menu">quickly access sfdc menu</a></li>
+        
+            <li><a class="toctree-l3" href="#support-many-projects">support many projects</a></li>
+        
+            <li><a class="toctree-l3" href="#auto-create-soql-and-run-soql">auto create soql , and run soql</a></li>
+        
+            <li><a class="toctree-l3" href="#export-data">export data</a></li>
+        
+            <li><a class="toctree-l3" href="#auto-create-tooling-query-and-tooling-soql">auto create tooling query , and tooling soql</a></li>
+        
+            <li><a class="toctree-l3" href="#run-apex-script">run apex script</a></li>
+        
+            <li><a class="toctree-l3" href="#run-rest-api">run rest api</a></li>
+        
+            <li><a class="toctree-l3" href="#view-apex-code-coverage">View Apex Code Coverage</a></li>
+        
+            <li><a class="toctree-l3" href="#auto-create-test-class">Auto Create Test Class</a></li>
+        
+            <li><a class="toctree-l3" href="#apex-log-viewer">Apex Log Viewer</a></li>
+        
+            <li><a class="toctree-l3" href="#data-migrateuse-bulk-api">Data Migrate(Use Bulk Api)</a></li>
+        
+            <li><a class="toctree-l3" href="#data-migrate2use-bulk-api">Data Migrate2(Use Bulk Api)</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l2"><a href="#advance">Advance</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#run-jsforce-script">Run JSForce Script</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l2"><a href="#install-salesforcexytools-for-chrome_1">Install SalesforceXyTools For Chrome</a></li>
+    
+
+    <li class="toctree-l2"><a href="#history">History</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#20170729-exia">2017.07.29 exia:</a></li>
+        
+        </ul>
+    
+
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXyTools-For-Sublime/">SalesforceXyToolsForSublime Rapid development tools for Salesforce</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-001-Install/">How to Install SalesforceXytoolsForSublime</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-002-Config/">How to Config SalesforceXytoolsForSublime</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-003-SFDC-Develop/">Use SalesforceXytoolsForSublime to develop SFDC</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-004-Sobject/">Export Sobject to Excel and Search Sobject</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-005-RunScript/">Run sfdc soql, apex script, tooling api</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-006-Dataloader/">Auto config salesforce ant-dataloader and Backup Sobject Data</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-007-Migration-Tool/">Auto config salesforce ant-migration-tools and Backup Metadata</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-008-Export-Sobject-Schema-To-Excel/">Export Sfdc Sobject Schema To Excel</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-009-DeployPackage-Builder/">Use SalesforceXytoolsForSublime Salesforce Deploy Package</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-010-Packagexml-Builder/">Salesforce package.xml Auto Builder</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-011-Apex-Coverage/">How to export Apex Code Coverage</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-012-PermissionSet-Builder/">PermissionSet Builder</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-013-Create-Soql/">Soql Creator</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-014-Build-Deploy-Module/">Save Your Sfdc Module and build a deploy module package</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-015-Search-SFDC-Metadata/">Search sfdc metadata</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-016-Copy-Lightning-component/">Copy a Lightning Component</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-017-LightningWebComponent/">Lightning Web Components HelloWorld</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-101-ApexCode-Creater/">Auto Create Salesforce VisualForce Apex</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../SalesforceXytoolsForSublime-102-TestClass-Creater/">Salesforce test code creator</a>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Cmder For Sublime</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>SalesforceXyTools For Chrome</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <p>b---
+title: SalesforceXyTools For Chrome 
+date: 2017-04-06 8:02:34
+tags: [SFDC, Salesforce, Apex, SalesforceXyTools]
+categories: [Salesforce]
+description: SalesforceXyTools for Chrome is a developer tools for Salesforce,SFDC,Force.com. Login SFDC By 1 click. Quickly Search Metadata Sobject,Apex,Trigger,Page,Component,EmailTemplate,SataticResource, etc. Auto Create Soql, Run Soql, Soql History. Run Apex Script. Quick Search SFDC Document.</p>
+<hr />
+<h1 id="what-is-salesforcexytools-for-chrome">What is SalesforceXyTools for Chrome ?</h1>
+<div class="note primary">SalesforceXyTools for Chrome is a developer tools for Salesforce,SFDC,Force.com.
+1. Login SFDC By 1 click
+2. Quickly Search For Sobject,Apex,Trigger,Page,Component,EmailTemplate,SataticResource, etc
+3. Auto Create Soql, Run Soql, Soql History, Export Data.
+4. Run Apex Script.
+5. Quick Search SFDC Document
+6. Run Rest Query
+7. View Apex Code Coverage
+8. Support JSForce Script
+9. Download CSV/Excel/Json...
+10. Apex Log Viewer
+11. Data Migration Between two Organization
+</div>
+
+<div class="note success">SalesforceXyTools Chrome插件
+- 一键登录Force.com
+- 快速检索Sobject,Apex,Trigger,Page,Component,EmailTemplate,SataticResource,数据列表
+- 自动生成Soql， 执行soql， soql检索历史记录, 下载数据.
+- 执行Apex Script代码
+- 快速检索SFDC文档
+- 执行Rest Api
+- 察看代码覆盖率Code Coverage
+- 支持JSForce Script
+- 下载 CSV/Excel/Json...
+- Apex 日志察看器
+- 数据迁移
+</div>
+
+<h1 id="install-salesforcexytools-for-chrome">Install SalesforceXyTools For Chrome</h1>
+<p><a target="_blank" class="btn" href="https://chrome.google.com/webstore/detail/salesforcexytools/ehklfkbacogbanjgekccnbfdgjechlmf?hl=ja">Install SalesforceXyTools For Chrome From Web Store</a></p>
+<h1 id="introduce">Introduce</h1>
+<h2 id="search-metadata">search metadata</h2>
+<p><img alt="SalesforceXyToolsForChrome" src="/images/salesforcexytools-for-chrome/saleforcexytools-for-chorme-search-metadata.gif" /> </p>
+<h3 id="support-for-metadata-type-as-below">support for metadata type as below</h3>
+<ul>
+<li>StandSobject</li>
+<li>CustomObject</li>
+<li>ApexClass</li>
+<li>ApexTrigger</li>
+<li>ApexPage</li>
+<li>ApexComponent</li>
+<li>EmailTemplate</li>
+<li>StaticResource</li>
+<li>SFDCMenu</li>
+</ul>
+<h2 id="search-document">search document</h2>
+<p><img alt="SalesforceXyToolsForChrome" src="/images/salesforcexytools-for-chrome/saleforcexytools-for-chorme-search-doc.gif" /> </p>
+<h3 id="support-for-document-as-below">support for document as below</h3>
+<ul>
+<li>Apex Developer Guide</li>
+<li>AJAX Toolkit Developer Guide</li>
+<li>Salesforce Reports and Dashboards REST API Developer Guide</li>
+<li>Analytics Cloud Dashboard JSON</li>
+<li>Visualforce Developer Guide</li>
+<li>Streaming API Developer Guide</li>
+<li>Salesforce Security Guide</li>
+<li>Bulk API Developer Guide</li>
+<li>REST API Developer Guide</li>
+<li>Open CTI Developer Guide</li>
+<li>Tooling API Developer Guide</li>
+<li>SOAP API Developer Guide</li>
+<li>Industries REST API Developer Guide</li>
+<li>Chatter REST API Developer Guide</li>
+<li>Metadata API Developer Guide</li>
+<li>Console Integration Toolkit Developer Guide</li>
+<li>Object Reference</li>
+<li>SOQL and SOSL Reference</li>
+<li>Lightning Components Developer Guide</li>
+<li>Development Lifecycle Guide</li>
+<li>Migration Tool Guide</li>
+<li>Force.com Workbook</li>
+<li>Integration Workbook</li>
+<li>Identity Implementation Guide</li>
+<li>Formulas Quick Reference</li>
+</ul>
+<h2 id="quickly-access-sfdc-menu">quickly access sfdc menu</h2>
+<p><img alt="SalesforceXyToolsForChrome" src="/images/salesforcexytools-for-chrome/saleforcexytools-for-chorme-search-menu.gif" /> </p>
+<h2 id="support-many-projects">support many projects</h2>
+<p><img alt="SalesforceXyToolsForChrome" src="/images/salesforcexytools-for-chrome/salesforcexytools-for-chrome4.jpg" /> </p>
+<h2 id="auto-create-soql-and-run-soql">auto create soql , and run soql</h2>
+<p><img alt="SalesforceXyToolsForChrome" src="/images/salesforcexytools-for-chrome/saleforcexytools-for-chorme-soql.gif" /> </p>
+<h2 id="export-data">export data</h2>
+<p><img alt="SalesforceXyToolsForChrome" src="/images/salesforcexytools-for-chrome/saleforcexytools-for-chorme-export-data.gif" /> </p>
+<h2 id="auto-create-tooling-query-and-tooling-soql">auto create tooling query , and tooling soql</h2>
+<p><img alt="SalesforceXyToolsForChrome" src="/images/salesforcexytools-for-chrome/saleforcexytools-for-chorme-tooling-query.jpg" /> </p>
+<h2 id="run-apex-script">run apex script</h2>
+<p><img alt="SalesforceXyToolsForChrome" src="/images/salesforcexytools-for-chrome/saleforcexytools-for-chorme-run-apex.gif" /> </p>
+<h2 id="run-rest-api">run rest api</h2>
+<p><img alt="SalesforceXyToolsForChrome" src="/images/salesforcexytools-for-chrome/saleforcexytools-for-chorme-run-rest-api.jpg" /> </p>
+<h2 id="view-apex-code-coverage">View Apex Code Coverage</h2>
+<p><img alt="SalesforceXyToolsForChrome" src="/images/salesforcexytools-for-chrome/saleforcexytools-for-chorme-apex-code-coverage.jpg" /> </p>
+<h2 id="auto-create-test-class">Auto Create Test Class</h2>
+<p>Select your apex code, it will help you to create test code, and deploy to your sfdc. Example, select <code>BlogDao</code> and click <code>Auto Create Test Code</code>, it will help you to create <code>BlogDaoTest</code>. The tool won't overide the <code>BlogDaoTest</code> if it is exist in your sfdc.
+  <img alt="Auto Create Test Class" src="/images/salesforcexytools-for-chrome/saleforcexytools-for-chorme-auto-create-testclass.gif" /> </p>
+<h2 id="apex-log-viewer">Apex Log Viewer</h2>
+<p><img alt="SalesforceXyToolsForChrome" src="/images/salesforcexytools-for-chrome/saleforcexytools-for-chorme-logviewer.gif" /> </p>
+<h2 id="data-migrateuse-bulk-api">Data Migrate(Use Bulk Api)</h2>
+<p><a href="/Salesforce/sfdc-salesforcexytools-data-migrate.html">Read More Data Migrate</a>
+  <img alt="sfdc-salesforcexytools-data-migrate6" src="/images/salesforcexytools-for-chrome/sfdc-salesforcexytools-data-migrate6.jpg" /></p>
+<h2 id="data-migrate2use-bulk-api">Data Migrate2(Use Bulk Api)</h2>
+<p><a href="/Salesforce/sfdc-salesforcexytools-data-migrate2.html">Read More Data Migrate</a>
+  <img alt="sfdc-salesforcexytools-data-migrate6" src="/images/salesforcexytools-for-chrome/sfdc-salesforcexytools-data-migrate2-1.jpg" /></p>
+<h1 id="advance">Advance</h1>
+<h2 id="run-jsforce-script">Run JSForce Script</h2>
+<div class="note primary">`F12` to Open Chrome Developer Tools, And paste your jsforce script and run it.
+`conn` is a jsforce.Connection object.
+</div>
+
+<p><img alt="SalesforceXyToolsForChrome" src="/images/salesforcexytools-for-chrome/saleforcexytools-for-chorme-run-jsforce.jpg" /> </p>
+<h1 id="install-salesforcexytools-for-chrome_1">Install SalesforceXyTools For Chrome</h1>
+<p><a target="_blank" class="btn" href="https://chrome.google.com/webstore/detail/salesforcexytools/ehklfkbacogbanjgekccnbfdgjechlmf?hl=ja">Install SalesforceXyTools For Chrome From Web Store</a></p>
+<h1 id="history">History</h1>
+<h2 id="20170729-exia">2017.07.29 exia:</h2>
+<p>add <a href="/Salesforce/sfdc-salesforcexytools-data-migrate.html">Data Migrate</a>.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../SalesforceXyTools-For-Sublime/" class="btn btn-neutral float-right" title="SalesforceXyToolsForSublime Rapid development tools for Salesforce">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href=".." class="btn btn-neutral" title="SalesforceXytoolsForSublime Reference"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href=".." style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../SalesforceXyTools-For-Sublime/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+
+</body>
+</html>
