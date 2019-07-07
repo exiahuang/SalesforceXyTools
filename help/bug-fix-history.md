@@ -1,5 +1,8 @@
 # SalesforceXyTools Update History
 
+## 2.1.8
+* document fix
+
 ## 2.1.7
 * support git command
 

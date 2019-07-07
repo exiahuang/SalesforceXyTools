@@ -1,0 +1,33 @@
+node_modules
+temp
+.tmp
+.sass-cache
+dist
+app/bower_components
+test/bower_components
+app/scripts
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# Distribution / packaging
+.Python
+env/
+bin/
+build/
+develop-eggs/
+dist/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+.xyconfig
+.vscode
+myconfig

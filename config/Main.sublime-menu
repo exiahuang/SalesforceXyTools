@@ -355,7 +355,10 @@
             { "caption": "-" },
             {
                 "caption": "Home Page",
-                "command": "home_page"
+                "command": "xy_open_url", "args":  
+                {  
+                    "url": "http://salesforcexytools.com/SalesforceXyTools/"
+                }
             },
             {
                 "caption": "Report Issue",
@@ -396,7 +399,7 @@
                 "caption": "Sfdx Help",
                 "command": "xy_open_url", "args":  
                 {  
-                    "url": "https://github.com/exiahuang/SalesforceXyTools/wiki/SalesforceXyTools-Support-SFDX-develop"
+                    "url": "http://salesforcexytools.com/SalesforceXyTools/SalesforceXytoolsForSublime-Support-Sfdx-Develop/"
                 }
             },
         ]

@@ -1,6 +1,6 @@
 # SalesforceXytoolsForSublime
 
-[SalesforceXytoolsForSublime](http://salesforcexytools.com/categories/SalesforcexytoolsForSublime/) is Rapid development tools for Salesforce Development.
+[SalesforceXytoolsForSublime](http://salesforcexytools.com/SalesforceXyTools/) is Rapid development tools for Salesforce Development.
 
 - Create Salesforce Project, Retrieve Metadata, Search Metadata
 
@@ -32,9 +32,9 @@
 
 - Auto Backup all metadata script(**Set your schedule, backup your sfdc metadata.**).
 
-- Support sfdx command (From v2.1.6), [Document](https://github.com/exiahuang/SalesforceXyTools/wiki/SalesforceXyTools-Support-SFDX-develop)
+- Support sfdx command (From v2.1.6), [Document](http://salesforcexytools.com/SalesforceXyTools/SalesforceXytoolsForSublime-Support-Git/)
 
-- Support git command (From v2.1.7), [Document](https://github.com/exiahuang/SalesforceXyTools/wiki/SalesforceXyTools-Support-Git)
+- Support git command (From v2.1.7), [Document](http://salesforcexytools.com/SalesforceXyTools/SalesforceXytoolsForSublime-Support-Sfdx-Develop/)
 
 # Basic on OpenSource
 
@@ -54,8 +54,8 @@ SalesforceXyToolsForSublime is based on python and open source below.
 
 # SalesforceXyToolsForSublime Reference
 
-* [SalesforceXyToolsForSublime Guide](http://salesforcexytools.com/categories/SalesforcexytoolsForSublime/)
-* [SalesforceXyToolsForSublime-Rapid-development-tools-for-Salesforce](http://salesforcexytools.com/Salesforce/SalesforceXyTools-For-Sublime.html)
+* [SalesforceXyToolsForSublime Guide](http://salesforcexytools.com/SalesforceXyTools/)
+* [SalesforceXyToolsForSublime-Rapid-development-tools-for-Salesforce](http://salesforcexytools.com/SalesforceXyTools/SalesforceXyTools-For-Sublime/)
 * [SalesforceXyToolsForSublime-Rapid-development-tools-for-Salesforce.pdf](http://salesforcexytools.com/pdf/SalesforceXyToolsForSublime-Rapid-development-tools-for-Salesforce.pdf)
 * [Source of SalesforceForSublime](https://github.com/exiahuang/SalesforceXyTools)
 * [Issues of SalesforceXyToolsForSublime](https://github.com/exiahuang/SalesforceXyTools/issues)
@@ -64,25 +64,25 @@ SalesforceXyToolsForSublime is based on python and open source below.
 
 
 # Document Reference
-- [How to Install SalesforceXytoolsForSublime](http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-001-Install.html)
-- [How to Config SalesforceXytoolsForSublime](http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-002-Config.html)
-- [Use SalesforceXytoolsForSublime to develop SFDC](http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-003-SFDC-Develop.html)
-- [Export Sobject to Excel and Search Sobject](http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-004-Sobject.html)
-- [Run sfdc soql, apex script, tooling api](http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-005-RunScript.html)
-- [Auto config salesforce ant-dataloader and Backup Sobject Data](http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-006-Dataloader.html)
-- [Auto config salesforce ant-migration-tools and Backup Metadata](http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-007-Migration-Tool.html)
-- [Export Sfdc Sobject Schema To Excel](http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-008-Export-Sobject-Schema-To-Excel.html)
-- [Use SalesforceXytoolsForSublime Salesforce Deploy Package](http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-009-DeployPackage-Builder.html)
-- [Salesforce package.xml Auto Builder](http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-010-Packagexml-Builder.html)
-- [How to export Apex Code Coverage](http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-011-Apex-Coverage.html)
-- [PermissionSet Builder](http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-012-PermissionSet-Builder.html)
-- [Soql Creator](http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-013-Create-Soql.html)
-- [Save Your Sfdc Module and build a deploy module package](http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-014-Build-Deploy-Module.html)
-- [Search sfdc metadata](http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-015-Search-SFDC-Metadata.html)
-- [Copy a Lightning Component](http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-016-Copy-Lightning-component.html)
-- [Auto Create Salesforce VisualForce Apex](http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-101-ApexCode-Creater.html)
-- [Salesforce test code creator](http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-102-TestClass-Creater.html)
-- [SalesforceXytoolsForSublime Reference](http://salesforcexytools.com/SalesforcexytoolsForSublime/SalesforceXytoolsForSublime-901-Reference.html)
+- [How to Install SalesforceXytoolsForSublime](http://salesforcexytools.com/SalesforceXyTools/SalesforceXytoolsForSublime-001-Install/)
+- [How to Config SalesforceXytoolsForSublime](http://salesforcexytools.com/SalesforceXyTools/SalesforceXytoolsForSublime-002-Config/)
+- [Use SalesforceXytoolsForSublime to develop SFDC](http://salesforcexytools.com/SalesforceXyTools/SalesforceXytoolsForSublime-003-SFDC-Develop/)
+- [Export Sobject to Excel and Search Sobject](http://salesforcexytools.com/SalesforceXyTools/SalesforceXytoolsForSublime-004-Sobject/)
+- [Run sfdc soql, apex script, tooling api](http://salesforcexytools.com/SalesforceXyTools/SalesforceXytoolsForSublime-005-RunScript/)
+- [Auto config salesforce ant-dataloader and Backup Sobject Data](http://salesforcexytools.com/SalesforceXyTools/SalesforceXytoolsForSublime-006-Dataloader/)
+- [Auto config salesforce ant-migration-tools and Backup Metadata](http://salesforcexytools.com/SalesforceXyTools/SalesforceXytoolsForSublime-007-Migration-Tool/)
+- [Export Sfdc Sobject Schema To Excel](http://salesforcexytools.com/SalesforceXyTools/SalesforceXytoolsForSublime-008-Export-Sobject-Schema-To-Excel/)
+- [Use SalesforceXytoolsForSublime Salesforce Deploy Package](http://salesforcexytools.com/SalesforceXyTools/SalesforceXytoolsForSublime-009-DeployPackage-Builder/)
+- [Salesforce package.xml Auto Builder](http://salesforcexytools.com/SalesforceXyTools/SalesforceXytoolsForSublime-010-Packagexml-Builder/)
+- [How to export Apex Code Coverage](http://salesforcexytools.com/SalesforceXyTools/SalesforceXytoolsForSublime-011-Apex-Coverage/)
+- [PermissionSet Builder](http://salesforcexytools.com/SalesforceXyTools/SalesforceXytoolsForSublime-012-PermissionSet-Builder/)
+- [Soql Creator](http://salesforcexytools.com/SalesforceXyTools/SalesforceXytoolsForSublime-013-Create-Soql/)
+- [Save Your Sfdc Module and build a deploy module package](http://salesforcexytools.com/SalesforceXyTools/SalesforceXytoolsForSublime-014-Build-Deploy-Module/)
+- [Search sfdc metadata](http://salesforcexytools.com/SalesforceXyTools/SalesforceXytoolsForSublime-015-Search-SFDC-Metadata/)
+- [Copy a Lightning Component](http://salesforcexytools.com/SalesforceXyTools/SalesforceXytoolsForSublime-016-Copy-Lightning-component/)
+- [Auto Create Salesforce VisualForce Apex](http://salesforcexytools.com/SalesforceXyTools/SalesforceXytoolsForSublime-101-ApexCode-Creater/)
+- [Salesforce test code creator](http://salesforcexytools.com/SalesforceXyTools/SalesforceXytoolsForSublime-102-TestClass-Creater/)
+- [SalesforceXytoolsForSublime Reference](http://salesforcexytools.com/SalesforceXyTools/)
 
 
 
