@@ -215,7 +215,18 @@ class CacheLoader(object):
     def get_cache(self):
         if self.all_cache:
             return self.all_cache
-        self.all_cache = self._load()
+        sub_thread = threading.Thread(target=self._load)
+        sub_thread.start()
+        if sub_thread.is_alive():
+            sleep(1)
+        self.all_cache = {}
+        if self.is_exist():
+            data = {}
+            encoding = 'utf-8'
+            with open(self.full_path, "r", encoding=encoding) as fp:
+                data = json.loads(fp.read(),encoding)
+            self.all_cache = data
+        # self.all_cache = self._load()
         return self.all_cache
 
     def reload(self):
@@ -273,6 +284,7 @@ class SobjectUtil(CacheLoader):
             allMetadataMap["sobjects"][name] = meta
         allMetadataMap["lastUpdated"] = str(datetime.now())
         self.save_dict(allMetadataMap)
+        self.sublconsole.showlog("load metadata cache done.")
         # self.sublconsole.save_and_open_in_panel(json.dumps(allMetadataMap, ensure_ascii=False, indent=4), self.save_dir, self.file_name , is_open=False)
 
     # get all fields from sobject
@@ -352,6 +364,7 @@ class MetadataUtil(CacheLoader):
         allMetadataResult = meta_api.getAllMetadataMap()
         allMetadataResult["AuraDefinition"] = self._load_lux_cache()
         self.save_dict(allMetadataResult)
+        self.sublconsole.showlog("load metadata cache done.")
     
     def _covert_AuraDefinition_to_cache_dict(self, AuraDefinition_records):
         AuraDefinition_MetadataMap = {}

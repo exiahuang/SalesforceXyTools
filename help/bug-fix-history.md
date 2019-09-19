@@ -1,5 +1,8 @@
 # SalesforceXyTools Update History
 
+## 2.1.9
+* meta cache bug fix
+
 ## 2.1.8
 * document fix
 

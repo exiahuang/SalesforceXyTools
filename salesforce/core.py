@@ -341,12 +341,16 @@ class MetadataApi(Soap):
         if query_option_list is None or len(query_option_list) == 0:
             return []
         # self.sf_version
-        request_body = soap_envelopes.get_list_metadata_envelope(session_id=self.session_id, query_option_list=query_option_list,api_version=self.sf_version)
-        result = self._doSoapQueryList("listMetadataResponse", request_body)
-        print(result)
-        if not isinstance(result, list): 
-            result = []
-        return result
+        try:
+            request_body = soap_envelopes.get_list_metadata_envelope(session_id=self.session_id, query_option_list=query_option_list,api_version=self.sf_version)
+            result = self._doSoapQueryList("listMetadataResponse", request_body)
+            print(result)
+            if not isinstance(result, list): 
+                result = []
+            return result
+        except Exception as e:
+            print(e)
+            return []
 
     def describeMetadata(self):
         if self.describe_metadata_response:
