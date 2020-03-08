@@ -1,3 +1,9 @@
+# About Cli and vscode
+
+- [exiahuang/sfdc-cli](https://github.com/exiahuang/sfdc-cli) is a sfdc development kit. sfdc-cli is base on SalesforceXytoolsForSublime.
+- [exiahuang/xysfdx](https://github.com/exiahuang/xysfdx) is a vscode plugin, support sfdx and sfdc-cli.
+
+
 # SalesforceXytoolsForSublime
 
 [SalesforceXytoolsForSublime](http://salesforcexytools.com/SalesforceXyTools/) is Rapid development tools for Salesforce Development.
@@ -105,3 +111,4 @@ The core of SalesforceXyTools For Sublime. Soap, Metadata, Rest API For Salesfor
 * [Install SalesforceXyTools For Chrome From Web Store](https://chrome.google.com/webstore/detail/salesforcexytools/ehklfkbacogbanjgekccnbfdgjechlmf)
 
 > SalesforceXyTools for Chrome is a developer tools for Salesforce,SFDC,Force.com. Login SFDC By 1 click. Quickly Search Metadata Sobject,Apex,Trigger,Page,Component,EmailTemplate,SataticResource, etc. Auto Create Soql, Run Soql, Soql History. Run Apex Script. Quick Search SFDC Document.
+
